@@ -1,17 +1,13 @@
 package transaction
 
+import java.util.concurrent.ThreadLocalRandom
 import java.util.{TimerTask, UUID}
-import java.util.concurrent.{ThreadLocalRandom, TimeUnit}
 
 import com.datastax.driver.core.Cluster
 import com.twitter.finagle.Service
-import com.twitter.finagle.client.StackClient
-import com.twitter.finagle.dispatch.SerialClientDispatcher
-import com.twitter.finagle.netty4.Netty4Transporter
-import com.twitter.util.{Await, Duration, Future, Promise, TimeoutException, Timer}
+import com.twitter.util.{Await, Future, Promise, TimeoutException}
 import transaction.protocol._
 
-import scala.collection.concurrent.TrieMap
 import scala.concurrent.ExecutionContext.Implicits.global
 
 object Client {
