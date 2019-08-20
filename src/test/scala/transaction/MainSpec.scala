@@ -11,8 +11,6 @@ class MainSpec extends FlatSpec {
 
   "amount of money" should " be equal after transactions" in {
 
-
-
   }
 
 }
