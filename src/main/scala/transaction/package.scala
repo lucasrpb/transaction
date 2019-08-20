@@ -69,6 +69,7 @@ package object transaction {
         case cmd: Read => out.add(buf.writeBytes(Any.pack(cmd).toByteArray))
         case cmd: ReadResult => out.add(buf.writeBytes(Any.pack(cmd).toByteArray))
         case cmd: PartitionResult => out.add(buf.writeBytes(Any.pack(cmd).toByteArray))
+        case cmd: Transaction => out.add(buf.writeBytes(Any.pack(cmd).toByteArray))
       }
 
       buf.release()
@@ -88,6 +89,7 @@ package object transaction {
         case _ if p.is(Read) => out.add(p.unpack(Read))
         case _ if p.is(ReadResult) => out.add(p.unpack(ReadResult))
         case _ if p.is(PartitionResult) => out.add(p.unpack(PartitionResult))
+        case _ if p.is(Transaction) => out.add(p.unpack(Transaction))
       }
 
     }

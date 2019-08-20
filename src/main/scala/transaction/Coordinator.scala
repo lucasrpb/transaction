@@ -70,6 +70,8 @@ class Coordinator(val id: String, val host: String, val port: Int)(implicit val 
   timer.scheduleAtFixedRate(new TimerTask {
     override def run(): Unit = {
 
+      if(batch.isEmpty) return
+
       val it = batch.iterator()
       var txs = Seq.empty[Request]
 
@@ -102,11 +104,13 @@ class Coordinator(val id: String, val host: String, val port: Int)(implicit val 
 
       val b = Batch(id, txs.map(_.id))
 
+      println(s"sending batch ${b.transactions}...\n")
+
       log(b).handle { case ex =>
-          txs.foreach { t =>
-            t.p.setValue(Nack())
-            executing.remove(t.id)
-          }
+        txs.foreach { t =>
+          t.p.setValue(Nack())
+          executing.remove(t.id)
+        }
       }
     }
   }, 10L, 10L)
@@ -118,6 +122,9 @@ class Coordinator(val id: String, val host: String, val port: Int)(implicit val 
   }
 
   def process(r: PartitionResult): Future[Command] = {
+
+    println(s"received partition result: ${r}\n")
+
     r.conflicted.foreach { id =>
       val t = executing.remove(id).get
       t.p.setValue(Nack())

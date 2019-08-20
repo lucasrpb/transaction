@@ -16,7 +16,7 @@ import scala.collection.concurrent.TrieMap
 import scala.concurrent.ExecutionContext
 import scala.util.{Failure, Success}
 
-class Executor(val id: String, val coordinators: Map[String, Service[Command, Command]])(implicit val ec: ExecutionContext)
+class Executor(val id: String)(implicit val ec: ExecutionContext)
   extends Service [Command, Command]{
 
   val p = id.toInt
@@ -26,6 +26,10 @@ class Executor(val id: String, val coordinators: Map[String, Service[Command, Co
     .build()
 
   val session = cluster.connect("mvcc")
+
+  val coordinators = Map(
+    "0" -> createConnection("127.0.0.1", 2551)
+  )
 
   val READ_TRANSACTION = session.prepare("select * from transactions where id=?;")
   val UPDATE_DATA = session.prepare("update data set value=?, version=? where key=?;")
@@ -130,20 +134,31 @@ class Executor(val id: String, val coordinators: Map[String, Service[Command, Co
 
   consumer.handler((evt: KafkaConsumerRecord[String, Array[Byte]]) => {
 
-    println(s"processing partition ${evt.partition()}...\n")
+    //println(s"processing partition ${evt.partition()}...\n")
 
     val bytes = evt.value()
     val obj = Any.parseFrom(bytes)
     val batch = obj.unpack(Batch)
 
+    if(!batch.transactions.isEmpty){
+      println(s"processing ${batch.transactions}...\n")
+    }
+
     Future.collect(batch.transactions.map{t => getTx(t)}).flatMap { txs =>
+
+      println(s"transactions ${txs}\n")
+
       val reads = txs.filter(_.partitions.isDefinedAt(id))
 
       Future.collect(reads.map{t => checkTx(t).map(t -> _)}).flatMap { txs =>
-        applyWrites(txs, batch.coordinator, TopicPartition().setPartition(evt.partition()).setTopic("transactions"), evt.offset())
+        applyWrites(txs, batch.coordinator, TopicPartition().setPartition(evt.partition()), evt.offset())
       }
+    }.handle { case t =>
+      t.printStackTrace()
     }
   })
 
-  override def apply(request: Command): Future[Command] = super.apply(request)
+  override def apply(request: Command): Future[Command] = {
+    null
+  }
 }
