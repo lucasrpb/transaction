@@ -14,7 +14,7 @@ import scala.concurrent.ExecutionContext
 
 package object transaction {
 
-  val TIMEOUT = 2000L
+  val TIMEOUT = 1000L
 
   object Status {
     val ABORTED = 0
@@ -53,9 +53,9 @@ package object transaction {
       }
   }
 
-  case class Transaction(id: String, val e: Enqueue, var tmp: Long){
+  /*case class Transaction(id: String, val e: Enqueue, var tmp: Long){
     val p = Promise[Command]()
-  }
+  }*/
 
   final class CommandEncoder extends MessageToMessageEncoder[Command] {
     override def encode(ctx: ChannelHandlerContext, msg: Command, out: java.util.List[AnyRef]): Unit = {
@@ -68,7 +68,7 @@ package object transaction {
         case cmd: Nack => out.add(buf.writeBytes(Any.pack(cmd).toByteArray))
         case cmd: Read => out.add(buf.writeBytes(Any.pack(cmd).toByteArray))
         case cmd: ReadResult => out.add(buf.writeBytes(Any.pack(cmd).toByteArray))
-        case cmd: Commit => out.add(buf.writeBytes(Any.pack(cmd).toByteArray))
+        case cmd: PartitionResult => out.add(buf.writeBytes(Any.pack(cmd).toByteArray))
       }
 
       buf.release()
@@ -87,7 +87,7 @@ package object transaction {
         case _ if p.is(Nack) => out.add(p.unpack(Nack))
         case _ if p.is(Read) => out.add(p.unpack(Read))
         case _ if p.is(ReadResult) => out.add(p.unpack(ReadResult))
-        case _ if p.is(Commit) => out.add(p.unpack(Commit))
+        case _ if p.is(PartitionResult) => out.add(p.unpack(PartitionResult))
       }
 
     }

@@ -13,22 +13,32 @@ message Enqueue {
     option (scalapb.message).companion_extends = "transaction.Command";
 
     string id = 1;
-    repeated string rs = 3;
-    map<string, VersionedValue> ws = 4;
+    map<string, VersionedValue> rs = 2;
+    map<string, VersionedValue> ws = 3;
 }
 
-message Commit {
+message Transaction {
     option (scalapb.message).extends = "transaction.Command";
     option (scalapb.message).companion_extends = "transaction.Command";
 
     string id = 1;
+    map<string, Enqueue> partitions = 2;
+}
+
+message PartitionResult {
+    option (scalapb.message).extends = "transaction.Command";
+    option (scalapb.message).companion_extends = "transaction.Command";
+
+    repeated string conflicted = 1;
+    repeated string applied = 2;
 }
 
 message Batch {
     option (scalapb.message).extends = "transaction.Command";
     option (scalapb.message).companion_extends = "transaction.Command";
 
-    repeated Enqueue txs = 1;
+    string coordinator = 1;
+    repeated string transactions = 2;
 }
 
 message Ack {

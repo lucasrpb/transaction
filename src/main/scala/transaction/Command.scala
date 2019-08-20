@@ -1,5 +1,3 @@
 package transaction
 
-trait Command {
-
-}
+trait Command
