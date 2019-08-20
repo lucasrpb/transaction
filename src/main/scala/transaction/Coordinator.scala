@@ -33,6 +33,8 @@ class Coordinator(val id: String, val host: String, val port: Int)(implicit val 
     val rs = t.partitions.values.map(_.rs.map(_._1)).flatten.toSeq
     val ws = t.partitions.values.map(_.ws.map(_._1)).flatten.toSeq
 
+    println(s"sets: rs ${rs} ws: ${ws}\n")
+
     val total = t.partitions.size
     var n = 0
     var committed = 0
@@ -80,34 +82,58 @@ class Coordinator(val id: String, val host: String, val port: Int)(implicit val 
       }
 
       val now = System.currentTimeMillis()
-      var keys = Seq.empty[String]
+      //var keys = Seq.empty[String]
+      var filter = Seq.empty[Request]
 
-      txs = txs.sortBy(_.id).filter { r =>
+      txs.sortBy(_.id).foreach { r =>
 
         val elapsed = now - r.tmp
         batch.remove(r)
 
         if(elapsed >= TIMEOUT){
           r.p.setValue(Nack())
-          false
-        } else if(!keys.exists{r.ws.contains(_)}) {
+        } else if(!filter.exists{r1 => r.ws.exists(r1.rs.contains(_)) || r1.ws.exists(r.rs.contains(_))}) {
+          filter = filter :+ r
+        } else {
+          r.p.setValue(Nack())
+        }
+      }
 
-          keys = keys ++ r.rs
-          executing.put(r.id, r)
+      var j = 0
 
+      filter = filter.filter { r =>
+
+        if(j == 0){
+          j += 1
           true
         } else {
+          j += 1
           r.p.setValue(Nack())
           false
         }
       }
 
-      val b = Batch(id, txs.map(_.id))
+      val b = Batch(id, filter.map(_.id))
 
-      println(s"sending batch ${b.transactions}...\n")
+     // println(s"sending batch ${b.transactions}...\n")
 
-      log(b).handle { case ex =>
-        txs.foreach { t =>
+      log(b).map { ok =>
+        if(ok){
+
+          println(s"${Console.YELLOW}sending batch ${txs.map(r => (r.ws ++ r.ws).distinct)}${Console.RESET}\n")
+
+          filter.foreach { t =>
+            executing.put(t.id, t)
+          }
+        } else {
+          filter.foreach { t =>
+            t.p.setValue(Nack())
+          }
+        }
+
+        ok
+      }.handle { case ex =>
+        filter.foreach { t =>
           t.p.setValue(Nack())
           executing.remove(t.id)
         }
@@ -123,28 +149,46 @@ class Coordinator(val id: String, val host: String, val port: Int)(implicit val 
 
   def process(r: PartitionResult): Future[Command] = {
 
-    println(s"received partition result: ${r}\n")
+    println(s"received partition result: ${r.conflicted} ${r.applied}\n")
 
     r.conflicted.foreach { id =>
       val t = executing.remove(id).get
+      t.n += 1
       t.p.setValue(Nack())
     }
 
     r.applied.foreach { id =>
       val t = executing(id)
-
       t.committed += 1
+      t.n += 1
+    }
+
+    val remove = executing.filter { case (id, t) =>
+
+      println(s"verifying for $id total ${t.total} committed ${t.committed} n ${t.n}")
 
       if(t.total == t.n){
-        if(t.committed == t.n){
+
+        println(s"all completed for ${id}...")
+
+        if(t.committed == t.total){
+
+          println(s"committed!")
+
           t.p.setValue(Ack())
         } else {
+
+          println(s"not committed")
           t.p.setValue(Nack())
         }
 
-        executing.remove(id)
+        true
+      } else {
+        false
       }
-    }
+    }.map(_._1)
+
+    remove.map(executing.remove(_))
 
     Future.value(Ack())
   }

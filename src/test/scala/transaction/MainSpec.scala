@@ -29,7 +29,7 @@ class MainSpec extends FlatSpec {
     var tasks = Seq.empty[Future[Boolean]]
     val nAcc = 1000
 
-    for(i<-0 until 1){
+    for(i<-0 until 100){
 
       val tid = UUID.randomUUID.toString
       val k1 = rand.nextInt(0, nAcc).toString

@@ -93,40 +93,35 @@ class Executor(val id: String)(implicit val ec: ExecutionContext)
       .setInt(2, Status.PENDING)).map(_.wasApplied())
   }
 
-  def applyWrites(txs: Seq[(Transaction, Boolean)], cid: String, tp: TopicPartition, offset: Long): Future[Boolean] = {
-    val result = PartitionResult()
+  def applyWrites(txs: Seq[(Transaction, Boolean)], cid: String, partition: Int, offset: Long): Future[Boolean] = {
     val c = coordinators(cid)
 
     val conflicted = txs.filter(!_._2).map(_._1)
-    result.addAllConflicted(conflicted.map(_.id))
 
-    val applies = txs.filter{case (t, ok) => ok && t.partitions.isDefinedAt(id) && !t.partitions(id).ws.isEmpty}.map(_._1)
+    val applies = txs.filter(_._2).map(_._1)
     val writes = applies.map(_.partitions(id).ws).flatten
+
+    println(s"keys ${txs.map(_._1.partitions.values)}")
 
     Future.collect(writes.map{case (k, v) => writeKey(k, v)}).flatMap { writes =>
 
       val p = Promise[Boolean]()
 
       if(writes.contains(false)){
-        consumer.seekFuture(tp, offset).onComplete {
-          case Success(r) => p.setValue(false)
-          case Failure(ex) => p.setException(ex)
-        }
-        p
+        System.exit(1)
+
+        Future.value(false)
       } else {
-        c(result)
-
         Future.collect(applies.map{t => commitTx(t).map{t -> _}} ++ conflicted.map{t => abortTx(t).map(t -> _)})
-          .flatMap { _ =>
+          .map { _ =>
 
-            result.addAllApplied(applies.map(_.id))
+            val result = PartitionResult.apply(conflicted.map(_.id), applies.map(_.id))
 
-            consumer.commitFuture().onComplete {
-              case Success(r) => p.setValue(true)
-              case Failure(ex) => p.setException(ex)
-            }
+            c(result)
 
-            p
+            consumer.commit()
+
+            true
           }
       }
     }
@@ -141,18 +136,19 @@ class Executor(val id: String)(implicit val ec: ExecutionContext)
     val batch = obj.unpack(Batch)
 
     if(!batch.transactions.isEmpty){
-      println(s"processing ${batch.transactions}...\n")
+      println(s"${Console.RED}processing batch ${batch.transactions}...${Console.RESET}\n")
     }
 
     Future.collect(batch.transactions.map{t => getTx(t)}).flatMap { txs =>
 
       println(s"transactions ${txs}\n")
 
-      val reads = txs.filter(_.partitions.isDefinedAt(id))
+      val reads = txs.filter(t => t.partitions.isDefinedAt(id) && !t.partitions(id).ws.isEmpty)
 
       Future.collect(reads.map{t => checkTx(t).map(t -> _)}).flatMap { txs =>
-        applyWrites(txs, batch.coordinator, TopicPartition().setPartition(evt.partition()), evt.offset())
+        applyWrites(txs, batch.coordinator, evt.partition(), evt.offset())
       }
+
     }.handle { case t =>
       t.printStackTrace()
     }

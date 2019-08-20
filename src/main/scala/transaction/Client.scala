@@ -39,12 +39,9 @@ class Client(val id: String, val numExecutors: Int)(implicit val ec: ExecutionCo
   def insertTx(tx: Transaction): Future[Boolean] = {
     val tmp = System.currentTimeMillis()
     val bytes = Any.pack(tx).toByteArray
-    println(s"tx ${tx.id} bytes ${bytes.length}")
+
     session.executeAsync(INSERT_TRANSACTION.bind.setString(0, tx.id).setInt(1, Status.PENDING).setLong(2, tmp)
       .setBytes(3, ByteBuffer.wrap(bytes))).map { rs =>
-
-      println("inserted", rs.wasApplied())
-
       rs.wasApplied()
     }.handle { case t =>
 
@@ -58,12 +55,7 @@ class Client(val id: String, val numExecutors: Int)(implicit val ec: ExecutionCo
 
     Future.collect(keys.map{k => read(k)}).flatMap { reads =>
 
-      println(s"read ${reads}")
-
       val writes = f(reads.toMap)
-
-      val tx = Transaction(tid)
-
       val requests = TrieMap[String, Enqueue]()
 
       reads.foreach { case (k, v) =>
@@ -71,7 +63,7 @@ class Client(val id: String, val numExecutors: Int)(implicit val ec: ExecutionCo
 
         requests.get(p) match {
           case None => requests.put(p, Enqueue(id, Map(k -> v)))
-          case Some(e) => e.addRs(k -> v)
+          case Some(e) => requests.put(p, Enqueue(id, e.rs + (k -> v)))
         }
       }
 
@@ -79,17 +71,12 @@ class Client(val id: String, val numExecutors: Int)(implicit val ec: ExecutionCo
         val p = (k.toInt % numExecutors).toString
 
           requests.get(p) match {
-            case None => requests.put(p, Enqueue(id, reads.toMap, Map(k -> v)))
-            case Some(e) => e.addWs(k -> v)
+            case None => requests.put(p, Enqueue(id, Map.empty[String, VersionedValue], Map(k -> v)))
+            case Some(e) => requests.put(p, Enqueue(id, e.rs, e.ws + (k -> v)))
           }
       }
 
-      println(s"writes ${writes}")
-
-      tx.addAllPartitions(requests)
-
-      println(s"requests ${requests}")
-      println(s"sending tx ${tx}")
+      val tx = Transaction(tid, requests.toMap)
 
       insertTx(tx).flatMap { ok =>
 
