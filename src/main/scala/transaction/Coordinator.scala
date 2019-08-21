@@ -19,8 +19,6 @@ import scala.util.{Failure, Success}
 class Coordinator(val id: String, val host: String, val port: Int)(implicit val ec: ExecutionContext)
   extends Service[Command, Command]{
 
-  val executing = TrieMap.empty[String, Request]
-
   val cluster = Cluster.builder()
     .addContactPoint("127.0.0.1")
     .build()
@@ -29,19 +27,7 @@ class Coordinator(val id: String, val host: String, val port: Int)(implicit val 
 
   case class Request(id: String, t: Transaction, tmp: Long = System.currentTimeMillis()){
     val p = Promise[Command]()
-
-    val rs = t.partitions.values.map(_.rs.map(_._1)).flatten.toSeq
-    val ws = t.partitions.values.map(_.ws.map(_._1)).flatten.toSeq
-
-    println(s"sets: rs ${rs} ws: ${ws}\n")
-
-    val total = t.partitions.size
-    var n = 0
-    var committed = 0
   }
-
-  val batch = new ConcurrentLinkedQueue[Request]()
-  val timer = new Timer()
 
   val config = scala.collection.mutable.Map[String, String]()
 
@@ -55,7 +41,7 @@ class Coordinator(val id: String, val host: String, val port: Int)(implicit val 
   // use producer for interacting with Apache Kafka
   val producer = KafkaProducer.create[String, Array[Byte]](vertx, config)
 
-  def log(b: Batch): Future[Boolean] = {
+  /*def log(b: Batch): Future[Boolean] = {
     val record = KafkaProducerRecord.create[String, Array[Byte]]("transactions",
       id, Any.pack(b).toByteArray)
 
@@ -67,128 +53,47 @@ class Coordinator(val id: String, val host: String, val port: Int)(implicit val 
     }
 
     p
+  }*/
+
+  def log(t: Transaction): Future[Boolean] = {
+    val record = KafkaProducerRecord.create[String, Array[Byte]]("transactions",
+      id, Any.pack(t).toByteArray)
+
+    val p = Promise[Boolean]()
+
+    producer.writeFuture(record).onComplete {
+      case Success(r) => p.setValue(true)
+      case Failure(e) => p.setException(e)
+    }
+
+    p
   }
 
-  timer.scheduleAtFixedRate(new TimerTask {
-    override def run(): Unit = {
-
-      if(batch.isEmpty) return
-
-      val it = batch.iterator()
-      var txs = Seq.empty[Request]
-
-      while(it.hasNext){
-        txs = txs :+ it.next()
-      }
-
-      val now = System.currentTimeMillis()
-      //var keys = Seq.empty[String]
-      var filter = Seq.empty[Request]
-
-      txs.sortBy(_.id).foreach { r =>
-
-        val elapsed = now - r.tmp
-        batch.remove(r)
-
-        if(elapsed >= TIMEOUT){
-          r.p.setValue(Nack())
-        } else if(!filter.exists{r1 => r.ws.exists(r1.rs.contains(_)) || r1.ws.exists(r.rs.contains(_))}) {
-          filter = filter :+ r
-        } else {
-          r.p.setValue(Nack())
-        }
-      }
-
-      var j = 0
-
-      filter = filter.filter { r =>
-
-        if(j == 0){
-          j += 1
-          true
-        } else {
-          j += 1
-          r.p.setValue(Nack())
-          false
-        }
-      }
-
-      val b = Batch(id, filter.map(_.id))
-
-     // println(s"sending batch ${b.transactions}...\n")
-
-      log(b).map { ok =>
-        if(ok){
-
-          println(s"${Console.YELLOW}sending batch ${txs.map(r => (r.ws ++ r.ws).distinct)}${Console.RESET}\n")
-
-          filter.foreach { t =>
-            executing.put(t.id, t)
-          }
-        } else {
-          filter.foreach { t =>
-            t.p.setValue(Nack())
-          }
-        }
-
-        ok
-      }.handle { case ex =>
-        filter.foreach { t =>
-          t.p.setValue(Nack())
-          executing.remove(t.id)
-        }
-      }
-    }
-  }, 10L, 10L)
+  val executing = TrieMap[String, Request]()
 
   def process(t: Transaction): Future[Command] = {
     val req = Request(t.id, t)
-    batch.offer(req)
+
+    log(t).onSuccess { ok =>
+      executing.put(req.id, req)
+    }.handle { case t =>
+      req.p.setValue(Nack())
+    }
+
     req.p
   }
 
   def process(r: PartitionResult): Future[Command] = {
 
-    println(s"received partition result: ${r.conflicted} ${r.applied}\n")
+    val t = executing(r.id)
 
-    r.conflicted.foreach { id =>
-      val t = executing.remove(id).get
-      t.n += 1
+    if(r.applied){
+      t.p.setValue(Ack())
+    } else {
       t.p.setValue(Nack())
     }
 
-    r.applied.foreach { id =>
-      val t = executing(id)
-      t.committed += 1
-      t.n += 1
-    }
-
-    val remove = executing.filter { case (id, t) =>
-
-      println(s"verifying for $id total ${t.total} committed ${t.committed} n ${t.n}")
-
-      if(t.total == t.n){
-
-        println(s"all completed for ${id}...")
-
-        if(t.committed == t.total){
-
-          println(s"committed!")
-
-          t.p.setValue(Ack())
-        } else {
-
-          println(s"not committed")
-          t.p.setValue(Nack())
-        }
-
-        true
-      } else {
-        false
-      }
-    }.map(_._1)
-
-    remove.map(executing.remove(_))
+    executing.remove(id)
 
     Future.value(Ack())
   }

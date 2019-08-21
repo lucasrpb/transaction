@@ -5,7 +5,7 @@ import java.util.TimerTask
 import com.datastax.driver.core.Cluster
 import com.google.protobuf.any.Any
 import com.twitter.finagle.Service
-import com.twitter.util.{Future, Promise}
+import com.twitter.util.{Await, Future, Promise}
 import io.vertx.scala.core.Vertx
 import io.vertx.scala.kafka.client.common.TopicPartition
 import io.vertx.scala.kafka.client.consumer.{KafkaConsumer, KafkaConsumerRecord}
@@ -33,7 +33,7 @@ class Executor(val id: String)(implicit val ec: ExecutionContext)
 
   val READ_TRANSACTION = session.prepare("select * from transactions where id=?;")
   val UPDATE_DATA = session.prepare("update data set value=?, version=? where key=?;")
-  val READ_DATA = session.prepare("select * from data where key=? and version=?;")
+  val READ_DATA = session.prepare("select * from data where key=?;")
   val UPDATE_TRANSACTION = session.prepare("update transactions set status=? where id=? if status=?")
 
   def write(k: String, v: VersionedValue): Future[Boolean] = {
@@ -70,7 +70,9 @@ class Executor(val id: String)(implicit val ec: ExecutionContext)
   }
 
   def readKey(k: String, v: VersionedValue): Future[Boolean] = {
-    session.executeAsync(READ_DATA.bind.setString(0, k).setString(1, v.version)).map(_.one() != null)
+    session.executeAsync(READ_DATA.bind.setString(0, k)).map{rs =>
+      val one = rs.one()
+      one != null && one.getLong("value") == v.value}
   }
 
   def writeKey(k: String, v: VersionedValue): Future[Boolean] = {
@@ -79,8 +81,11 @@ class Executor(val id: String)(implicit val ec: ExecutionContext)
   }
 
   def checkTx(t: Transaction): Future[Boolean] = {
-    val rs = t.partitions.values.map(_.rs).flatten
-    Future.collect(rs.map{case (k, v) => readKey(k, v)}.toSeq).map(!_.contains(false))
+    Future.collect(t.rs.map{case (k, v) => readKey(k, v)}.toSeq).map(!_.contains(false))
+  }
+
+  def writeTx(t: Transaction): Future[Boolean] = {
+    Future.collect(t.ws.map{case (k, v) => writeKey(k, v)}.toSeq).map(!_.contains(false))
   }
 
   def commitTx(t: Transaction): Future[Boolean] = {
@@ -93,65 +98,60 @@ class Executor(val id: String)(implicit val ec: ExecutionContext)
       .setInt(2, Status.PENDING)).map(_.wasApplied())
   }
 
-  def applyWrites(txs: Seq[(Transaction, Boolean)], cid: String, partition: Int, offset: Long): Future[Boolean] = {
-    val c = coordinators(cid)
-
-    val conflicted = txs.filter(!_._2).map(_._1)
-
-    val applies = txs.filter(_._2).map(_._1)
-    val writes = applies.map(_.partitions(id).ws).flatten
-
-    println(s"keys ${txs.map(_._1.partitions.values)}")
-
-    Future.collect(writes.map{case (k, v) => writeKey(k, v)}).flatMap { writes =>
-
-      val p = Promise[Boolean]()
-
-      if(writes.contains(false)){
-        System.exit(1)
-
-        Future.value(false)
-      } else {
-        Future.collect(applies.map{t => commitTx(t).map{t -> _}} ++ conflicted.map{t => abortTx(t).map(t -> _)})
-          .map { _ =>
-
-            val result = PartitionResult.apply(conflicted.map(_.id), applies.map(_.id))
-
-            c(result)
-
-            consumer.commit()
-
-            true
-          }
-      }
-    }
-  }
-
   consumer.handler((evt: KafkaConsumerRecord[String, Array[Byte]]) => {
 
     //println(s"processing partition ${evt.partition()}...\n")
 
     val bytes = evt.value()
     val obj = Any.parseFrom(bytes)
-    val batch = obj.unpack(Batch)
+    val t = obj.unpack(Transaction)
 
-    if(!batch.transactions.isEmpty){
-      println(s"${Console.RED}processing batch ${batch.transactions}...${Console.RESET}\n")
+    val c = coordinators("0")
+
+    println(s"processing tx ${t.id} at partition ${evt.partition()}")
+
+    consumer.pause()
+
+    val f = checkTx(t).flatMap { ok =>
+      if(ok){
+        writeTx(t).flatMap { ok =>
+          if(ok){
+            commitTx(t)
+          } else {
+            abortTx(t)
+          }
+        }
+      } else {
+        abortTx(t)
+      }
+    }.handle {
+      case t => t.printStackTrace()
+      false
     }
 
-    Future.collect(batch.transactions.map{t => getTx(t)}).flatMap { txs =>
+    f.onSuccess { ok =>
+      c(PartitionResult.apply(t.id, ok))
 
-      println(s"transactions ${txs}\n")
-
-      val reads = txs.filter(t => t.partitions.isDefinedAt(id) && !t.partitions(id).ws.isEmpty)
-
-      Future.collect(reads.map{t => checkTx(t).map(t -> _)}).flatMap { txs =>
-        applyWrites(txs, batch.coordinator, evt.partition(), evt.offset())
+      if(ok){
+        consumer.resume()
       }
 
-    }.handle { case t =>
-      t.printStackTrace()
+      println(s"finished ${t.id}")
+    }.onFailure { _ =>
+
+      c(PartitionResult.apply(t.id, false))
+
+      println(s"finished ${t.id}")
     }
+
+    //val ok = Await.result(f)
+
+    /*c(PartitionResult.apply(t.id, ok))
+
+    consumer.commit()
+
+    println(s"finished ${t.id}")*/
+
   })
 
   override def apply(request: Command): Future[Command] = {

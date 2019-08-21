@@ -41,8 +41,7 @@ class Client(val id: String, val numExecutors: Int)(implicit val ec: ExecutionCo
     val bytes = Any.pack(tx).toByteArray
 
     session.executeAsync(INSERT_TRANSACTION.bind.setString(0, tx.id).setInt(1, Status.PENDING).setLong(2, tmp)
-      .setBytes(3, ByteBuffer.wrap(bytes))).map { rs =>
-      rs.wasApplied()
+      .setBytes(3, ByteBuffer.wrap(bytes))).map { rs => rs.wasApplied()
     }.handle { case t =>
 
         t.printStackTrace()
@@ -51,39 +50,24 @@ class Client(val id: String, val numExecutors: Int)(implicit val ec: ExecutionCo
     }
   }
 
-  def execute(tid: String, keys: Seq[String])(f: (Map[String, VersionedValue]) => Map[String, VersionedValue]): Future[Boolean] = {
+  def execute(tid: String, keys: Seq[String])(f: ((String, Map[String, VersionedValue])) => Map[String, VersionedValue]): Future[Boolean] = {
 
     Future.collect(keys.map{k => read(k)}).flatMap { reads =>
 
-      val writes = f(reads.toMap)
-      val requests = TrieMap[String, Enqueue]()
+      val writes = f(tid -> reads.toMap)
 
-      reads.foreach { case (k, v) =>
-        val p = (k.toInt % numExecutors).toString
+      println(s"reads ${reads.toMap}")
+      println(s"writes ${writes}")
+      println()
 
-        requests.get(p) match {
-          case None => requests.put(p, Enqueue(id, Map(k -> v)))
-          case Some(e) => requests.put(p, Enqueue(id, e.rs + (k -> v)))
-        }
-      }
-
-      writes.foreach { case (k, v) =>
-        val p = (k.toInt % numExecutors).toString
-
-          requests.get(p) match {
-            case None => requests.put(p, Enqueue(id, Map.empty[String, VersionedValue], Map(k -> v)))
-            case Some(e) => requests.put(p, Enqueue(id, e.rs, e.ws + (k -> v)))
-          }
-      }
-
-      val tx = Transaction(tid, requests.toMap)
+      val tx = Transaction(tid, reads.toMap, writes)
 
       insertTx(tx).flatMap { ok =>
 
         if(!ok){
           Future.value(false)
         } else {
-          val c = coordinators(if(coordinators.size == 1) "0" else rand.nextInt(0, coordinators.size).toString)
+          val c = coordinators("0")
 
           c(tx).map {
             _ match {

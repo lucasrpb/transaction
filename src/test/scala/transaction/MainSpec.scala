@@ -39,7 +39,7 @@ class MainSpec extends FlatSpec {
 
         val c = clients(rand.nextInt(0, clients.length))
 
-        tasks = tasks :+ c.execute(tid, Seq(k1, k2)){ reads =>
+        tasks = tasks :+ c.execute(tid, Seq(k1, k2)){ case (tid, reads) =>
 
           val keys = reads.keys
 

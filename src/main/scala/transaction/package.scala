@@ -63,7 +63,6 @@ package object transaction {
       val buf = ctx.alloc().buffer().retain()
 
       msg match {
-        case cmd: Enqueue => out.add(buf.writeBytes(Any.pack(cmd).toByteArray))
         case cmd: Ack => out.add(buf.writeBytes(Any.pack(cmd).toByteArray))
         case cmd: Nack => out.add(buf.writeBytes(Any.pack(cmd).toByteArray))
         case cmd: Read => out.add(buf.writeBytes(Any.pack(cmd).toByteArray))
@@ -85,7 +84,6 @@ package object transaction {
       val p = Any.parseFrom(bytes)
 
       p match {
-        case _ if p.is(Enqueue) => out.add(p.unpack(Enqueue))
         case _ if p.is(Ack) => out.add(p.unpack(Ack))
         case _ if p.is(Nack) => out.add(p.unpack(Nack))
         case _ if p.is(Read) => out.add(p.unpack(Read))

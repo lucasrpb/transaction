@@ -8,7 +8,7 @@ option (scalapb.options) = {
   flat_package: true
 };
 
-message Enqueue {
+message Transaction {
     option (scalapb.message).extends = "transaction.Command";
     option (scalapb.message).companion_extends = "transaction.Command";
 
@@ -17,20 +17,12 @@ message Enqueue {
     map<string, VersionedValue> ws = 3;
 }
 
-message Transaction {
-    option (scalapb.message).extends = "transaction.Command";
-    option (scalapb.message).companion_extends = "transaction.Command";
-
-    string id = 1;
-    map<string, Enqueue> partitions = 2;
-}
-
 message PartitionResult {
     option (scalapb.message).extends = "transaction.Command";
     option (scalapb.message).companion_extends = "transaction.Command";
 
-    repeated string conflicted = 1;
-    repeated string applied = 2;
+    string id = 1;
+    bool applied = 2;
 }
 
 message Batch {
