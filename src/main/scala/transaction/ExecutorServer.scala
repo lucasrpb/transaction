@@ -6,11 +6,12 @@ import scala.concurrent.ExecutionContext.Implicits.global
 
 object ExecutorServer {
 
-  def main(args: Array[String]): Unit = {
+  val executors = Map(
+    "0" -> ("127.0.0.1" -> 2552),
+    "1" -> ("127.0.0.1" -> 2554)
+  )
 
-    val executors = Map(
-      "0" -> ("127.0.0.1" -> 2552)
-    )
+  def main(args: Array[String]): Unit = {
 
     Await.all(executors.map { case (id, (host, port)) =>
       val executor = new Executor(id)

@@ -24,8 +24,8 @@ class Client(val id: String, val numExecutors: Int)(implicit val ec: ExecutionCo
 
     val conn = coordinators(rand.nextInt(0, coordinators.size).toString)
 
-    Future.collect(keys.map{k => conn(Read(keys))}).flatMap { READS =>
-      val reads = READS.map(_.asInstanceOf[ReadResult].values).flatten.toMap
+    conn(Read(keys)).flatMap { r =>
+      val reads = r.asInstanceOf[ReadResult].values
       val writes = f(tid -> reads)
 
       val tx = Transaction(tid, reads, writes)

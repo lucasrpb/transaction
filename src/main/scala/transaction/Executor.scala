@@ -116,7 +116,7 @@ class Executor(val id: String)(implicit val ec: ExecutionContext)
 
     consumer.pause()
 
-    println(s"processing batch ${batch.id} with size ${txs.size} at partition ${evt.partition()}")
+    println(s"executor ${id} processing batch ${batch.id} with size ${txs.size} at partition ${evt.partition()}")
 
     Future.collect(txs.map(t => checkTx(t).map(t -> _))).flatMap { checks =>
       val conflicted = checks.filter(_._2 == false)
