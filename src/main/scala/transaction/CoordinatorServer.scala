@@ -7,17 +7,21 @@ import scala.concurrent.ExecutionContext.Implicits.global
 
 object CoordinatorServer {
 
-  def main(args: Array[String]): Unit = {
+  val coordinators = Map(
+    "0" -> ("127.0.0.1" -> 2551),
+    "1" -> ("127.0.0.1" -> 2553),
+    "2" -> ("127.0.0.1" -> 2557),
+    "3" -> ("127.0.0.1" -> 2559)
+  )
 
-    val coordinators = Map(
-      "0" -> ("127.0.0.1" -> 2551)
-    )
+  val n = coordinators.size
+
+  def main(args: Array[String]): Unit = {
 
     Await.all(coordinators.map { case (id, (host, port)) =>
       val executor = new Coordinator(id, host, port)
       TransactorServer.Server().serve(new InetSocketAddress(host, port), executor)
     }.toSeq: _*)
-
   }
 
 }

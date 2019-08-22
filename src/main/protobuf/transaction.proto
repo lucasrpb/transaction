@@ -22,15 +22,17 @@ message PartitionResult {
     option (scalapb.message).companion_extends = "transaction.Command";
 
     string id = 1;
-    bool applied = 2;
+    repeated string aborted = 2;
+    repeated string applied = 3;
 }
 
 message Batch {
     option (scalapb.message).extends = "transaction.Command";
     option (scalapb.message).companion_extends = "transaction.Command";
 
-    string coordinator = 1;
-    repeated string transactions = 2;
+    string id = 1;
+    string coordinator = 2;
+    repeated Transaction transactions = 3;
 }
 
 message Ack {

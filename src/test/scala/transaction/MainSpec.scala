@@ -3,7 +3,7 @@ package transaction
 import java.util.UUID
 import java.util.concurrent.ThreadLocalRandom
 
-import com.datastax.driver.core.Cluster
+import com.datastax.driver.core.{Cluster, Session}
 import com.twitter.finagle.Service
 import com.twitter.util.{Await, Future}
 import org.scalatest.FlatSpec
@@ -20,16 +20,12 @@ class MainSpec extends FlatSpec {
     val nAccounts = 1000
     val numExecutors = 1
 
-    var clients = Seq.empty[Client]
-
-    for(i<-0 until 200){
-      clients = clients :+ new Client(i.toString, numExecutors)
-    }
-
     var tasks = Seq.empty[Future[Boolean]]
     val nAcc = 1000
 
-    for(i<-0 until 100){
+    var sessions = Seq.empty[(Cluster, Session)]
+
+    for(i<-0 until 1000){
 
       val tid = UUID.randomUUID.toString
       val k1 = rand.nextInt(0, nAcc).toString
@@ -37,7 +33,7 @@ class MainSpec extends FlatSpec {
 
       if(!k1.equals(k2)){
 
-        val c = clients(rand.nextInt(0, clients.length))
+        val c = new Client(i.toString, numExecutors)
 
         tasks = tasks :+ c.execute(tid, Seq(k1, k2)){ case (tid, reads) =>
 
@@ -73,7 +69,9 @@ class MainSpec extends FlatSpec {
     println(s"elapsed: ${elapsed}ms, req/s: ${reqs}\n")
     println(s"${result.count(_ == true)}/${len}\n")
 
-    Await.all(clients.map(_.close()): _*)
+    Await.all(sessions.map { case (c, s) =>
+      s.closeAsync().flatMap(_ => c.closeAsync())
+    }: _*)
   }
 
 }

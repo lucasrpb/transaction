@@ -1,6 +1,7 @@
 package transaction
 
 import java.util.TimerTask
+import java.util.concurrent.ThreadLocalRandom
 
 import com.datastax.driver.core.Cluster
 import com.google.protobuf.any.Any
@@ -27,10 +28,6 @@ class Executor(val id: String)(implicit val ec: ExecutionContext)
 
   val session = cluster.connect("mvcc")
 
-  val coordinators = Map(
-    "0" -> createConnection("127.0.0.1", 2551)
-  )
-
   val READ_TRANSACTION = session.prepare("select * from transactions where id=?;")
   val UPDATE_DATA = session.prepare("update data set value=?, version=? where key=?;")
   val READ_DATA = session.prepare("select * from data where key=?;")
@@ -38,6 +35,10 @@ class Executor(val id: String)(implicit val ec: ExecutionContext)
 
   def write(k: String, v: VersionedValue): Future[Boolean] = {
     session.executeAsync(UPDATE_DATA.bind.setLong(0, v.value).setString(1, v.version).setString(2, k)).map(_.wasApplied())
+  }
+
+  val coordinators = CoordinatorServer.coordinators.map{ case (id, (host, port)) =>
+    id -> (0 until 10).map(_ => createConnection(host, port))
   }
 
   val config = scala.collection.mutable.Map[String, String]()
@@ -98,59 +99,39 @@ class Executor(val id: String)(implicit val ec: ExecutionContext)
       .setInt(2, Status.PENDING)).map(_.wasApplied())
   }
 
-  consumer.handler((evt: KafkaConsumerRecord[String, Array[Byte]]) => {
+  val rand = ThreadLocalRandom.current()
 
-    //println(s"processing partition ${evt.partition()}...\n")
+  def send(c: String, r: PartitionResult): Future[Command] = {
+    val connections = coordinators(c)
+    connections.apply(rand.nextInt(0, connections.size))(r)
+  }
+
+  consumer.handler((evt: KafkaConsumerRecord[String, Array[Byte]]) => {
 
     val bytes = evt.value()
     val obj = Any.parseFrom(bytes)
-    val t = obj.unpack(Transaction)
+    val batch = obj.unpack(Batch)
 
-    val c = coordinators("0")
-
-    println(s"processing tx ${t.id} at partition ${evt.partition()}")
+    val txs = batch.transactions
 
     consumer.pause()
 
-    val f = checkTx(t).flatMap { ok =>
-      if(ok){
-        writeTx(t).flatMap { ok =>
-          if(ok){
-            commitTx(t)
-          } else {
-            abortTx(t)
-          }
+    println(s"processing batch ${batch.id} with size ${txs.size} at partition ${evt.partition()}")
+
+    Future.collect(txs.map(t => checkTx(t).map(t -> _))).flatMap { checks =>
+      val conflicted = checks.filter(_._2 == false)
+      val accepted = checks.filter(_._2 == true)
+
+      // Assuming nothing goes wrong...
+      Future.collect(accepted.map{case (t, _) => writeTx(t)}).flatMap { writes =>
+        Future.collect(accepted.map{case (t, _) => commitTx(t)}).map { commits =>
+          send(batch.coordinator, PartitionResult.apply(batch.id, conflicted.map(_._1.id), accepted.map(_._1.id)))
+          consumer.resume()
         }
-      } else {
-        abortTx(t)
       }
-    }.handle {
-      case t => t.printStackTrace()
-      false
+    }.handle { case t =>
+      t.printStackTrace()
     }
-
-    f.onSuccess { ok =>
-      c(PartitionResult.apply(t.id, ok))
-
-      if(ok){
-        consumer.resume()
-      }
-
-      println(s"finished ${t.id}")
-    }.onFailure { _ =>
-
-      c(PartitionResult.apply(t.id, false))
-
-      println(s"finished ${t.id}")
-    }
-
-    //val ok = Await.result(f)
-
-    /*c(PartitionResult.apply(t.id, ok))
-
-    consumer.commit()
-
-    println(s"finished ${t.id}")*/
 
   })
 
