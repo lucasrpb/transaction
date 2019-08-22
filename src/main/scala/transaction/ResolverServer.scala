@@ -4,20 +4,19 @@ import java.net.InetSocketAddress
 import com.twitter.util.Await
 import scala.concurrent.ExecutionContext.Implicits.global
 
-object ExecutorServer {
+object ResolverServer {
 
-  val executors = Map(
-    "0" -> ("127.0.0.1" -> 2552),
-    "1" -> ("127.0.0.1" -> 2554)
+  val resolvers = Map(
+    "0" -> ("127.0.0.1" -> 2552)
   )
 
-  def main(args: Array[String]): Unit = {
+  val n = resolvers.size
 
-    Await.all(executors.map { case (id, (host, port)) =>
-      val executor = new Executor(id)
+  def main(args: Array[String]): Unit = {
+    Await.all(resolvers.map { case (id, (host, port)) =>
+      val executor = new Resolver(id)
       TransactorServer.Server().serve(new InetSocketAddress(host, port), executor)
     }.toSeq: _*)
-
   }
 
 }
