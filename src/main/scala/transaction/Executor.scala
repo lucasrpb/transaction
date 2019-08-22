@@ -38,7 +38,7 @@ class Executor(val id: String)(implicit val ec: ExecutionContext)
   }
 
   val coordinators = CoordinatorServer.coordinators.map{ case (id, (host, port)) =>
-    id -> (0 until 10).map(_ => createConnection(host, port))
+    id -> (0 until 1).map(_ => createConnection(host, port))
   }
 
   val config = scala.collection.mutable.Map[String, String]()

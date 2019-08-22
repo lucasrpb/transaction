@@ -23,9 +23,9 @@ class MainSpec extends FlatSpec {
     var tasks = Seq.empty[Future[Boolean]]
     val nAcc = 1000
 
-    var sessions = Seq.empty[(Cluster, Session)]
+    var clients = Seq.empty[Client]
 
-    for(i<-0 until 1000){
+    for(i<-0 until 2000){
 
       val tid = UUID.randomUUID.toString
       val k1 = rand.nextInt(0, nAcc).toString
@@ -34,6 +34,7 @@ class MainSpec extends FlatSpec {
       if(!k1.equals(k2)){
 
         val c = new Client(i.toString, numExecutors)
+        clients = clients :+ c
 
         tasks = tasks :+ c.execute(tid, Seq(k1, k2)){ case (tid, reads) =>
 
@@ -69,9 +70,7 @@ class MainSpec extends FlatSpec {
     println(s"elapsed: ${elapsed}ms, req/s: ${reqs}\n")
     println(s"${result.count(_ == true)}/${len}\n")
 
-    Await.all(sessions.map { case (c, s) =>
-      s.closeAsync().flatMap(_ => c.closeAsync())
-    }: _*)
+    Await.all(clients.map(_.close()): _*)
   }
 
 }
