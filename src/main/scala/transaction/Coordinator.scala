@@ -3,11 +3,12 @@ package transaction
 import java.nio.ByteBuffer
 import java.util.{Timer, TimerTask, UUID}
 import java.util.concurrent.ConcurrentLinkedQueue
+import java.util.concurrent.atomic.AtomicBoolean
 
 import com.datastax.driver.core.{Cluster, Session}
 import com.google.protobuf.any.Any
 import com.twitter.finagle.Service
-import com.twitter.util.{Future, Promise}
+import com.twitter.util.{Await, Future, Promise}
 import io.vertx.scala.core.Vertx
 import io.vertx.scala.kafka.client.producer.{KafkaProducer, KafkaProducerRecord}
 import org.apache.kafka.clients.producer.ProducerConfig
@@ -37,72 +38,26 @@ class Coordinator(val id: String, val host: String, val port: Int)(implicit val 
     val partitions = (rs ++ ws).distinct.map(k => (k.toInt % NPARTITIONS).toString)
   }
 
-  val config = scala.collection.mutable.Map[String, String]()
-
-  config += (ProducerConfig.BOOTSTRAP_SERVERS_CONFIG -> "localhost:9092")
-  config += (ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG -> "org.apache.kafka.common.serialization.StringSerializer")
-  config += (ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG -> "org.apache.kafka.common.serialization.ByteArraySerializer")
-  config += (ProducerConfig.ACKS_CONFIG -> "1")
-
-  val vertx = Vertx.vertx()
-
-  // use producer for interacting with Apache Kafka
-  val producer = KafkaProducer.create[String, Array[Byte]](vertx, config)
-
-  val INSERT_TRANSACTION = session.prepare("insert into transactions(id, status, tmp, bin) values(?,?,?, ?);")
-  val INSERT_BATCH = session.prepare("insert into batches(id, total, n) values(?,?,0);")
-  val READ_DATA = session.prepare("select * from data where key=?;")
-
-  def read(k: String): Future[(String, VersionedValue)] = {
-    session.executeAsync(READ_DATA.bind.setString(0, k)).map { r =>
-      val one = r.one()
-      k -> VersionedValue(one.getString("version"), one.getLong("value"))
-    }
-  }
-
-  def insertTx(tx: Transaction): Future[Boolean] = {
-    val tmp = System.currentTimeMillis()
-    val bytes = Any.pack(tx).toByteArray
-
-    session.executeAsync(INSERT_TRANSACTION.bind.setString(0, tx.id).setInt(1, Status.PENDING).setLong(2, tmp)
-      .setBytes(3, ByteBuffer.wrap(bytes))).map { rs => rs.wasApplied()
-    }.handle { case t =>
-
-      t.printStackTrace()
-
-      false
-    }
-  }
-
-  def insertBatch(id: String, total: Int): Future[Boolean] = {
-    session.executeAsync(INSERT_BATCH.bind.setString(0, id).setInt(1, total)).map { rs =>
-      rs.wasApplied()
-    }.handle { case t =>
-      t.printStackTrace()
-      false
-    }
-  }
-
-  def log(b: Batch): Future[Boolean] = {
-    val record = KafkaProducerRecord.create[String, Array[Byte]]("transactions", id, Any.pack(b).toByteArray)
-
-    val p = Promise[Boolean]()
-
-    producer.writeFuture(record).onComplete {
-      case Success(r) => p.setValue(true)
-      case Failure(e) => p.setException(e)
-    }
-
-    p
-  }
-
   val batch = new ConcurrentLinkedQueue[Request]()
   val executing = TrieMap[String, Request]()
 
   val timer = new Timer()
+  val done = new AtomicBoolean(true)
 
   timer.scheduleAtFixedRate(new TimerTask {
     override def run(): Unit = {
+
+      val now = System.currentTimeMillis()
+
+      /*if(!executing.isEmpty) {
+        executing.filter(now - _._2.tmp >= TIMEOUT).foreach { case (_, r) =>
+          executing.remove(r.id)
+          r.p.setValue(Nack())
+        }
+        return
+      }*/
+
+      if(!done.get()) return
 
       var txs = Seq.empty[Request]
       val it = batch.iterator()
@@ -110,8 +65,6 @@ class Coordinator(val id: String, val host: String, val port: Int)(implicit val 
       while(it.hasNext()){
         txs = txs :+ it.next()
       }
-
-      val now = System.currentTimeMillis()
 
       var keys = executing.map(_._2.rs).flatten.toSeq
 
@@ -128,17 +81,17 @@ class Coordinator(val id: String, val host: String, val port: Int)(implicit val 
         }
       }
 
-      resolver(PartitionRequest.apply(id, executing.values.map(_.partitions).toSeq.flatten.distinct))
+      request()
     }
   }, 10L, 10L)
 
   def process(t: Transaction): Future[Command] = {
-    val req = Request(t.id, t)
 
     if(batch.size() >= 10000){
-      req.p.setValue(Nack())
-      return req.p
+      return Future.value(Nack())
     }
+
+    val req = Request(t.id, t)
 
     batch.offer(req)
     req.p
@@ -148,15 +101,52 @@ class Coordinator(val id: String, val host: String, val port: Int)(implicit val 
     Future.collect(r.keys.map{k => read(k)}).map(result => ReadResult(result.toMap))
   }
 
+  def read(k: String): Future[(String, VersionedValue)] = {
+    session.executeAsync(READ_DATA.bind.setString(0, k)).map { r =>
+      val one = r.one()
+      k -> VersionedValue(one.getString("version"), one.getLong("value"))
+    }
+  }
+
+  val READ_TRANSACTION = session.prepare("select * from transactions where id=?;")
+  val UPDATE_DATA = session.prepare("update data set value=?, version=? where key=?;")
+  val READ_DATA = session.prepare("select * from data where key=?;")
+  val UPDATE_TRANSACTION = session.prepare("update transactions set status=? where id=? if status=?")
+
+  def readKey(k: String, v: VersionedValue): Future[Boolean] = {
+    session.executeAsync(READ_DATA.bind.setString(0, k)).map{rs =>
+      val one = rs.one()
+      one != null && one.getLong("value") == v.value}
+  }
+
+  def writeKey(k: String, v: VersionedValue): Future[Boolean] = {
+    session.executeAsync(UPDATE_DATA.bind.setLong(0, v.value).setString(1, v.version).setString(2, k))
+      .map(_.wasApplied())
+  }
+
+  def checkTx(t: Transaction): Future[Boolean] = {
+    Future.collect(t.rs.map{case (k, v) => readKey(k, v)}.toSeq).map(!_.contains(false))
+  }
+
+  def writeTx(t: Transaction): Future[Boolean] = {
+    Future.collect(t.ws.map{case (k, v) => writeKey(k, v)}.toSeq).map(!_.contains(false))
+  }
+
   def process(pr: PartitionResponse): Future[Command] = {
+
+    println(s"partition response from ${pr.id} with allowed partitions ${pr.allowed}\n")
 
     val allowed = pr.allowed
 
-    var keys = Seq.empty[String]
+    if(allowed.isEmpty) {
+      resolver(PartitionRelease.apply(id, allowed))
+      return Future.value(Nack())
+    }
 
+    var keys = Seq.empty[String]
     val now = System.currentTimeMillis()
 
-    var txs = executing.filter { case (id, r) =>
+    val TXS = executing.filter { case (id, r) =>
       val elapsed = now - r.tmp
 
       if(elapsed >= TIMEOUT){
@@ -172,19 +162,81 @@ class Coordinator(val id: String, val host: String, val port: Int)(implicit val 
     }
 
     // Executing all txs that spam allowed partitions
-    txs = txs.filter { case (tid, r) =>
+    val txs = TXS.filter { case (_, r) =>
       !r.partitions.exists(!allowed.contains(_))
+    }.map(_._2.t).toSeq
+
+    val release = PartitionRelease(id, allowed)
+
+    var conflicted = Seq.empty[(Transaction, Boolean)]
+    var accepted = Seq.empty[(Transaction, Boolean)]
+
+    def clean(): Unit = {
+      conflicted.foreach { case (t, _) =>
+        executing.remove(t.id).get.p.setValue(Nack())
+      }
+
+      accepted.foreach { case (t, _) =>
+        executing.remove(t.id).get.p.setValue(Ack())
+      }
     }
 
+    Future.collect(txs.map(t => checkTx(t).map(t -> _))).flatMap { checks =>
+      conflicted = checks.filter(_._2 == false)
+      accepted = checks.filter(_._2 == true)
 
+      // Assuming nothing goes wrong...
+      Future.collect(accepted.map{case (t, _) => writeTx(t)}).map { writes =>
 
-    Future.value(null)
+        clean()
+        resolver(release)
+
+        Ack()
+      }
+    }.onFailure { case t =>
+
+      t.printStackTrace()
+
+      clean()
+      resolver(release)
+
+      Future.value(Ack())
+    }
+  }
+
+  def request(): Unit = {
+
+    done.set(false)
+
+    val partitions = executing.values.map(_.partitions).toSeq.flatten.distinct
+
+    if(partitions.isEmpty) {
+      done.set(true)
+      return
+    }
+
+    //println(s"partitions for coordinator ${id} ${partitions}\n")
+
+    val req = PartitionRequest.apply(id, partitions)
+
+    resolver(req)/*.flatMap { response =>
+      process(response.asInstanceOf[PartitionResponse])
+    }.handle { case t =>
+      t.printStackTrace()
+    }.ensure {
+      done.set(true)
+    }*/
   }
 
   override def apply(request: Command): Future[Command] = {
     request match {
       case cmd: Transaction => process(cmd)
-      case cmd: PartitionResponse => process(cmd)
+      case cmd: PartitionResponse =>
+
+        process(cmd).map { r =>
+          done.set(true)
+          r
+        }
       case cmd: Read => process(cmd)
     }
   }

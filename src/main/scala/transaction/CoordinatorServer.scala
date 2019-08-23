@@ -2,7 +2,10 @@ package transaction
 
 import java.net.InetSocketAddress
 import java.util.UUID
+
+import com.twitter.finagle.Service
 import com.twitter.util.Await
+
 import scala.concurrent.ExecutionContext.Implicits.global
 
 object CoordinatorServer {
@@ -21,6 +24,7 @@ object CoordinatorServer {
       val executor = new Coordinator(id, host, port)
       TransactorServer.Server().serve(new InetSocketAddress(host, port), executor)
     }.toSeq: _*)
+
   }
 
 }

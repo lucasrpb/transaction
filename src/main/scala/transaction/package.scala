@@ -22,7 +22,7 @@ package object transaction {
     val PENDING = 2
   }
 
-  val NPARTITIONS = 100
+  val NPARTITIONS = 400
 
   implicit def rsfToScalaFuture[T](rsf: ListenableFuture[T])(implicit ec: ExecutionContext): Future[T] = {
     val p = Promise[T]()
@@ -69,11 +69,12 @@ package object transaction {
         case cmd: Nack => out.add(buf.writeBytes(Any.pack(cmd).toByteArray))
         case cmd: Read => out.add(buf.writeBytes(Any.pack(cmd).toByteArray))
         case cmd: ReadResult => out.add(buf.writeBytes(Any.pack(cmd).toByteArray))
-        case cmd: PartitionResponse => out.add(buf.writeBytes(Any.pack(cmd).toByteArray))
         case cmd: Transaction => out.add(buf.writeBytes(Any.pack(cmd).toByteArray))
         case cmd: Batch => out.add(buf.writeBytes(Any.pack(cmd).toByteArray))
         case cmd: VersionedValue => out.add(buf.writeBytes(Any.pack(cmd).toByteArray))
+        case cmd: PartitionResponse => out.add(buf.writeBytes(Any.pack(cmd).toByteArray))
         case cmd: PartitionRequest => out.add(buf.writeBytes(Any.pack(cmd).toByteArray))
+        case cmd: PartitionRelease => out.add(buf.writeBytes(Any.pack(cmd).toByteArray))
       }
 
       buf.release()
@@ -91,11 +92,12 @@ package object transaction {
         case _ if p.is(Nack) => out.add(p.unpack(Nack))
         case _ if p.is(Read) => out.add(p.unpack(Read))
         case _ if p.is(ReadResult) => out.add(p.unpack(ReadResult))
-        case _ if p.is(PartitionResponse) => out.add(p.unpack(PartitionResponse))
         case _ if p.is(Transaction) => out.add(p.unpack(Transaction))
         case _ if p.is(Batch) => out.add(p.unpack(Batch))
         case _ if p.is(VersionedValue) => out.add(p.unpack(VersionedValue))
         case _ if p.is(PartitionRequest) => out.add(p.unpack(PartitionRequest))
+        case _ if p.is(PartitionRelease) => out.add(p.unpack(PartitionRelease))
+        case _ if p.is(PartitionResponse) => out.add(p.unpack(PartitionResponse))
       }
 
     }

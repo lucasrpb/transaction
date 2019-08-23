@@ -32,8 +32,12 @@ class Client(val id: String, val numExecutors: Int)(implicit val ec: ExecutionCo
 
       conn(tx).map {
         _ match {
-          case cmd: Ack => true
-          case cmd: Nack => false
+          case cmd: Ack =>
+            println(s"tx ${tid} succeed")
+            true
+          case cmd: Nack =>
+            println(s"tx ${tid} failed")
+            false
         }
       }
     }

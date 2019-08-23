@@ -33,6 +33,14 @@ message PartitionRequest {
     repeated string partitions = 2;
 }
 
+message PartitionRelease {
+    option (scalapb.message).extends = "transaction.Command";
+    option (scalapb.message).companion_extends = "transaction.Command";
+
+    string id = 1;
+    repeated string partitions = 2;
+}
+
 message Batch {
     option (scalapb.message).extends = "transaction.Command";
     option (scalapb.message).companion_extends = "transaction.Command";
