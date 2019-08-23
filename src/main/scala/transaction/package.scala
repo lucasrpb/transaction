@@ -11,6 +11,7 @@ import io.netty.handler.codec.{MessageToMessageDecoder, MessageToMessageEncoder}
 import transaction.protocol._
 
 import scala.concurrent.ExecutionContext
+import scala.util.{Failure, Success}
 
 package object transaction {
 
@@ -23,6 +24,15 @@ package object transaction {
   }
 
   val NPARTITIONS = 400
+
+  implicit def sfToTwitterFuture[T](tf: scala.concurrent.Future[T])(implicit ec: ExecutionContext): Future[T] = {
+    val p = Promise[T]
+    tf.onComplete {
+      case Success(r) => p.setValue(r)
+      case Failure(e) => p.setException(e)
+    }
+    p
+  }
 
   implicit def rsfToScalaFuture[T](rsf: ListenableFuture[T])(implicit ec: ExecutionContext): Future[T] = {
     val p = Promise[T]()

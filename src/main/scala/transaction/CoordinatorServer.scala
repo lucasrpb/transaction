@@ -11,9 +11,7 @@ import scala.concurrent.ExecutionContext.Implicits.global
 object CoordinatorServer {
 
   val coordinators = Map(
-    "0" -> ("127.0.0.1" -> 2551),
-    "1" -> ("127.0.0.1" -> 2553),
-    "2" -> ("127.0.0.1" -> 2557)
+    "0" -> ("127.0.0.1" -> 2560)
   )
 
   val n = coordinators.size

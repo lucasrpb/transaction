@@ -18,7 +18,7 @@ class MainSpec extends FlatSpec {
     val rand = ThreadLocalRandom.current()
 
     val nAccounts = 1000
-    val numExecutors = ResolverServer.resolvers.size
+    val numExecutors = PartitionServer.resolvers.size
 
     var tasks = Seq.empty[Future[Boolean]]
     val nAcc = 1000
