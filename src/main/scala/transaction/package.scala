@@ -23,7 +23,7 @@ package object transaction {
     val PENDING = 2
   }
 
-  val NPARTITIONS = 400
+  val NPARTITIONS = 1000
 
   implicit def sfToTwitterFuture[T](tf: scala.concurrent.Future[T])(implicit ec: ExecutionContext): Future[T] = {
     val p = Promise[T]

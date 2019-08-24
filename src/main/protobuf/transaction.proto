@@ -17,12 +17,21 @@ message Transaction {
     map<string, VersionedValue> ws = 3;
 }
 
+message Partition {
+    option (scalapb.message).extends = "transaction.Command";
+    option (scalapb.message).companion_extends = "transaction.Command";
+
+    string id = 1;
+    repeated string txs = 2;
+}
+
 message PartitionResponse {
     option (scalapb.message).extends = "transaction.Command";
     option (scalapb.message).companion_extends = "transaction.Command";
 
     string id = 1;
-    repeated string allowed = 2;
+    repeated string conflicted = 2;
+    repeated string applied = 3;
 }
 
 message PartitionRequest {
@@ -47,8 +56,9 @@ message Batch {
 
     string id = 1;
     string coordinator = 2;
-    repeated Transaction transactions = 3;
-    uint32 total = 4;
+    map<string, Transaction> transactions = 3;
+    map<string, Partition> partitions = 4;
+    uint32 total = 5;
 }
 
 message Ack {

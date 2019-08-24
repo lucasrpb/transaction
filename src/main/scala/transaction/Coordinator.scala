@@ -1,8 +1,9 @@
 package transaction
 
+import java.nio.ByteBuffer
 import java.util.concurrent.ConcurrentLinkedQueue
 import java.util.concurrent.atomic.AtomicBoolean
-import java.util.{Timer, TimerTask}
+import java.util.{Timer, TimerTask, UUID}
 
 import com.datastax.driver.core.Cluster
 import com.google.protobuf.any.Any
@@ -24,6 +25,11 @@ class Coordinator(val id: String, val host: String, val port: Int)(implicit val 
     .build()
 
   val session = cluster.connect("mvcc")
+
+  //session.execute("truncate batches;")
+
+  val INSERT_BATCH = session.prepare("insert into batches(id, total, n) values(?,?,0);")
+  val READ_DATA = session.prepare("select * from data where key=?;")
 
   val config = scala.collection.mutable.Map[String, String]()
 
@@ -52,6 +58,10 @@ class Coordinator(val id: String, val host: String, val port: Int)(implicit val 
   val timer = new Timer()
   val done = new AtomicBoolean(true)
 
+  def insertBatch(b: Batch): Future[Boolean] = {
+    session.executeAsync(INSERT_BATCH.bind.setString(0, b.id).setInt(1, b.total)).map(_.wasApplied())
+  }
+
   def log(b: Batch): Future[Boolean] = {
     val record = KafkaProducerRecord.create[String, Array[Byte]]("transactions", id, Any.pack(b).toByteArray)
     producer.writeFuture(record).map(_ => true)
@@ -69,18 +79,56 @@ class Coordinator(val id: String, val host: String, val port: Int)(implicit val 
         txs = txs :+ it.next()
       }
 
-      var keys = executing.map(_._2.rs).flatten.toSeq
+      var keys = Seq.empty[String]
 
-      txs.sortBy(_.id).foreach { r =>
+      txs = txs.sortBy(_.id).filter { r =>
         val elapsed = now - r.tmp
 
+        batch.remove(r)
+
         if(elapsed >= TIMEOUT){
-          batch.remove(r)
           r.p.setValue(Nack())
-        } else if(!r.rs.exists(keys.contains(_))){
+          false
+        } else if(!r.ws.exists(keys.contains(_))){
           keys = keys ++ r.rs
-          batch.remove(r)
-          executing.put(r.id, r)
+          true
+        } else {
+          r.p.setValue(Nack())
+          false
+        }
+      }
+
+      if(txs.isEmpty) return
+
+      var partitions = Map[String, Partition]()
+
+      txs.foreach { r =>
+        r.partitions.foreach { p =>
+          partitions.get(p) match {
+            case None => partitions = partitions + (p -> Partition(p, Seq(r.id)))
+            case Some(pt) => partitions = partitions + (p -> Partition(p, pt.txs :+ r.id))
+          }
+        }
+      }
+
+      val b = Batch(UUID.randomUUID.toString, id, txs.map(r => r.id -> r.t).toMap, partitions, partitions.size)
+
+      insertBatch(b).flatMap(ok => log(b).map(_ && ok)).map { ok =>
+        if(ok) {
+          txs.foreach { r =>
+            executing.put(r.id, r)
+          }
+        } else {
+          txs.foreach { r =>
+            batch.remove(r)
+            r.p.setValue(Nack())
+          }
+        }
+      }.handle { case t =>
+        t.printStackTrace()
+
+        txs.foreach { r =>
+          r.p.setValue(Nack())
         }
       }
 
@@ -93,9 +141,43 @@ class Coordinator(val id: String, val host: String, val port: Int)(implicit val 
     req.p
   }
 
+  def read(key: String): Future[(String, VersionedValue)] = {
+    session.executeAsync(READ_DATA.bind.setString(0, key)).map { rs =>
+      val one = rs.one()
+      key -> VersionedValue(one.getString("version"), one.getLong("value"))
+    }
+  }
+
+  def process(r: Read): Future[Command] = {
+    Future.collect(r.keys.map{read(_)}).map(r => ReadResult(r.toMap))
+  }
+
+  def process(pr: PartitionResponse): Future[Command] = {
+    println(s"conflicted ${pr.conflicted}")
+    println(s"applied ${pr.applied}\n")
+
+    pr.conflicted.foreach { t =>
+      executing.get(t) match {
+        case None =>
+        case Some(r) => if(!r.p.isDefined) r.p.setValue(Nack())
+      }
+    }
+
+    pr.applied.foreach { t =>
+      executing.get(t) match {
+        case None =>
+        case Some(r) => if(!r.p.isDefined) r.p.setValue(Ack())
+      }
+    }
+
+    Future.value(Ack())
+  }
+
   override def apply(request: Command): Future[Command] = {
     request match {
       case cmd: Transaction => process(cmd)
+      case cmd: Read => process(cmd)
+      case cmd: PartitionResponse => process(cmd)
     }
   }
 
