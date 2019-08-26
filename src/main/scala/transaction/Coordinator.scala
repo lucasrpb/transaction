@@ -72,6 +72,15 @@ class Coordinator(val id: String, val host: String, val port: Int)(implicit val 
 
       val now = System.currentTimeMillis()
 
+      val remove = executing.filter { case (_, r) =>
+          now - r.tmp >= TIMEOUT
+      }
+
+      remove.foreach{case (id, r) =>
+        executing.remove(id)
+          r.p.setValue(Nack())
+      }
+
       var txs = Seq.empty[Request]
       val it = batch.iterator()
 

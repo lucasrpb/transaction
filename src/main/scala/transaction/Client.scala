@@ -6,8 +6,9 @@ import java.util.concurrent.ThreadLocalRandom
 import com.datastax.driver.core.{Cluster, Session}
 import com.google.protobuf.any.Any
 import com.twitter.finagle.Service
-import com.twitter.util.Future
+import com.twitter.util.{Future, Timer}
 import transaction.protocol._
+import com.twitter.conversions.DurationOps._
 
 import scala.collection.concurrent.TrieMap
 import scala.concurrent.ExecutionContext
@@ -19,6 +20,8 @@ class Client(val id: String, val numExecutors: Int)(implicit val ec: ExecutionCo
   val coordinators = CoordinatorServer.coordinators.map{ case (id, (host, port)) =>
     id -> createConnection(host, port)
   }
+
+  implicit val timer = new com.twitter.util.JavaTimer()
 
   def execute(tid: String, keys: Seq[String])(f: ((String, Map[String, VersionedValue])) => Map[String, VersionedValue]): Future[Boolean] = {
 
@@ -40,7 +43,7 @@ class Client(val id: String, val numExecutors: Int)(implicit val ec: ExecutionCo
             false
         }
       }
-    }
+    }.within(5 seconds)
   }
 
   def close(): Future[Boolean] = {

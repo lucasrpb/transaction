@@ -3,8 +3,6 @@ package transaction
 import java.util.UUID
 import java.util.concurrent.ThreadLocalRandom
 
-import com.datastax.driver.core.{Cluster, Session}
-import com.twitter.finagle.Service
 import com.twitter.util.{Await, Future}
 import org.scalatest.FlatSpec
 import transaction.protocol._
@@ -25,7 +23,7 @@ class MainSpec extends FlatSpec {
 
     var clients = Seq.empty[Client]
 
-    for(i<-0 until 200){
+    for(i<-0 until 600){
 
       val tid = UUID.randomUUID.toString
       val k1 = rand.nextInt(0, nAcc).toString
