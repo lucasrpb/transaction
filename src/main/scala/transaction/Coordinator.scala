@@ -2,10 +2,10 @@ package transaction
 
 import java.nio.ByteBuffer
 import java.util.concurrent.ConcurrentLinkedQueue
-import java.util.concurrent.atomic.AtomicBoolean
+import java.util.concurrent.atomic.{AtomicBoolean, AtomicInteger}
 import java.util.{Timer, TimerTask, UUID}
 
-import com.datastax.driver.core.Cluster
+import com.datastax.driver.core.{Cluster, HostDistance, PoolingOptions}
 import com.google.protobuf.any.Any
 import com.twitter.finagle.Service
 import com.twitter.util.{Future, Promise}
@@ -20,11 +20,21 @@ import scala.concurrent.ExecutionContext
 class Coordinator(val id: String, val host: String, val port: Int)(implicit val ec: ExecutionContext)
   extends Service[Command, Command]{
 
+  val poolingOptions = new PoolingOptions()
+    //.setConnectionsPerHost(HostDistance.LOCAL, 1, 200)
+    .setMaxRequestsPerConnection(HostDistance.LOCAL, 3000)
+    //.setNewConnectionThreshold(HostDistance.LOCAL, 2000)
+    //.setCoreConnectionsPerHost(HostDistance.LOCAL, 2000)
+
   val cluster = Cluster.builder()
     .addContactPoint("127.0.0.1")
+    .withPoolingOptions(poolingOptions)
     .build()
 
   val session = cluster.connect("mvcc")
+
+  val MAX_REQUESTS = 256
+  //val reqCounter = new AtomicInteger(0)
 
   //session.execute("truncate batches;")
 
@@ -72,14 +82,16 @@ class Coordinator(val id: String, val host: String, val port: Int)(implicit val 
 
       val now = System.currentTimeMillis()
 
-      val remove = executing.filter { case (_, r) =>
+      /*val remove = executing.filter { case (_, r) =>
           now - r.tmp >= TIMEOUT
       }
 
       remove.foreach{case (id, r) =>
         executing.remove(id)
-          r.p.setValue(Nack())
-      }
+        r.p.setValue(Nack())
+      }*/
+
+      //if(reqCounter.get() >= MAX_REQUESTS) return
 
       var txs = Seq.empty[Request]
       val it = batch.iterator()
@@ -122,6 +134,8 @@ class Coordinator(val id: String, val host: String, val port: Int)(implicit val 
 
       val b = Batch(UUID.randomUUID.toString, id, txs.map(r => r.id -> r.t).toMap, partitions, partitions.size)
 
+      //reqCounter.incrementAndGet()
+
       insertBatch(b).flatMap(ok => log(b).map(_ && ok)).map { ok =>
         if(ok) {
           txs.foreach { r =>
@@ -139,6 +153,8 @@ class Coordinator(val id: String, val host: String, val port: Int)(implicit val 
         txs.foreach { r =>
           r.p.setValue(Nack())
         }
+      }.ensure {
+        //reqCounter.decrementAndGet()
       }
 
     }

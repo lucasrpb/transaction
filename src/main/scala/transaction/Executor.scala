@@ -2,7 +2,7 @@ package transaction
 
 import java.util.{Timer, TimerTask}
 
-import com.datastax.driver.core.Cluster
+import com.datastax.driver.core.{BatchStatement, Cluster}
 import com.google.protobuf.any.Any
 import com.twitter.finagle.Service
 import com.twitter.util.{Await, Future, Promise}
@@ -36,6 +36,8 @@ class Executor(val id: String)(implicit val ec: ExecutionContext) extends Servic
   //val UPDATE_BATCH = session.prepare("update batches set n = n + ? where id=?;")
   val UPDATE_DATA = session.prepare("update data set value=?, version=? where key=?;")
   val READ_DATA = session.prepare("select * from data where key=?;")
+
+  val wb = new BatchStatement()
 
   def readBatch(id: String, total: Int): Future[Boolean] = {
     session.executeAsync(READ_BATCH.bind.setString(0, id)).map { rs =>
@@ -92,89 +94,45 @@ class Executor(val id: String)(implicit val ec: ExecutionContext) extends Servic
     case Failure(cause) => println("Failure")
   }
 
-  def checkBatchFinished(id: String, total: Int, c: Service[Command, Command],
-                         conflicted: Seq[String], applied: Seq[String]): Future[Boolean] = {
-    val timer = new Timer()
-    val p = Promise[Boolean]()
+  def write(txs: Seq[Transaction]): Future[Boolean] = {
+    val wb = new BatchStatement()
 
-    timer.schedule(new TimerTask {
-      override def run(): Unit = {
-
-        println(s"TRYING AGAIN...")
-
-        readBatch(id, total).onSuccess { ok =>
-          if(ok){
-            sendOkToCoordinator(c, conflicted, applied)
-            p.setValue(true)
-          } else {
-            timer.purge()
-            checkBatchFinished(id, total, c, conflicted, applied)
-          }
-        }
+    txs.foreach { t =>
+      t.ws.foreach { case (k, v) =>
+        wb.add(UPDATE_DATA.bind.setLong(0, v.value).setString(1, v.version).setString(2, k))
       }
-    }, 10L)
+    }
 
-    p
-  }
-
-  def sendOkToCoordinator(c: Service[Command, Command], conflicted: Seq[String], applied: Seq[String]): Future[Boolean] = {
-    c.apply(PartitionResponse(id, conflicted, applied))
-
-    println(s"executor ${id} finished processing")
-
-    consumer.resume()
-    consumer.commit()
-    Future.value(true)
+    session.executeAsync(wb).map(_.wasApplied())
   }
 
   def process(evt: KafkaConsumerRecord[String, Array[Byte]]): Unit = {
+
     val bytes = evt.value()
     val obj = Any.parseFrom(bytes)
     val batch = obj.unpack(Batch)
 
-    val partitions = batch.partitions.filter{case (k, _) => k.toInt % ExecutorServer.n == eid}
-
-    if(partitions.isEmpty) {
-      println(s"${Console.RED} EXECUTOR ${id} JUMPING batch ${batch.id} TO THE NEXT...${Console.RESET}\n")
-      consumer.commit()
-      return
-    }
-
-    consumer.pause()
-    println(s"executor ${id} started processing batch ${batch.id}\n")
-
-    val txs = partitions.map(_._2.txs).flatten.toSeq.distinct.map(batch.transactions(_))
-
-    //println(s"processing txs ${txs.map(_.id)}...\n")
-
+    val txs = batch.transactions.map(_._2).toSeq
     val c = coordinators(batch.coordinator)
 
-    //println(s"executor ${id} processing batch ${batch.id}\n")
+    println(s"processing ${txs.map(_.id)}\n")
+
+    consumer.pause()
 
     Future.collect(txs.map{t => checkTx(t).map(t -> _)}).flatMap { reads =>
 
       val conflicted = reads.filter(_._2 == false)
-      val nconflicted = reads.filter{case (t, ok) => ok && t.ws.exists{case (k, _) => k.toInt % ExecutorServer.n == eid}}
+      val nconflicted = reads.filter{_._2 == true}
 
-      val n = partitions.size
-
-      //println(s"conflicted ${conflicted.map(_._1.id)} not conflicted ${nconflicted.map(_._1.id)}\n")
-
-      Future.collect(nconflicted.map{case (t, _) => writeTx(t)}).flatMap { writes =>
-
-        updateBatch(batch.id, batch.total, n).flatMap { ok =>
-
-          println(s"update batch ${id} => ${ok}\n")
-
-          if(ok){
-            sendOkToCoordinator(c, conflicted.map(_._1.id), nconflicted.map(_._1.id))
-          } else {
-            checkBatchFinished(batch.id, batch.total, c, conflicted.map(_._1.id), nconflicted.map(_._1.id))
-          }
-        }
+      write(nconflicted.map(_._1)).flatMap { _ =>
+        c.apply(PartitionResponse.apply(id, conflicted.map(_._1.id), nconflicted.map(_._1.id)))
       }
+
     }.handle { case t =>
       t.printStackTrace()
+    }.ensure {
+      consumer.resume()
+      consumer.commit()
     }
 
   }
