@@ -94,13 +94,19 @@ class Executor(val id: String)(implicit val ec: ExecutionContext) extends Servic
     case Failure(cause) => println("Failure")
   }
 
-  def write(txs: Seq[Transaction]): Future[Boolean] = {
+  def write(ws: Seq[(String, VersionedValue)]): Future[Boolean] = {
     val wb = new BatchStatement()
 
-    txs.foreach { t =>
+    /*txs.foreach { t =>
       t.ws.foreach { case (k, v) =>
-        wb.add(UPDATE_DATA.bind.setLong(0, v.value).setString(1, v.version).setString(2, k))
+        if((k.toInt % NPARTITIONS) % ExecutorServer.n == eid){
+          wb.add(UPDATE_DATA.bind.setLong(0, v.value).setString(1, v.version).setString(2, k))
+        }
       }
+    }*/
+
+    ws.foreach { case (k, v) =>
+      wb.add(UPDATE_DATA.bind.setLong(0, v.value).setString(1, v.version).setString(2, k))
     }
 
     session.executeAsync(wb).map(_.wasApplied())
@@ -112,28 +118,61 @@ class Executor(val id: String)(implicit val ec: ExecutionContext) extends Servic
     val obj = Any.parseFrom(bytes)
     val batch = obj.unpack(Batch)
 
-    val txs = batch.transactions.map(_._2).toSeq
+    val partitions = batch.partitions.filter{case (k, _) => k.toInt % ExecutorServer.n == eid}
+    val txs = partitions.map(_._2.txs)
+      .toSeq.flatten.distinct.map(batch.transactions(_))
+
+    if(txs.isEmpty){
+      println(s"${Console.RED}EXECUTOR ${id} JUMPING BATCH ${batch.id}...${Console.RESET}")
+      //consumer.commit()
+      return
+    }
+
     val c = coordinators(batch.coordinator)
 
-    println(s"processing ${txs.map(_.id)}\n")
+    println(s"${Console.GREEN}EXECUTOR ${id} PROCESSING BATCH ${batch.id}...${Console.RESET}\n")
 
     consumer.pause()
 
-    Future.collect(txs.map{t => checkTx(t).map(t -> _)}).flatMap { reads =>
+    val f = Future.collect(txs.map{t => checkTx(t).map(t -> _)}).flatMap { reads =>
 
       val conflicted = reads.filter(_._2 == false)
-      val nconflicted = reads.filter{_._2 == true}
+      val nconflicted = reads.filter(_._2 == true)
+      val ws = nconflicted.map(_._1.ws).flatten.filter{case (k, _) => (k.toInt % NPARTITIONS) % ExecutorServer.n == eid}
 
-      write(nconflicted.map(_._1)).flatMap { _ =>
-        c.apply(PartitionResponse.apply(id, conflicted.map(_._1.id), nconflicted.map(_._1.id)))
+      def checkFinished(): Future[Boolean] = {
+        readBatch(batch.id, batch.total).flatMap { ok =>
+          if(ok) {
+            c.apply(PartitionResponse.apply(id, conflicted.map(_._1.id), nconflicted.map(_._1.id))).map(_ => true)
+          } else {
+
+            println(s"TRYING AGAIN...")
+
+            checkFinished()
+          }
+        }
+      }
+
+      write(ws).flatMap { _ =>
+        updateBatch(batch.id, batch.total, partitions.size).flatMap { ok =>
+          if(ok){
+            c.apply(PartitionResponse.apply(id, conflicted.map(_._1.id), nconflicted.map(_._1.id)))
+          } else {
+            checkFinished()
+          }
+        }
       }
 
     }.handle { case t =>
       t.printStackTrace()
     }.ensure {
-      consumer.resume()
-      consumer.commit()
+
     }
+
+    Await.ready(f)
+
+    consumer.resume()
+    consumer.commit()
 
   }
 

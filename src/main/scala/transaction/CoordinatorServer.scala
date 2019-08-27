@@ -10,11 +10,13 @@ import scala.concurrent.ExecutionContext.Implicits.global
 
 object CoordinatorServer {
 
-  val coordinators = Map(
-    "0" -> ("127.0.0.1" -> 2560)
-  )
+  val port = 3000
+  val n = 3
+  var coordinators = Map.empty[String, (String, Int)]
 
-  val n = coordinators.size
+  for(i<-0 until n){
+    coordinators = coordinators + (i.toString -> ("127.0.0.1" -> (port + i)))
+  }
 
   def main(args: Array[String]): Unit = {
 
