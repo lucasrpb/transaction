@@ -16,14 +16,14 @@ class MainSpec extends FlatSpec {
     val rand = ThreadLocalRandom.current()
 
     val nAccounts = 1000
-    val numExecutors = ExecutorServer.executors.size
+    val numExecutors = DataPartitionServer.partitions.size
 
     var tasks = Seq.empty[Future[Boolean]]
     val nAcc = 1000
 
     var clients = Seq.empty[Client]
 
-    for(i<-0 until 200){
+    for(i<-0 until 3000){
 
       val tid = UUID.randomUUID.toString
       val k1 = rand.nextInt(0, nAcc).toString

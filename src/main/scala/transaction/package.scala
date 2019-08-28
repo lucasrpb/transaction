@@ -16,7 +16,7 @@ import scala.util.{Failure, Success}
 package object transaction {
 
   val TIMEOUT = 1000L
-
+  
   object Status {
     val ABORTED = 0
     val COMMITTED = 1
@@ -85,6 +85,7 @@ package object transaction {
         case cmd: PartitionResponse => out.add(buf.writeBytes(Any.pack(cmd).toByteArray))
         case cmd: PartitionRequest => out.add(buf.writeBytes(Any.pack(cmd).toByteArray))
         case cmd: PartitionRelease => out.add(buf.writeBytes(Any.pack(cmd).toByteArray))
+        case cmd: Epoch => out.add(buf.writeBytes(Any.pack(cmd).toByteArray))
       }
 
       buf.release()
@@ -108,6 +109,7 @@ package object transaction {
         case _ if p.is(PartitionRequest) => out.add(p.unpack(PartitionRequest))
         case _ if p.is(PartitionRelease) => out.add(p.unpack(PartitionRelease))
         case _ if p.is(PartitionResponse) => out.add(p.unpack(PartitionResponse))
+        case _ if p.is(Epoch) => out.add(p.unpack(Epoch))
       }
 
     }

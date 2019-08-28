@@ -33,12 +33,9 @@ class Coordinator(val id: String, val host: String, val port: Int)(implicit val 
 
   val session = cluster.connect("mvcc")
 
-  val MAX_REQUESTS = 256
-  //val reqCounter = new AtomicInteger(0)
+  session.execute("truncate batches;")
 
-  //session.execute("truncate batches;")
-
-  val INSERT_BATCH = session.prepare("insert into batches(id, total, n) values(?,?,0);")
+  val INSERT_BATCH = session.prepare("insert into batches(id, total, n) values(?,?,?);")
   val READ_DATA = session.prepare("select * from data where key=?;")
 
   val config = scala.collection.mutable.Map[String, String]()
@@ -66,10 +63,10 @@ class Coordinator(val id: String, val host: String, val port: Int)(implicit val 
   val executing = TrieMap[String, Request]()
 
   val timer = new Timer()
-  val done = new AtomicBoolean(true)
 
   def insertBatch(b: Batch): Future[Boolean] = {
-    session.executeAsync(INSERT_BATCH.bind.setString(0, b.id).setInt(1, b.total)).map(_.wasApplied())
+    session.executeAsync(INSERT_BATCH.bind.setString(0, b.id).setInt(1, b.partitions.size).setInt(2, 0))
+      .map(_.wasApplied())
   }
 
   def log(b: Batch): Future[Boolean] = {
@@ -81,17 +78,6 @@ class Coordinator(val id: String, val host: String, val port: Int)(implicit val 
     override def run(): Unit = {
 
       val now = System.currentTimeMillis()
-
-      /*val remove = executing.filter { case (_, r) =>
-          now - r.tmp >= TIMEOUT
-      }
-
-      remove.foreach{case (id, r) =>
-        executing.remove(id)
-        r.p.setValue(Nack())
-      }*/
-
-      //if(reqCounter.get() >= MAX_REQUESTS) return
 
       var txs = Seq.empty[Request]
       val it = batch.iterator()
@@ -124,6 +110,9 @@ class Coordinator(val id: String, val host: String, val port: Int)(implicit val 
       var partitions = Map[String, Partition]()
 
       txs.foreach { r =>
+
+        //println(s"partitions ${r.partitions}\n")
+
         r.partitions.foreach { p =>
           partitions.get(p) match {
             case None => partitions = partitions + (p -> Partition(p, Seq(r.id)))
@@ -134,9 +123,7 @@ class Coordinator(val id: String, val host: String, val port: Int)(implicit val 
 
       val b = Batch(UUID.randomUUID.toString, id, txs.map(r => r.id -> r.t).toMap, partitions, partitions.size)
 
-      //reqCounter.incrementAndGet()
-
-      insertBatch(b).flatMap(ok => log(b).map(_ && ok)).map { ok =>
+      insertBatch(b).flatMap(ok1 => log(b).map(ok1 && _)).map { ok =>
         if(ok) {
           txs.foreach { r =>
             executing.put(r.id, r)
@@ -153,8 +140,6 @@ class Coordinator(val id: String, val host: String, val port: Int)(implicit val 
         txs.foreach { r =>
           r.p.setValue(Nack())
         }
-      }.ensure {
-        //reqCounter.decrementAndGet()
       }
 
     }

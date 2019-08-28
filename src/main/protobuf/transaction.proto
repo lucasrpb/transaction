@@ -61,6 +61,14 @@ message Batch {
     uint32 total = 5;
 }
 
+message Epoch {
+    option (scalapb.message).extends = "transaction.Command";
+    option (scalapb.message).companion_extends = "transaction.Command";
+
+    string id = 1;
+    repeated Batch batches = 2;
+}
+
 message Ack {
     option (scalapb.message).extends = "transaction.Command";
     option (scalapb.message).companion_extends = "transaction.Command";

@@ -11,7 +11,7 @@ import scala.concurrent.ExecutionContext.Implicits.global
 object CoordinatorServer {
 
   val port = 3000
-  val n = 3
+  val n = 5
   var coordinators = Map.empty[String, (String, Int)]
 
   for(i<-0 until n){
