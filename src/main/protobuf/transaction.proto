@@ -66,7 +66,19 @@ message Epoch {
     option (scalapb.message).companion_extends = "transaction.Command";
 
     string id = 1;
-    repeated Batch batches = 2;
+    repeated string batches = 2;
+}
+
+message GetOffset {
+    option (scalapb.message).extends = "transaction.Command";
+    option (scalapb.message).companion_extends = "transaction.Command";
+}
+
+message OffsetResult {
+    option (scalapb.message).extends = "transaction.Command";
+    option (scalapb.message).companion_extends = "transaction.Command";
+
+    uint64 offset = 1;
 }
 
 message Ack {

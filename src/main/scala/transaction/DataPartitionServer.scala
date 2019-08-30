@@ -9,7 +9,7 @@ import scala.concurrent.ExecutionContext.Implicits.global
 object DataPartitionServer {
 
   val port = 2000
-  val n = 10
+  val n = 3
   var partitions = Map.empty[String, (String, Int)]
 
   for(i<-0 until n){

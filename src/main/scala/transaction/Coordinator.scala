@@ -35,7 +35,7 @@ class Coordinator(val id: String, val host: String, val port: Int)(implicit val 
 
   session.execute("truncate batches;")
 
-  val INSERT_BATCH = session.prepare("insert into batches(id, total, n) values(?,?,?);")
+  val INSERT_BATCH = session.prepare("insert into batches(id, total, n, bin) values(?,?,?,?);")
   val READ_DATA = session.prepare("select * from data where key=?;")
 
   val config = scala.collection.mutable.Map[String, String]()
@@ -65,12 +65,12 @@ class Coordinator(val id: String, val host: String, val port: Int)(implicit val 
   val timer = new Timer()
 
   def insertBatch(b: Batch): Future[Boolean] = {
-    session.executeAsync(INSERT_BATCH.bind.setString(0, b.id).setInt(1, b.partitions.size).setInt(2, 0))
-      .map(_.wasApplied())
+    session.executeAsync(INSERT_BATCH.bind.setString(0, b.id).setInt(1, b.partitions.size).setInt(2, 0)
+      .setBytes(3, ByteBuffer.wrap(Any.pack(b).toByteArray))).map(_.wasApplied())
   }
 
   def log(b: Batch): Future[Boolean] = {
-    val record = KafkaProducerRecord.create[String, Array[Byte]]("transactions", id, Any.pack(b).toByteArray)
+    val record = KafkaProducerRecord.create[String, Array[Byte]]("log", id, b.id.getBytes)
     producer.writeFuture(record).map(_ => true)
   }
 
