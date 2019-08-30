@@ -53,7 +53,13 @@ class Processor(val id: String)(implicit val ec: ExecutionContext) extends Servi
     producer.writeFuture(record).map(_ => true)
   }
 
+  var partitions = Map.empty[String, Service[Command, Command]]
+
   def handle(e: KafkaConsumerRecords[String, Array[Byte]]): Unit = {
+
+    if(partitions.isEmpty) partitions = DataPartitionServer.partitions.map{ case (id, (host, port)) =>
+      id -> createConnection(host, port)
+    }
 
     val batches = (0 until e.size()).map(e.recordAt(_))
 
@@ -86,7 +92,6 @@ class Processor(val id: String)(implicit val ec: ExecutionContext) extends Servi
   }
 
   consumer.handler((_) => {})
-
   consumer.batchHandler(handle)
 
   override def apply(request: Command): Future[Command] = {
