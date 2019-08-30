@@ -16,7 +16,7 @@ import transaction.protocol._
 import scala.concurrent.ExecutionContext
 import scala.util.{Failure, Success}
 
-class Processor(val id: String)(implicit val ec: ExecutionContext) extends Service [Command, Command]{
+class Scheduler(val id: String)(implicit val ec: ExecutionContext) extends Service [Command, Command]{
 
   val consumerConfig = scala.collection.mutable.Map[String, String]()
 
