@@ -23,7 +23,7 @@ class MainSpec extends FlatSpec {
 
     var clients = Seq.empty[Client]
 
-    for(i<-0 until 100){
+    for(i<-0 until 1000){
 
       val tid = UUID.randomUUID.toString
       val k1 = rand.nextInt(0, nAcc).toString
