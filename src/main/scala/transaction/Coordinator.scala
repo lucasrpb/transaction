@@ -38,17 +38,7 @@ class Coordinator(val id: String, val host: String, val port: Int)(implicit val 
   val INSERT_BATCH = session.prepare("insert into batches(id, total, n, bin) values(?,?,?,?);")
   val READ_DATA = session.prepare("select * from data where key=?;")
 
-  val config = scala.collection.mutable.Map[String, String]()
-
-  config += (ProducerConfig.BOOTSTRAP_SERVERS_CONFIG -> "localhost:9092")
-  config += (ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG -> "org.apache.kafka.common.serialization.StringSerializer")
-  config += (ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG -> "org.apache.kafka.common.serialization.ByteArraySerializer")
-  config += (ProducerConfig.ACKS_CONFIG -> "1")
-
-  val vertx = Vertx.vertx()
-
-  // use producer for interacting with Apache Kafka
-  val producer = KafkaProducer.create[String, Array[Byte]](vertx, config)
+  var resolver: Service[Command, Command] = null
 
   case class Request(id: String, t: Transaction, tmp: Long = System.currentTimeMillis()){
     val p = Promise[Command]()
@@ -70,8 +60,8 @@ class Coordinator(val id: String, val host: String, val port: Int)(implicit val 
   }
 
   def log(b: Batch): Future[Boolean] = {
-    val record = KafkaProducerRecord.create[String, Array[Byte]]("log", id, b.id.getBytes)
-    producer.writeFuture(record).map(_ => true)
+    if(resolver == null) resolver = createConnection("127.0.0.1", 4001)
+    resolver.apply(b).map(_.isInstanceOf[Ack])
   }
 
   timer.scheduleAtFixedRate(new TimerTask {

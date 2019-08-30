@@ -18,13 +18,10 @@ object DataPartitionServer {
 
   def main(args: Array[String]): Unit = {
 
-    val processor = new Scheduler(UUID.randomUUID.toString)
-    val s = TransactorServer.Server().serve(new InetSocketAddress("127.0.0.1", 4000), processor)
-
     Await.all(partitions.map { case (id, (host, port)) =>
       val executor = new DataPartition(id)
       TransactorServer.Server().serve(new InetSocketAddress(host, port), executor)
-    }.toSeq :+ s: _*)
+    }.toSeq: _*)
 
   }
 

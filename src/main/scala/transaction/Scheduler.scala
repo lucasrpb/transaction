@@ -49,7 +49,7 @@ class Scheduler(val id: String)(implicit val ec: ExecutionContext) extends Servi
   }
 
   def log(e: Epoch): Future[Boolean] = {
-    val record = KafkaProducerRecord.create[String, Array[Byte]]("epoch", id, Any.pack(e).toByteArray)
+    val record = KafkaProducerRecord.create[String, Array[Byte]]("log", id, Any.pack(e).toByteArray)
     producer.writeFuture(record).map(_ => true)
   }
 
@@ -76,11 +76,7 @@ class Scheduler(val id: String)(implicit val ec: ExecutionContext) extends Servi
 
     consumer.pause()
 
-    log(epoch).flatMap { _ =>
-      Future.collect(partitions.map{case (_, s) => s(epoch)}.toSeq)
-    }.handle { case t =>
-      t.printStackTrace()
-    }
+    Future.collect(partitions.map{_._2.apply(epoch)}.toSeq)
     .ensure {
       consumer.commit()
       consumer.resume()
