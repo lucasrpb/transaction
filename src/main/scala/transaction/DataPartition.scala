@@ -103,7 +103,7 @@ class DataPartition(val id: String)(implicit val ec: ExecutionContext) extends S
   // use consumer for interacting with Apache Kafka
   var consumer = KafkaConsumer.create[String, Array[Byte]](vertx, config)
 
-  consumer.subscribeFuture("epoch").onComplete {
+  consumer.subscribeFuture("log").onComplete {
     case Success(result) => {
       println(s"Consumer ${id} subscribed")
     }
