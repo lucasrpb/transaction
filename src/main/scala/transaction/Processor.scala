@@ -75,7 +75,14 @@ class Processor(val id: String)(implicit val ec: ExecutionContext) extends Servi
       consumer.resume()
     }*/
 
-    
+    Future.collect(partitions.map{case (_, s) => s(epoch)}.toSeq)
+      .handle { case t =>
+        t.printStackTrace()
+      }
+      .ensure {
+        consumer.commit()
+        consumer.resume()
+      }
   }
 
   consumer.handler((_) => {})
