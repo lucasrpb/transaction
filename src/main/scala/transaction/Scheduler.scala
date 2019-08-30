@@ -68,7 +68,7 @@ class Scheduler(val id: String)(implicit val ec: ExecutionContext) extends Servi
       return
     }
 
-    println(s"${Console.RED}processing partition ${batches.map(_.partition())} epoch with size ${e.size()}...${Console.RESET}\n")
+    println(s"${Console.RED}processing epoch with size ${e.size()}...${Console.RESET}\n")
 
     val epoch = Epoch(UUID.randomUUID.toString, batches.map { e =>
       new String(e.value())
