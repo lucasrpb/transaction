@@ -65,7 +65,7 @@ class MainSpec extends FlatSpec {
     val len = result.length
     val reqs = (1000 * len)/elapsed
 
-    println(s"elapsed: ${elapsed}ms, req/s: ${reqs}\n")
+    println(s"elapsed: ${elapsed}ms, req/s: ${reqs} avg. latency: ${elapsed.toDouble/len} ms\n")
     println(s"${result.count(_ == true)}/${len}\n")
 
     Await.all(clients.map(_.close()): _*)

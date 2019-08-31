@@ -64,8 +64,13 @@ class Coordinator(val id: String, val host: String, val port: Int)(implicit val 
     resolver.apply(b).map(_.isInstanceOf[Ack])
   }
 
-  timer.scheduleAtFixedRate(new TimerTask {
+  class Job extends TimerTask {
     override def run(): Unit = {
+
+      if(batch.isEmpty){
+        timer.schedule(new Job(), 10L)
+        return
+      }
 
       val now = System.currentTimeMillis()
 
@@ -130,10 +135,18 @@ class Coordinator(val id: String, val host: String, val port: Int)(implicit val 
         txs.foreach { r =>
           r.p.setValue(Nack())
         }
+      }.ensure {
+        if(batch.isEmpty){
+          timer.schedule(new Job(), 10L)
+        } else {
+          this.run()
+        }
       }
 
     }
-  }, 10L, 10L)
+  }
+
+  timer.schedule(new Job(), 10L)
 
   def process(t: Transaction): Future[Command] = {
     val req = Request(t.id, t)

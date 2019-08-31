@@ -55,7 +55,7 @@ class Scheduler(val id: String)(implicit val ec: ExecutionContext) extends Servi
 
   var partitions = Map.empty[String, Service[Command, Command]]
 
-  def handle(e: KafkaConsumerRecords[String, Array[Byte]]): Unit = {
+  /*def handle(e: KafkaConsumerRecords[String, Array[Byte]]): Unit = {
 
     if(partitions.isEmpty) partitions = DataPartitionServer.partitions.map{ case (id, (host, port)) =>
       id -> createConnection(host, port)
@@ -81,10 +81,35 @@ class Scheduler(val id: String)(implicit val ec: ExecutionContext) extends Servi
       consumer.commit()
       consumer.resume()
     }
+  }*/
+
+  def handle(evt: KafkaConsumerRecord[String, Array[Byte]]): Unit = {
+
+    if(partitions.isEmpty) partitions = DataPartitionServer.partitions.map{ case (id, (host, port)) =>
+      id -> createConnection(host, port)
+    }
+
+    val e = Any.parseFrom(evt.value()).unpack(Epoch)
+
+    if(e.batches.isEmpty) {
+      consumer.commit()
+      return
+    }
+
+    val batches = e.batches
+
+    println(s"${Console.RED}processing epoch ${e.id} with size ${e.batches.size}...${Console.RESET}\n")
+
+    consumer.pause()
+
+    Future.collect(partitions.map{_._2.apply(e)}.toSeq).ensure {
+      consumer.commit()
+      consumer.resume()
+    }
   }
 
-  consumer.handler((_) => {})
-  consumer.batchHandler(handle)
+  consumer.handler(handle)
+  //consumer.batchHandler(handle)
 
   override def apply(request: Command): Future[Command] = {
     null
