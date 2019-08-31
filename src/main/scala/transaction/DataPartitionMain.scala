@@ -6,7 +6,7 @@ import java.util.UUID
 import com.twitter.util.Await
 import scala.concurrent.ExecutionContext.Implicits.global
 
-object DataPartitionServer {
+object DataPartitionMain {
 
   val port = 2000
   val n = 3

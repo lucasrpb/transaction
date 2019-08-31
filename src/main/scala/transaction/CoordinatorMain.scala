@@ -8,7 +8,7 @@ import com.twitter.util.Await
 
 import scala.concurrent.ExecutionContext.Implicits.global
 
-object CoordinatorServer {
+object CoordinatorMain {
 
   val port = 3000
   val n = 12

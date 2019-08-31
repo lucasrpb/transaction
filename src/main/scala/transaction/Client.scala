@@ -17,7 +17,7 @@ class Client(val id: String, val numExecutors: Int)(implicit val ec: ExecutionCo
 
   val rand = ThreadLocalRandom.current()
 
-  val coordinators = CoordinatorServer.coordinators.map{ case (id, (host, port)) =>
+  val coordinators = CoordinatorMain.coordinators.map{ case (id, (host, port)) =>
     id -> createConnection(host, port)
   }
 

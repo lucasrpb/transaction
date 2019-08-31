@@ -20,7 +20,7 @@ class DataPartition(val id: String)(implicit val ec: ExecutionContext) extends S
 
   val eid = id.toInt
 
-  val coordinators = CoordinatorServer.coordinators.map{ case (id, (host, port)) =>
+  val coordinators = CoordinatorMain.coordinators.map{ case (id, (host, port)) =>
     id -> createConnection(host, port)
   }
 
@@ -81,7 +81,7 @@ class DataPartition(val id: String)(implicit val ec: ExecutionContext) extends S
     wb.clear()
 
     t.ws.foreach { case (k, v) =>
-      if((k.toInt % DataPartitionServer.n) == eid){
+      if((k.toInt % DataPartitionMain.n) == eid){
         wb.add(UPDATE_DATA.bind.setLong(0, v.value).setString(1, v.version).setString(2, k))
       }
     }
@@ -115,7 +115,7 @@ class DataPartition(val id: String)(implicit val ec: ExecutionContext) extends S
 
     txs.foreach { t =>
       t.ws.foreach { case (k, v) =>
-        if((k.toInt % NPARTITIONS) % DataPartitionServer.n == eid){
+        if((k.toInt % NPARTITIONS) % DataPartitionMain.n == eid){
           wb.add(UPDATE_DATA.bind.setLong(0, v.value).setString(1, v.version).setString(2, k))
         }
       }

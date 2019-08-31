@@ -13,11 +13,7 @@ object Global {
     val scheduler = new Scheduler(UUID.randomUUID.toString)
     val s = TransactorServer.Server().serve(new InetSocketAddress("127.0.0.1", 4000), scheduler)
 
-    val resolver = new Resolver(UUID.randomUUID.toString)
-    val r = TransactorServer.Server().serve(new InetSocketAddress("127.0.0.1", 4001), resolver)
-
-    Await.all(Seq(s, r): _*)
-
+    Await.ready(s)
   }
 
 }
