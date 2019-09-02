@@ -37,7 +37,7 @@ class Scheduler(val id: String)(implicit val ec: ExecutionContext) extends Servi
   val vertx = Vertx.vertx()
 
   // use consumer for interacting with Apache Kafka
-  var consumer = KafkaConsumer.create[String, Array[Byte]](vertx, consumerConfig)
+  val consumer = KafkaConsumer.create[String, Array[Byte]](vertx, consumerConfig)
   // use producer for interacting with Apache Kafka
   val producer = KafkaProducer.create[String, Array[Byte]](vertx, producerConfig)
 
