@@ -1,0 +1,1110 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ChangeListManager">
+    <list default="true" id="9c96cb1b-7911-444a-b8c9-15cd525b39b8" name="Default Changelist" comment="" />
+    <ignored path="$PROJECT_DIR$/out/" />
+    <ignored path="$PROJECT_DIR$/target/" />
+    <ignored path="$PROJECT_DIR$/project/project/target/" />
+    <ignored path="$PROJECT_DIR$/project/target/" />
+    <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="DatabaseView">
+    <option name="SHOW_INTERMEDIATE" value="true" />
+    <option name="GROUP_DATA_SOURCES" value="true" />
+    <option name="GROUP_SCHEMA" value="true" />
+    <option name="GROUP_CONTENTS" value="false" />
+    <option name="SORT_POSITIONED" value="false" />
+    <option name="SHOW_EMPTY_GROUPS" value="false" />
+    <option name="AUTO_SCROLL_FROM_SOURCE" value="false" />
+    <option name="HIDDEN_KINDS">
+      <set />
+    </option>
+    <expand />
+    <select />
+  </component>
+  <component name="DefaultGradleProjectSettings">
+    <option name="isMigrated" value="true" />
+  </component>
+  <component name="ExternalProjectsData">
+    <projectState path="$PROJECT_DIR$">
+      <ProjectState />
+    </projectState>
+  </component>
+  <component name="FileEditorManager">
+    <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
+      <file pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/src/main/scala/transaction/Coordinator.scala">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="762">
+              <caret line="185" column="7" lean-forward="true" selection-start-line="185" selection-start-column="7" selection-end-line="185" selection-end-column="7" />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/build.sbt">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="242">
+              <caret line="11" column="1" selection-start-line="11" selection-start-column="1" selection-end-line="11" selection-end-column="1" />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/src/main/scala/transaction/DataPartition.scala">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="2552">
+              <caret line="130" column="30" selection-start-line="130" selection-start-column="30" selection-end-line="130" selection-end-column="30" />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/src/test/scala/transaction/MainSpec.scala">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="396">
+              <caret line="25" column="23" selection-start-line="25" selection-start-column="23" selection-end-line="25" selection-end-column="23" />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/src/main/scala/transaction/Global.scala">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="330">
+              <caret line="15" column="18" selection-start-line="15" selection-start-column="18" selection-end-line="15" selection-end-column="18" />
+              <folding>
+                <element signature="e#21#54#0" expanded="true" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/src/main/scala/transaction/DataPartitionMain.scala">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="374">
+              <caret line="17" selection-start-line="17" selection-end-line="17" />
+              <folding>
+                <element signature="e#21#54#0" expanded="true" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/src/main/scala/transaction/Scheduler.scala">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="1540">
+              <caret line="84" selection-start-line="84" selection-end-line="84" />
+            </state>
+          </provider>
+        </entry>
+      </file>
+    </leaf>
+  </component>
+  <component name="FileTemplateManagerImpl">
+    <option name="RECENT_TEMPLATES">
+      <list>
+        <option value="Package Object" />
+      </list>
+    </option>
+  </component>
+  <component name="FindInProjectRecents">
+    <findStrings>
+      <find>Nack</find>
+      <find>s1</find>
+      <find>clear</find>
+      <find>256</find>
+      <find>insertTx(</find>
+      <find>Batch</find>
+      <find>readKey</find>
+      <find>resolver</find>
+      <find>getTx</find>
+      <find>Any.</find>
+      <find>passou</find>
+      <find>truncate</find>
+      <find>session</find>
+      <find>readBatch(</find>
+      <find>readBatch</find>
+      <find>producer</find>
+    </findStrings>
+  </component>
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+    <option name="RECENT_BRANCH_BY_REPOSITORY">
+      <map>
+        <entry key="$PROJECT_DIR$" value="v0.5" />
+      </map>
+    </option>
+  </component>
+  <component name="IdeDocumentHistory">
+    <option name="CHANGED_PATHS">
+      <list>
+        <option value="$PROJECT_DIR$/project/protoc.sbt" />
+        <option value="$PROJECT_DIR$/src/main/protobuf/enqueue.proto" />
+        <option value="$PROJECT_DIR$/src/main/scala/transaction/ClientMain.scala" />
+        <option value="$PROJECT_DIR$/src/main/scala/transaction/TransactorClient.scala" />
+        <option value="$PROJECT_DIR$/src/main/scala/transaction/Transactor.scala" />
+        <option value="$PROJECT_DIR$/build.sbt" />
+        <option value="$PROJECT_DIR$/src/main/scala/transaction/Producer.scala" />
+        <option value="$PROJECT_DIR$/src/main/scala/transaction/Server.scala" />
+        <option value="$PROJECT_DIR$/src/main/scala/transaction/SerializerServer.scala" />
+        <option value="$PROJECT_DIR$/src/main/scala/transaction/Transaction.scala" />
+        <option value="$PROJECT_DIR$/src/test/scala/transaction/A.scala" />
+        <option value="$PROJECT_DIR$/src/test/scala/transaction/InsertSpec.scala" />
+        <option value="$PROJECT_DIR$/src/main/scala/transaction/Serializer.scala" />
+        <option value="$PROJECT_DIR$/src/main/scala/transaction/Command.scala" />
+        <option value="$PROJECT_DIR$/src/main/scala/transaction/ResolverServer.scala" />
+        <option value="$PROJECT_DIR$/src/main/scala/transaction/TransactorServer.scala" />
+        <option value="$PROJECT_DIR$/src/main/scala/transaction/Client.scala" />
+        <option value="$PROJECT_DIR$/src/main/scala/transaction/ExecutorServer.scala" />
+        <option value="$PROJECT_DIR$/src/main/scala/transaction/Executor.scala" />
+        <option value="$PROJECT_DIR$/src/main/scala/transaction/Partition.scala" />
+        <option value="$PROJECT_DIR$/src/main/scala/transaction/PartitionServer.scala" />
+        <option value="$PROJECT_DIR$/src/main/scala/transaction/CoordinatorServer.scala" />
+        <option value="$PROJECT_DIR$/src/main/scala/transaction/Aggregator.scala" />
+        <option value="$PROJECT_DIR$/src/main/protobuf/transaction.proto" />
+        <option value="$PROJECT_DIR$/src/main/scala/transaction/package.scala" />
+        <option value="$PROJECT_DIR$/src/main/scala/transaction/Processor.scala" />
+        <option value="$PROJECT_DIR$/src/main/scala/transaction/DataPartition.scala" />
+        <option value="$PROJECT_DIR$/src/main/scala/transaction/DataPartitionServer.scala" />
+        <option value="$PROJECT_DIR$/src/main/scala/transaction/Resolver.scala" />
+        <option value="$PROJECT_DIR$/src/main/scala/transaction/Global.scala" />
+        <option value="$PROJECT_DIR$/src/main/scala/transaction/Scheduler.scala" />
+        <option value="$PROJECT_DIR$/src/test/scala/transaction/MainSpec.scala" />
+        <option value="$PROJECT_DIR$/src/main/scala/transaction/Coordinator.scala" />
+      </list>
+    </option>
+  </component>
+  <component name="MacroExpansionManager">
+    <option name="directoryName" value="mcAXNgqC" />
+  </component>
+  <component name="ProjectFrameBounds" extendedState="6">
+    <option name="x" value="114" />
+    <option name="y" value="48" />
+    <option name="width" value="1825" />
+    <option name="height" value="970" />
+  </component>
+  <component name="ProjectLevelVcsManager" settingsEditedManually="true">
+    <ConfirmationsSetting value="2" id="Add" />
+  </component>
+  <component name="ProjectView">
+    <navigator proportions="" version="1">
+      <foldersAlwaysOnTop value="true" />
+    </navigator>
+    <panes>
+      <pane id="PackagesPane" />
+      <pane id="ProjectPane">
+        <subPane>
+          <expand>
+            <path>
+              <item name="transaction" type="b2602c69:ProjectViewProjectNode" />
+              <item name="transaction" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="transaction" type="b2602c69:ProjectViewProjectNode" />
+              <item name="transaction" type="462c0819:PsiDirectoryNode" />
+              <item name="project" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="transaction" type="b2602c69:ProjectViewProjectNode" />
+              <item name="transaction" type="462c0819:PsiDirectoryNode" />
+              <item name="src" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="transaction" type="b2602c69:ProjectViewProjectNode" />
+              <item name="transaction" type="462c0819:PsiDirectoryNode" />
+              <item name="src" type="462c0819:PsiDirectoryNode" />
+              <item name="main" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="transaction" type="b2602c69:ProjectViewProjectNode" />
+              <item name="transaction" type="462c0819:PsiDirectoryNode" />
+              <item name="src" type="462c0819:PsiDirectoryNode" />
+              <item name="main" type="462c0819:PsiDirectoryNode" />
+              <item name="protobuf" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="transaction" type="b2602c69:ProjectViewProjectNode" />
+              <item name="transaction" type="462c0819:PsiDirectoryNode" />
+              <item name="src" type="462c0819:PsiDirectoryNode" />
+              <item name="main" type="462c0819:PsiDirectoryNode" />
+              <item name="scala" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="transaction" type="b2602c69:ProjectViewProjectNode" />
+              <item name="transaction" type="462c0819:PsiDirectoryNode" />
+              <item name="src" type="462c0819:PsiDirectoryNode" />
+              <item name="main" type="462c0819:PsiDirectoryNode" />
+              <item name="scala" type="462c0819:PsiDirectoryNode" />
+              <item name="transaction" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="transaction" type="b2602c69:ProjectViewProjectNode" />
+              <item name="transaction" type="462c0819:PsiDirectoryNode" />
+              <item name="src" type="462c0819:PsiDirectoryNode" />
+              <item name="test" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="transaction" type="b2602c69:ProjectViewProjectNode" />
+              <item name="transaction" type="462c0819:PsiDirectoryNode" />
+              <item name="src" type="462c0819:PsiDirectoryNode" />
+              <item name="test" type="462c0819:PsiDirectoryNode" />
+              <item name="scala" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="transaction" type="b2602c69:ProjectViewProjectNode" />
+              <item name="transaction" type="462c0819:PsiDirectoryNode" />
+              <item name="src" type="462c0819:PsiDirectoryNode" />
+              <item name="test" type="462c0819:PsiDirectoryNode" />
+              <item name="scala" type="462c0819:PsiDirectoryNode" />
+              <item name="transaction" type="462c0819:PsiDirectoryNode" />
+            </path>
+          </expand>
+          <select />
+        </subPane>
+      </pane>
+      <pane id="Scope" />
+    </panes>
+  </component>
+  <component name="PropertiesComponent">
+    <property name="SHARE_PROJECT_CONFIGURATION_FILES" value="true" />
+    <property name="WebServerToolWindowFactoryState" value="false" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$/../calvin" />
+    <property name="nodejs_interpreter_path.stuck_in_default_project" value="undefined stuck path" />
+    <property name="nodejs_npm_path_reset_for_default_project" value="true" />
+    <property name="project.structure.last.edited" value="Project" />
+    <property name="project.structure.proportion" value="0.0" />
+    <property name="project.structure.side.proportion" value="0.2" />
+  </component>
+  <component name="RecentsManager">
+    <key name="CopyClassDialog.RECENTS_KEY">
+      <recent name="transaction" />
+    </key>
+    <key name="CopyFile.RECENT_KEYS">
+      <recent name="C:\Users\lucas\IdeaProjects\transaction\project" />
+    </key>
+  </component>
+  <component name="RunDashboard">
+    <option name="ruleStates">
+      <list>
+        <RuleState>
+          <option name="name" value="ConfigurationTypeDashboardGroupingRule" />
+        </RuleState>
+        <RuleState>
+          <option name="name" value="StatusDashboardGroupingRule" />
+        </RuleState>
+      </list>
+    </option>
+  </component>
+  <component name="SbtLocalSettings">
+    <option name="availableProjects">
+      <map>
+        <entry>
+          <key>
+            <ExternalProjectPojo>
+              <option name="name" value="transaction" />
+              <option name="path" value="$PROJECT_DIR$" />
+            </ExternalProjectPojo>
+          </key>
+          <value>
+            <list>
+              <ExternalProjectPojo>
+                <option name="name" value="transaction [file:/C:/Users/lucas/IdeaProjects/transaction/]" />
+                <option name="path" value="$PROJECT_DIR$" />
+              </ExternalProjectPojo>
+              <ExternalProjectPojo>
+                <option name="name" value="transaction-build" />
+                <option name="path" value="$PROJECT_DIR$/project" />
+              </ExternalProjectPojo>
+            </list>
+          </value>
+        </entry>
+      </map>
+    </option>
+    <option name="modificationStamps">
+      <map>
+        <entry key="$PROJECT_DIR$" value="6255643428597" />
+        <entry key="$PROJECT_DIR$/build.sbt" value="202733631" />
+        <entry key="$PROJECT_DIR$/project/Dependencies.scala" value="698762684" />
+        <entry key="$PROJECT_DIR$/project/build.properties" value="1396028727" />
+        <entry key="$PROJECT_DIR$/project/protoc.sbt" value="2971333397" />
+      </map>
+    </option>
+    <option name="projectSyncType">
+      <map>
+        <entry key="$PROJECT_DIR$/../index4" value="PREVIEW" />
+      </map>
+    </option>
+  </component>
+  <component name="SvnConfiguration">
+    <configuration />
+  </component>
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="9c96cb1b-7911-444a-b8c9-15cd525b39b8" name="Default Changelist" comment="" />
+      <created>1564928934220</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1564928934220</updated>
+      <workItem from="1564928935844" duration="984000" />
+      <workItem from="1564929943686" duration="1833000" />
+      <workItem from="1564933303804" duration="1514000" />
+      <workItem from="1565038937842" duration="10158000" />
+      <workItem from="1565050963623" duration="14697000" />
+      <workItem from="1565112382578" duration="5000" />
+      <workItem from="1565122339817" duration="9870000" />
+      <workItem from="1565200619327" duration="11648000" />
+      <workItem from="1565283281327" duration="15920000" />
+      <workItem from="1565374641266" duration="12867000" />
+      <workItem from="1565472765026" duration="14955000" />
+      <workItem from="1565522634950" duration="25525000" />
+      <workItem from="1565574166580" duration="6209000" />
+      <workItem from="1565606867357" duration="3392000" />
+      <workItem from="1565636989879" duration="1253000" />
+      <workItem from="1565660481482" duration="5061000" />
+      <workItem from="1565807932631" duration="6575000" />
+      <workItem from="1565890604603" duration="1546000" />
+      <workItem from="1565912942930" duration="5736000" />
+      <workItem from="1565980631492" duration="13632000" />
+      <workItem from="1566066044701" duration="3383000" />
+      <workItem from="1566248442051" duration="8000" />
+      <workItem from="1566249329430" duration="19779000" />
+      <workItem from="1566303378724" duration="30114000" />
+      <workItem from="1566392468070" duration="10804000" />
+      <workItem from="1566437614470" duration="4579000" />
+      <workItem from="1566493269323" duration="22452000" />
+      <workItem from="1566582305683" duration="19665000" />
+      <workItem from="1566668540054" duration="801000" />
+      <workItem from="1566775818923" duration="3766000" />
+      <workItem from="1566841362071" duration="23635000" />
+      <workItem from="1566882346740" duration="14878000" />
+      <workItem from="1566995991390" duration="21344000" />
+      <workItem from="1567189115958" duration="13060000" />
+      <workItem from="1567273069773" duration="6541000" />
+      <workItem from="1567426234984" duration="3903000" />
+      <workItem from="1567446071907" duration="59000" />
+      <workItem from="1567446189130" duration="240000" />
+    </task>
+    <task id="LOCAL-00001" summary="First commit.">
+      <created>1565537996305</created>
+      <option name="number" value="00001" />
+      <option name="presentableId" value="LOCAL-00001" />
+      <option name="project" value="LOCAL" />
+      <updated>1565537996305</updated>
+    </task>
+    <task id="LOCAL-00002" summary="First commit.">
+      <created>1565538009495</created>
+      <option name="number" value="00002" />
+      <option name="presentableId" value="LOCAL-00002" />
+      <option name="project" value="LOCAL" />
+      <updated>1565538009495</updated>
+    </task>
+    <task id="LOCAL-00003" summary="First commit.">
+      <created>1565538061125</created>
+      <option name="number" value="00003" />
+      <option name="presentableId" value="LOCAL-00003" />
+      <option name="project" value="LOCAL" />
+      <updated>1565538061125</updated>
+    </task>
+    <task id="LOCAL-00004" summary="First commit.">
+      <created>1566272336469</created>
+      <option name="number" value="00004" />
+      <option name="presentableId" value="LOCAL-00004" />
+      <option name="project" value="LOCAL" />
+      <updated>1566272336469</updated>
+    </task>
+    <task id="LOCAL-00005" summary="First commit.">
+      <created>1566273931372</created>
+      <option name="number" value="00005" />
+      <option name="presentableId" value="LOCAL-00005" />
+      <option name="project" value="LOCAL" />
+      <updated>1566273931372</updated>
+    </task>
+    <task id="LOCAL-00006" summary="First commit.">
+      <created>1566321381027</created>
+      <option name="number" value="00006" />
+      <option name="presentableId" value="LOCAL-00006" />
+      <option name="project" value="LOCAL" />
+      <updated>1566321381027</updated>
+    </task>
+    <task id="LOCAL-00007" summary="First commit.">
+      <created>1566340868195</created>
+      <option name="number" value="00007" />
+      <option name="presentableId" value="LOCAL-00007" />
+      <option name="project" value="LOCAL" />
+      <updated>1566340868195</updated>
+    </task>
+    <task id="LOCAL-00008" summary="First commit.">
+      <created>1566392582463</created>
+      <option name="number" value="00008" />
+      <option name="presentableId" value="LOCAL-00008" />
+      <option name="project" value="LOCAL" />
+      <updated>1566392582463</updated>
+    </task>
+    <task id="LOCAL-00009" summary="First commit.">
+      <created>1566428006207</created>
+      <option name="number" value="00009" />
+      <option name="presentableId" value="LOCAL-00009" />
+      <option name="project" value="LOCAL" />
+      <updated>1566428006207</updated>
+    </task>
+    <task id="LOCAL-00010" summary="First commit.">
+      <created>1566440258810</created>
+      <option name="number" value="00010" />
+      <option name="presentableId" value="LOCAL-00010" />
+      <option name="project" value="LOCAL" />
+      <updated>1566440258810</updated>
+    </task>
+    <task id="LOCAL-00011" summary="First commit.">
+      <created>1566441255094</created>
+      <option name="number" value="00011" />
+      <option name="presentableId" value="LOCAL-00011" />
+      <option name="project" value="LOCAL" />
+      <updated>1566441255094</updated>
+    </task>
+    <task id="LOCAL-00012" summary="First commit.">
+      <created>1566442196387</created>
+      <option name="number" value="00012" />
+      <option name="presentableId" value="LOCAL-00012" />
+      <option name="project" value="LOCAL" />
+      <updated>1566442196387</updated>
+    </task>
+    <task id="LOCAL-00013" summary="First commit.">
+      <created>1566504076105</created>
+      <option name="number" value="00013" />
+      <option name="presentableId" value="LOCAL-00013" />
+      <option name="project" value="LOCAL" />
+      <updated>1566504076105</updated>
+    </task>
+    <task id="LOCAL-00014" summary="First commit.">
+      <created>1566526406963</created>
+      <option name="number" value="00014" />
+      <option name="presentableId" value="LOCAL-00014" />
+      <option name="project" value="LOCAL" />
+      <updated>1566526406963</updated>
+    </task>
+    <task id="LOCAL-00015" summary="First commit.">
+      <created>1566584926017</created>
+      <option name="number" value="00015" />
+      <option name="presentableId" value="LOCAL-00015" />
+      <option name="project" value="LOCAL" />
+      <updated>1566584926017</updated>
+    </task>
+    <task id="LOCAL-00016" summary="Fauna protocol.">
+      <created>1566619491735</created>
+      <option name="number" value="00016" />
+      <option name="presentableId" value="LOCAL-00016" />
+      <option name="project" value="LOCAL" />
+      <updated>1566619491735</updated>
+    </task>
+    <task id="LOCAL-00017" summary="Fauna protocol.">
+      <created>1566620199307</created>
+      <option name="number" value="00017" />
+      <option name="presentableId" value="LOCAL-00017" />
+      <option name="project" value="LOCAL" />
+      <updated>1566620199307</updated>
+    </task>
+    <task id="LOCAL-00018" summary="Fauna protocol.">
+      <created>1566841431267</created>
+      <option name="number" value="00018" />
+      <option name="presentableId" value="LOCAL-00018" />
+      <option name="project" value="LOCAL" />
+      <updated>1566841431267</updated>
+    </task>
+    <task id="LOCAL-00019" summary="Fauna protocol.">
+      <created>1566846261615</created>
+      <option name="number" value="00019" />
+      <option name="presentableId" value="LOCAL-00019" />
+      <option name="project" value="LOCAL" />
+      <updated>1566846261615</updated>
+    </task>
+    <task id="LOCAL-00020" summary="Fauna protocol.">
+      <created>1566867868118</created>
+      <option name="number" value="00020" />
+      <option name="presentableId" value="LOCAL-00020" />
+      <option name="project" value="LOCAL" />
+      <updated>1566867868118</updated>
+    </task>
+    <task id="LOCAL-00021" summary="High performance transaction protocol.">
+      <created>1567035404769</created>
+      <option name="number" value="00021" />
+      <option name="presentableId" value="LOCAL-00021" />
+      <option name="project" value="LOCAL" />
+      <updated>1567035404769</updated>
+    </task>
+    <task id="LOCAL-00022" summary="High performance transaction protocol.">
+      <created>1567189608182</created>
+      <option name="number" value="00022" />
+      <option name="presentableId" value="LOCAL-00022" />
+      <option name="project" value="LOCAL" />
+      <updated>1567189608183</updated>
+    </task>
+    <task id="LOCAL-00023" summary="High performance transaction protocol.">
+      <created>1567189616231</created>
+      <option name="number" value="00023" />
+      <option name="presentableId" value="LOCAL-00023" />
+      <option name="project" value="LOCAL" />
+      <updated>1567189616231</updated>
+    </task>
+    <task id="LOCAL-00024" summary="High performance transaction protocol.">
+      <created>1567195352829</created>
+      <option name="number" value="00024" />
+      <option name="presentableId" value="LOCAL-00024" />
+      <option name="project" value="LOCAL" />
+      <updated>1567195352829</updated>
+    </task>
+    <task id="LOCAL-00025" summary="High performance transaction protocol.">
+      <created>1567195385678</created>
+      <option name="number" value="00025" />
+      <option name="presentableId" value="LOCAL-00025" />
+      <option name="project" value="LOCAL" />
+      <updated>1567195385678</updated>
+    </task>
+    <task id="LOCAL-00026" summary="Load balanced log.">
+      <created>1567195546475</created>
+      <option name="number" value="00026" />
+      <option name="presentableId" value="LOCAL-00026" />
+      <option name="project" value="LOCAL" />
+      <updated>1567195546475</updated>
+    </task>
+    <task id="LOCAL-00027" summary="Load balanced log.">
+      <created>1567196181689</created>
+      <option name="number" value="00027" />
+      <option name="presentableId" value="LOCAL-00027" />
+      <option name="project" value="LOCAL" />
+      <updated>1567196181689</updated>
+    </task>
+    <task id="LOCAL-00028" summary="Load balanced log.">
+      <created>1567196353224</created>
+      <option name="number" value="00028" />
+      <option name="presentableId" value="LOCAL-00028" />
+      <option name="project" value="LOCAL" />
+      <updated>1567196353224</updated>
+    </task>
+    <task id="LOCAL-00029" summary="Load balanced log.">
+      <created>1567201562467</created>
+      <option name="number" value="00029" />
+      <option name="presentableId" value="LOCAL-00029" />
+      <option name="project" value="LOCAL" />
+      <updated>1567201562467</updated>
+    </task>
+    <task id="LOCAL-00030" summary="Load balanced log.">
+      <created>1567201865509</created>
+      <option name="number" value="00030" />
+      <option name="presentableId" value="LOCAL-00030" />
+      <option name="project" value="LOCAL" />
+      <updated>1567201865509</updated>
+    </task>
+    <task id="LOCAL-00031" summary="Cross datacenter database :) Only workloads that span multiple datacenters are replicated across datacenters.">
+      <created>1567209598038</created>
+      <option name="number" value="00031" />
+      <option name="presentableId" value="LOCAL-00031" />
+      <option name="project" value="LOCAL" />
+      <updated>1567209598038</updated>
+    </task>
+    <task id="LOCAL-00032" summary="Single datacenter optimized transactions.&#10;&#10;Future implementation for multidatacenter solutions:&#10;&#10;- Log: only use global consensus between datacenters involved. This is an optimization for low latency local epochs (those that don't envolve multiple datacenters)&#10;- Execution: local epochs can execute right away. When processing a global epoch =&gt; ask involved dcs whether they are in the same global epoch. Only process the global epoch when all dcs are ready to proceed.">
+      <created>1567279738493</created>
+      <option name="number" value="00032" />
+      <option name="presentableId" value="LOCAL-00032" />
+      <option name="project" value="LOCAL" />
+      <updated>1567279738493</updated>
+    </task>
+    <task id="LOCAL-00033" summary="Single DC implementation for distributed transactions.">
+      <created>1567283083942</created>
+      <option name="number" value="00033" />
+      <option name="presentableId" value="LOCAL-00033" />
+      <option name="project" value="LOCAL" />
+      <updated>1567283083942</updated>
+    </task>
+    <task id="LOCAL-00034" summary="Single DC implementation for distributed transactions.">
+      <created>1567427922528</created>
+      <option name="number" value="00034" />
+      <option name="presentableId" value="LOCAL-00034" />
+      <option name="project" value="LOCAL" />
+      <updated>1567427922529</updated>
+    </task>
+    <option name="localTasksCounter" value="35" />
+    <servers />
+  </component>
+  <component name="TimeTrackingManager">
+    <option name="totallyTimeSpent" value="362391000" />
+  </component>
+  <component name="ToolWindowManager">
+    <frame x="-8" y="-8" width="1936" height="1056" extended-state="6" />
+    <editor active="true" />
+    <layout>
+      <window_info active="true" content_ui="combo" id="Project" order="0" visible="true" weight="0.1609808" />
+      <window_info id="Structure" order="1" side_tool="true" weight="0.25" />
+      <window_info id="Designer" order="2" />
+      <window_info id="Image Layers" order="3" />
+      <window_info id="Capture Tool" order="4" />
+      <window_info id="Favorites" order="5" side_tool="true" />
+      <window_info id="UI Designer" order="6" />
+      <window_info anchor="bottom" id="Message" order="0" />
+      <window_info anchor="bottom" id="Find" order="1" weight="0.32936078" />
+      <window_info anchor="bottom" id="Run" order="2" />
+      <window_info anchor="bottom" id="Debug" order="3" weight="0.4" />
+      <window_info anchor="bottom" id="Cvs" order="4" weight="0.25" />
+      <window_info anchor="bottom" id="Inspection" order="5" weight="0.4" />
+      <window_info anchor="bottom" id="TODO" order="6" />
+      <window_info anchor="bottom" id="sbt-shell-toolwindow" order="7" />
+      <window_info anchor="bottom" id="Terminal" order="8" />
+      <window_info anchor="bottom" id="Docker" order="9" show_stripe_button="false" />
+      <window_info anchor="bottom" id="Event Log" order="10" sideWeight="0.50053304" side_tool="true" weight="0.32394367" />
+      <window_info anchor="bottom" id="Build" order="11" weight="0.32936078" />
+      <window_info anchor="bottom" id="Database Changes" order="12" />
+      <window_info anchor="bottom" id="Version Control" order="13" sideWeight="0.49946696" weight="0.32394367" />
+      <window_info anchor="right" id="Commander" internal_type="SLIDING" order="0" type="SLIDING" weight="0.4" />
+      <window_info anchor="right" id="Ant Build" order="1" weight="0.25" />
+      <window_info anchor="right" content_ui="combo" id="Hierarchy" order="2" weight="0.25" />
+      <window_info anchor="right" id="Maven" order="3" />
+      <window_info anchor="right" id="Palette" order="4" />
+      <window_info anchor="right" id="sbt" order="5" />
+      <window_info anchor="right" id="Cargo" order="6" />
+      <window_info anchor="right" id="Database" order="7" weight="0.32995737" />
+      <window_info anchor="right" id="Palette&#9;" order="8" />
+      <window_info anchor="right" id="Theme Preview" order="9" />
+      <window_info anchor="right" id="Capture Analysis" order="10" />
+    </layout>
+  </component>
+  <component name="TypeScriptGeneratedFilesManager">
+    <option name="version" value="1" />
+  </component>
+  <component name="VcsManagerConfiguration">
+    <MESSAGE value="First commit." />
+    <MESSAGE value="Fauna protocol." />
+    <MESSAGE value="High performance transaction protocol." />
+    <MESSAGE value="Load balanced log." />
+    <MESSAGE value="Cross datacenter database :) Only workloads that span multiple datacenters are replicated across datacenters." />
+    <MESSAGE value="Single datacenter optimized transactions.&#10;&#10;Future implementation for multidatacenter solutions:&#10;&#10;- Log: only use global consensus between datacenters involved. This is an optimization for low latency local epochs (those that don't envolve multiple datacenters)&#10;- Execution: local epochs can execute right away. When processing a global epoch =&gt; ask involved dcs whether they are in the same global epoch. Only process the global epoch when all dcs are ready to proceed." />
+    <MESSAGE value="Single DC implementation for distributed transactions." />
+    <option name="LAST_COMMIT_MESSAGE" value="Single DC implementation for distributed transactions." />
+  </component>
+  <component name="editorHistoryManager">
+    <entry file="file://$PROJECT_DIR$/target/scala-2.12/src_managed/main/transaction/protocol/Commit.scala" />
+    <entry file="jar://$USER_HOME$/.ivy2/cache/com.twitter/finagle-core_2.12/srcs/finagle-core_2.12-19.5.1-sources.jar!/com/twitter/finagle/Server.scala">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="298">
+          <caret line="125" column="12" selection-start-line="125" selection-start-column="12" selection-end-line="125" selection-end-column="12" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="jar://$USER_HOME$/.ivy2/cache/com.twitter/finagle-core_2.12/srcs/finagle-core_2.12-19.5.1-sources.jar!/com/twitter/finagle/dispatch/ServerDispatcher.scala">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="-2450">
+          <caret line="26" column="27" selection-start-line="26" selection-start-column="27" selection-end-line="26" selection-end-column="27" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="jar://$USER_HOME$/.ivy2/cache/io.vertx/vertx-kafka-client-scala_2.12/srcs/vertx-kafka-client-scala_2.12-3.5.0-sources.jar!/io/vertx/scala/kafka/client/consumer/KafkaConsumerRecord.scala">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="298">
+          <caret line="41" column="6" selection-start-line="41" selection-start-column="6" selection-end-line="41" selection-end-column="6" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="jar://C:/Program Files/Java/jdk-12.0.1/lib/src.zip!/java.base/java/util/Timer.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="496">
+          <caret line="456" column="16" selection-start-line="456" selection-start-column="16" selection-end-line="456" selection-end-column="16" />
+          <folding>
+            <element signature="e#4831#4832#0" expanded="true" />
+            <element signature="e#4878#4879#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="jar://$USER_HOME$/.ivy2/cache/io.vertx/vertx-kafka-client/srcs/vertx-kafka-client-3.5.0-sources.jar!/io/vertx/kafka/client/producer/KafkaProducer.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="2542">
+          <caret line="181" column="34" selection-start-line="181" selection-start-column="34" selection-end-line="181" selection-end-column="34" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="jar://$USER_HOME$/.ivy2/cache/org.scala-lang/scala-library/srcs/scala-library-2.12.8-sources.jar!/scala/collection/concurrent/TrieMap.scala">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="290">
+          <caret line="742" column="23" selection-start-line="742" selection-start-column="23" selection-end-line="742" selection-end-column="23" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="jar://C:/Program Files/Java/jdk-12.0.1/lib/src.zip!/java.base/java/util/concurrent/ConcurrentLinkedQueue.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="2204">
+          <caret line="426" column="12" selection-start-line="426" selection-start-column="12" selection-end-line="426" selection-end-column="12" />
+          <folding>
+            <element signature="e#16739#16740#0" expanded="true" />
+            <element signature="e#16777#16778#0" expanded="true" />
+            <element signature="e#28023#28024#0" expanded="true" />
+            <element signature="e#28055#28056#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="jar://$USER_HOME$/.ivy2/cache/com.datastax.cassandra/cassandra-driver-core/srcs/cassandra-driver-core-3.7.2-sources.jar!/com/datastax/driver/core/Cluster.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="298">
+          <caret line="329" column="17" selection-start-line="329" selection-start-column="17" selection-end-line="329" selection-end-column="17" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="jar://$USER_HOME$/.ivy2/cache/com.datastax.cassandra/cassandra-driver-core/srcs/cassandra-driver-core-3.7.2-sources.jar!/com/datastax/driver/core/ResultSetFuture.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="242">
+          <caret line="30" column="17" selection-start-line="30" selection-start-column="17" selection-end-line="30" selection-end-column="17" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="jar://$USER_HOME$/.ivy2/cache/com.datastax.cassandra/cassandra-driver-core/srcs/cassandra-driver-core-3.7.2-sources.jar!/com/datastax/driver/core/Session.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="298">
+          <caret line="236" column="18" selection-start-line="236" selection-start-column="18" selection-end-line="236" selection-end-column="18" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/target/scala-2.12/src_managed/main/transaction/protocol/Enqueue.scala" />
+    <entry file="jar://$USER_HOME$/.ivy2/cache/com.datastax.cassandra/cassandra-driver-core/srcs/cassandra-driver-core-3.7.2-sources.jar!/com/datastax/driver/core/BoundStatement.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="298">
+          <caret line="489" column="24" selection-start-line="489" selection-start-column="24" selection-end-line="489" selection-end-column="24" />
+          <folding>
+            <element signature="e#17437#17438#0" expanded="true" />
+            <element signature="e#17476#17477#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/test/scala/transaction/InsertSpec.scala">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="88">
+          <caret line="9" column="16" selection-start-line="9" selection-start-column="16" selection-end-line="9" selection-end-column="16" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/scala/transaction/Serializer.scala" />
+    <entry file="file://$PROJECT_DIR$/target/scala-2.12/src_managed/main/transaction/protocol/VersionedValue.scala">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="110">
+          <caret line="8" column="17" selection-start-line="8" selection-start-column="17" selection-end-line="8" selection-end-column="17" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/target/scala-2.12/src_managed/main/transaction/protocol/Transaction.scala">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="110">
+          <caret line="8" column="17" selection-start-line="8" selection-start-column="17" selection-end-line="8" selection-end-column="17" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="jar://$USER_HOME$/.ivy2/cache/com.datastax.cassandra/cassandra-driver-core/srcs/cassandra-driver-core-3.7.2-sources.jar!/com/datastax/driver/core/ResultSet.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="298">
+          <caret line="37" column="6" selection-start-line="37" selection-start-column="6" selection-end-line="37" selection-end-column="6" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="jar://$USER_HOME$/.ivy2/cache/io.vertx/vertx-kafka-client/srcs/vertx-kafka-client-3.5.0-sources.jar!/io/vertx/kafka/client/consumer/KafkaConsumer.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="298">
+          <caret line="133" column="26" selection-start-line="133" selection-start-column="26" selection-end-line="133" selection-end-column="26" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/target/scala-2.12/src_managed/main/transaction/protocol/PartitionResult.scala" />
+    <entry file="file://$PROJECT_DIR$/target/scala-2.12/src_managed/main/transaction/protocol/PartitionRelease.scala">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="110">
+          <caret line="8" column="17" selection-start-line="8" selection-start-column="17" selection-end-line="8" selection-end-column="17" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="jar://C:/Program Files/Java/jdk-12.0.1/lib/src.zip!/java.base/java/util/concurrent/atomic/AtomicBoolean.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="298">
+          <caret line="193" column="25" selection-start-line="193" selection-start-column="25" selection-end-line="193" selection-end-column="25" />
+          <folding>
+            <element signature="e#1877#1878#0" expanded="true" />
+            <element signature="e#1910#1911#0" expanded="true" />
+            <element signature="e#4490#4491#0" expanded="true" />
+            <element signature="e#4530#4531#0" expanded="true" />
+            <element signature="e#5672#5673#0" expanded="true" />
+            <element signature="e#5720#5721#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/scala/transaction/TransactorServer.scala">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="220">
+          <caret line="16" column="63" selection-start-line="16" selection-start-column="63" selection-end-line="16" selection-end-column="63" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="jar://$USER_HOME$/.ivy2/cache/io.vertx/vertx-kafka-client-scala_2.12/srcs/vertx-kafka-client-scala_2.12-3.5.0-sources.jar!/io/vertx/scala/kafka/client/producer/KafkaProducer.scala">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="298">
+          <caret line="136" column="6" selection-start-line="136" selection-start-column="6" selection-end-line="136" selection-end-column="6" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/target/scala-2.12/src_managed/main/transaction/protocol/PartitionResponse.scala">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="110">
+          <caret line="8" column="17" selection-start-line="8" selection-start-column="17" selection-end-line="8" selection-end-column="17" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/scala/transaction/TransactorClient.scala">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="242">
+          <caret line="11" column="23" selection-start-line="11" selection-start-column="23" selection-end-line="11" selection-end-column="23" />
+          <folding>
+            <element signature="e#21#37#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="jar://$USER_HOME$/.ivy2/cache/com.datastax.cassandra/cassandra-driver-core/srcs/cassandra-driver-core-3.7.2-sources.jar!/com/datastax/driver/core/PoolingOptions.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="694">
+          <caret line="196" column="37" selection-start-line="196" selection-start-column="37" selection-end-line="196" selection-end-column="37" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="jar://$USER_HOME$/.ivy2/cache/com.twitter/util-core_2.12/srcs/util-core_2.12-19.5.1-sources.jar!/com/twitter/util/Future.scala">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="562">
+          <caret line="1514" column="6" selection-start-line="1514" selection-start-column="6" selection-end-line="1514" selection-end-column="6" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="jar://$USER_HOME$/.ivy2/cache/com.datastax.cassandra/cassandra-driver-core/srcs/cassandra-driver-core-3.7.2-sources.jar!/com/datastax/driver/core/PreparedStatement.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="298">
+          <caret line="78" column="24" selection-start-line="78" selection-start-column="24" selection-end-line="78" selection-end-column="24" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="jar://$USER_HOME$/.ivy2/cache/com.datastax.cassandra/cassandra-driver-core/srcs/cassandra-driver-core-3.7.2-sources.jar!/com/datastax/driver/core/Statement.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="298">
+          <caret line="600" column="27" selection-start-line="600" selection-start-column="27" selection-end-line="600" selection-end-column="27" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="jar://$USER_HOME$/.ivy2/cache/com.datastax.cassandra/cassandra-driver-core/srcs/cassandra-driver-core-3.7.2-sources.jar!/com/datastax/driver/core/BatchStatement.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="386">
+          <caret line="291" column="20" selection-start-line="291" selection-start-column="20" selection-end-line="291" selection-end-column="20" />
+          <folding>
+            <element signature="e#2582#2583#0" expanded="true" />
+            <element signature="e#2609#2610#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/target/scala-2.12/src_managed/main/transaction/protocol/Partition.scala">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="110">
+          <caret line="8" column="17" selection-start-line="8" selection-start-column="17" selection-end-line="8" selection-end-column="17" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/scala/transaction/Client.scala">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="220">
+          <caret line="28" selection-start-line="28" selection-end-line="28" />
+          <folding>
+            <element signature="e#21#47#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="jar://C:/Program Files/Java/jdk-12.0.1/lib/src.zip!/java.base/java/util/concurrent/atomic/AtomicInteger.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="298">
+          <caret line="442" column="21" selection-start-line="442" selection-start-column="21" selection-end-line="442" selection-end-column="21" />
+          <folding>
+            <element signature="e#13910#13911#0" expanded="true" />
+            <element signature="e#13961#13962#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/scala/transaction/Command.scala">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="44">
+          <caret line="2" column="13" selection-start-line="2" selection-start-column="13" selection-end-line="2" selection-end-column="13" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/protobuf/transaction.proto">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="582">
+          <caret line="73" column="71" lean-forward="true" selection-start-line="73" selection-start-column="71" selection-end-line="73" selection-end-column="71" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/scala/transaction/package.scala">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="278">
+          <caret line="101" column="47" selection-start-line="101" selection-start-column="47" selection-end-line="101" selection-end-column="47" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="jar://$USER_HOME$/.ivy2/cache/io.vertx/vertx-kafka-client-scala_2.12/srcs/vertx-kafka-client-scala_2.12-3.5.0-sources.jar!/io/vertx/scala/kafka/client/consumer/KafkaConsumer.scala">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="298">
+          <caret line="433" column="6" selection-start-line="433" selection-start-column="6" selection-end-line="433" selection-end-column="6" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/scala/transaction/CoordinatorMain.scala">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="418">
+          <caret line="25" column="16" lean-forward="true" selection-start-line="25" selection-start-column="16" selection-end-line="25" selection-end-column="16" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/target/scala-2.12/src_managed/main/transaction/protocol/Batch.scala">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="110">
+          <caret line="8" column="17" selection-start-line="8" selection-start-column="17" selection-end-line="8" selection-end-column="17" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="jar://C:/Program Files/Java/jdk-12.0.1/lib/src.zip!/java.base/java/util/TimerTask.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="1156">
+          <caret line="119" column="19" selection-start-line="119" selection-start-column="19" selection-end-line="119" selection-end-column="19" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/scala/transaction/Resolver.scala" />
+    <entry file="file://$PROJECT_DIR$/target/scala-2.12/src_managed/main/transaction/protocol/Epoch.scala">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="154">
+          <caret line="10" column="4" selection-start-line="10" selection-start-column="4" selection-end-line="10" selection-end-column="4" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/project/Dependencies.scala">
+      <provider selected="true" editor-type-id="text-editor">
+        <state>
+          <caret column="7" selection-start-column="7" selection-end-column="7" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/scala/transaction/Coordinator.scala">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="762">
+          <caret line="185" column="7" lean-forward="true" selection-start-line="185" selection-start-column="7" selection-end-line="185" selection-end-column="7" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/build.sbt">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="242">
+          <caret line="11" column="1" selection-start-line="11" selection-start-column="1" selection-end-line="11" selection-end-column="1" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/scala/transaction/DataPartition.scala">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="2552">
+          <caret line="130" column="30" selection-start-line="130" selection-start-column="30" selection-end-line="130" selection-end-column="30" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/test/scala/transaction/MainSpec.scala">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="396">
+          <caret line="25" column="23" selection-start-line="25" selection-start-column="23" selection-end-line="25" selection-end-column="23" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/scala/transaction/Global.scala">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="330">
+          <caret line="15" column="18" selection-start-line="15" selection-start-column="18" selection-end-line="15" selection-end-column="18" />
+          <folding>
+            <element signature="e#21#54#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/scala/transaction/DataPartitionMain.scala">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="374">
+          <caret line="17" selection-start-line="17" selection-end-line="17" />
+          <folding>
+            <element signature="e#21#54#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/scala/transaction/Scheduler.scala">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="1540">
+          <caret line="84" selection-start-line="84" selection-end-line="84" />
+        </state>
+      </provider>
+    </entry>
+  </component>
+  <component name="masterDetails">
+    <states>
+      <state key="GlobalLibrariesConfigurable.UI">
+        <settings>
+          <splitter-proportions>
+            <option name="proportions">
+              <list>
+                <option value="0.2" />
+              </list>
+            </option>
+          </splitter-proportions>
+        </settings>
+      </state>
+      <state key="JdkListConfigurable.UI">
+        <settings>
+          <last-edited>11</last-edited>
+          <splitter-proportions>
+            <option name="proportions">
+              <list>
+                <option value="0.2" />
+              </list>
+            </option>
+          </splitter-proportions>
+        </settings>
+      </state>
+      <state key="ProjectJDKs.UI">
+        <settings>
+          <last-edited>11</last-edited>
+          <splitter-proportions>
+            <option name="proportions">
+              <list>
+                <option value="0.2" />
+              </list>
+            </option>
+          </splitter-proportions>
+        </settings>
+      </state>
+      <state key="ProjectLibrariesConfigurable.UI">
+        <settings>
+          <splitter-proportions>
+            <option name="proportions">
+              <list>
+                <option value="0.2" />
+              </list>
+            </option>
+          </splitter-proportions>
+        </settings>
+      </state>
+    </states>
+  </component>
+</project>

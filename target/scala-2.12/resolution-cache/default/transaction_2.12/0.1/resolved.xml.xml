@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ivy-module version="2.0" xmlns:e="http://ant.apache.org/ivy/extra">
+	<info organisation="default"
+		module="transaction_2.12"
+		revision="0.1"
+		status="integration"
+		publication="20190831171149"
+	>
+		<description>
+		transaction
+		</description>
+	</info>
+	<configurations>
+		<conf name="compile" visibility="public" description=""/>
+		<conf name="runtime" visibility="public" description="" extends="compile"/>
+		<conf name="test" visibility="public" description="" extends="runtime"/>
+		<conf name="provided" visibility="public" description=""/>
+		<conf name="optional" visibility="public" description=""/>
+		<conf name="protobuf" visibility="public" description=""/>
+		<conf name="compile-internal" visibility="private" description="" extends="compile,optional,provided"/>
+		<conf name="runtime-internal" visibility="private" description="" extends="runtime,optional"/>
+		<conf name="test-internal" visibility="private" description="" extends="test,optional,provided"/>
+		<conf name="plugin" visibility="private" description=""/>
+		<conf name="pom" visibility="public" description=""/>
+		<conf name="scala-tool" visibility="private" description=""/>
+	</configurations>
+	<publications>
+		<artifact name="transaction_2.12" type="pom" ext="pom" conf="pom"/>
+		<artifact name="transaction_2.12" type="jar" ext="jar" conf="compile"/>
+		<artifact name="transaction_2.12" type="src" ext="jar" conf="compile" e:classifier="sources"/>
+		<artifact name="transaction_2.12" type="doc" ext="jar" conf="compile" e:classifier="javadoc"/>
+	</publications>
+	<dependencies>
+		<dependency org="org.scala-lang" name="scala-compiler" rev="2.12.8" conf="scala-tool->default,optional(default)"/>
+		<dependency org="org.scala-lang" name="scala-library" rev="2.12.8" conf="scala-tool->default,optional(default);compile->default(compile)"/>
+		<dependency org="com.thesamet.scalapb" name="scalapb-runtime_2.12" rev="0.9.0-M7" conf="compile->default(compile);protobuf->default(compile)"/>
+		<dependency org="org.scalactic" name="scalactic_2.12" rev="3.0.5" conf="compile->default(compile)"/>
+		<dependency org="org.scalatest" name="scalatest_2.12" rev="3.0.5" conf="test->default(compile)"/>
+		<dependency org="com.google.guava" name="guava" rev="27.1-jre" conf="compile->default(compile)"/>
+		<dependency org="org.apache.commons" name="commons-lang3" rev="3.8.1" conf="compile->default(compile)"/>
+		<dependency org="org.scala-lang.modules" name="scala-collection-compat_2.12" rev="2.0.0" conf="compile->default(compile)"/>
+		<dependency org="io.vertx" name="vertx-codegen" rev="3.5.0" conf="provided->default(compile)"/>
+		<dependency org="io.vertx" name="vertx-lang-scala_2.12" rev="3.5.0" conf="compile->default(compile)"/>
+		<dependency org="io.vertx" name="vertx-hazelcast" rev="3.5.0" conf="compile->default(compile)"/>
+		<dependency org="io.vertx" name="vertx-kafka-client-scala_2.12" rev="3.5.0" conf="compile->default(compile)"/>
+		<dependency org="com.twitter" name="finagle-http_2.12" rev="19.5.1" conf="compile->default(compile)"/>
+		<dependency org="com.twitter" name="finagle-core_2.12" rev="19.5.1" conf="compile->default(compile)"/>
+		<dependency org="io.netty" name="netty-all" rev="4.1.35.Final" conf="compile->default(compile)"/>
+		<dependency org="org.scala-lang.modules" name="scala-java8-compat_2.12" rev="0.9.0" conf="compile->default(compile)"/>
+		<dependency org="com.datastax.cassandra" name="cassandra-driver-core" rev="3.7.2" conf="compile->default(compile)"/>
+	</dependencies>
+</ivy-module>

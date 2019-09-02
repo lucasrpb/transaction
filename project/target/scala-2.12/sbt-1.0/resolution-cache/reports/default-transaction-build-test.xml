@@ -1,0 +1,110 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?xml-stylesheet type="text/xsl" href="ivy-report.xsl"?>
+<ivy-report version="1.0">
+	<info
+		organisation="default"
+		module="transaction-build"
+		revision="0.1.0-SNAPSHOT"
+		extra-scalaVersion="2.12"
+		extra-sbtVersion="1.0"
+		conf="test"
+		confs="compile, runtime, test, provided, optional, compile-internal, runtime-internal, test-internal, plugin, pom, scala-tool"
+		date="20190804113025"/>
+	<dependencies>
+		<module organisation="com.thesamet.scalapb" name="compilerplugin_2.12">
+			<revision name="0.9.0-M7" status="release" pubdate="20190613224025" resolver="public" artresolver="public" homepage="https://github.com/scalapb/ScalaPB" downloaded="true" searched="true" default="false" conf="default, compile, runtime, default(compile), master" position="4">
+				<license name="Apache 2" url="http://www.apache.org/licenses/LICENSE-2.0.txt"/>
+				<metadata-artifact status="successful" details="" size="2276" time="904" location="C:\Users\lucas\.ivy2\cache\com.thesamet.scalapb\compilerplugin_2.12\ivy-0.9.0-M7.xml" searched="true" original-local-location="C:\Users\lucas\.ivy2\cache\com.thesamet.scalapb\compilerplugin_2.12\ivy-0.9.0-M7.xml.original" origin-is-local="false" origin-location="https://repo1.maven.org/maven2/com/thesamet/scalapb/compilerplugin_2.12/0.9.0-M7/compilerplugin_2.12-0.9.0-M7.pom"/>
+				<caller organisation="default" name="transaction-build" conf="test, compile, runtime" rev="0.9.0-M7" rev-constraint-default="0.9.0-M7" rev-constraint-dynamic="0.9.0-M7" callerrev="0.1.0-SNAPSHOT"/>
+				<artifacts>
+					<artifact name="compilerplugin_2.12" type="jar" ext="jar" status="successful" details="" size="365733" time="1766" location="C:\Users\lucas\.ivy2\cache\com.thesamet.scalapb\compilerplugin_2.12\jars\compilerplugin_2.12-0.9.0-M7.jar">
+						<origin-location is-local="false" location="https://repo1.maven.org/maven2/com/thesamet/scalapb/compilerplugin_2.12/0.9.0-M7/compilerplugin_2.12-0.9.0-M7.jar"/>
+					</artifact>
+				</artifacts>
+			</revision>
+		</module>
+		<module organisation="com.thesamet.scalapb" name="protoc-bridge_2.12">
+			<revision name="0.7.7" status="release" pubdate="20190613000643" resolver="public" artresolver="public" homepage="https://github.com/scalapb/protoc-bridge" downloaded="true" searched="true" default="false" conf="compile, runtime(*), master(compile), runtime, compile(*), master, default, default(compile)" position="5">
+				<license name="Apache 2" url="http://www.apache.org/licenses/LICENSE-2.0.txt"/>
+				<metadata-artifact status="successful" details="" size="2322" time="628" location="C:\Users\lucas\.ivy2\cache\com.thesamet.scalapb\protoc-bridge_2.12\ivy-0.7.7.xml" searched="true" original-local-location="C:\Users\lucas\.ivy2\cache\com.thesamet.scalapb\protoc-bridge_2.12\ivy-0.7.7.xml.original" origin-is-local="false" origin-location="https://repo1.maven.org/maven2/com/thesamet/scalapb/protoc-bridge_2.12/0.7.7/protoc-bridge_2.12-0.7.7.pom"/>
+				<caller organisation="com.thesamet" name="sbt-protoc" conf="compile" rev="0.7.6" rev-constraint-default="0.7.6" rev-constraint-dynamic="0.7.6" callerrev="0.99.21"/>
+				<caller organisation="com.thesamet.scalapb" name="compilerplugin_2.12" conf="default, compile, runtime, master" rev="0.7.7" rev-constraint-default="0.7.7" rev-constraint-dynamic="0.7.7" callerrev="0.9.0-M7"/>
+				<artifacts>
+					<artifact name="protoc-bridge_2.12" type="jar" ext="jar" status="successful" details="" size="52866" time="1607" location="C:\Users\lucas\.ivy2\cache\com.thesamet.scalapb\protoc-bridge_2.12\jars\protoc-bridge_2.12-0.7.7.jar">
+						<origin-location is-local="false" location="https://repo1.maven.org/maven2/com/thesamet/scalapb/protoc-bridge_2.12/0.7.7/protoc-bridge_2.12-0.7.7.jar"/>
+					</artifact>
+				</artifacts>
+			</revision>
+			<revision name="0.7.6" status="release" pubdate="20190525013627" resolver="sbt-chain" artresolver="sbt-chain" evicted="latest-revision" evicted-reason="" homepage="https://github.com/scalapb/protoc-bridge" downloaded="false" searched="false" default="false" conf="default, compile, runtime, default(compile), master" position="-1">
+				<license name="Apache 2" url="http://www.apache.org/licenses/LICENSE-2.0.txt"/>
+				<metadata-artifact status="no" details="" size="3094" time="0" location="C:\Users\lucas\.ivy2\cache\com.thesamet.scalapb\protoc-bridge_2.12\ivy-0.7.6.xml" searched="false" origin-is-local="false" origin-location="https://repo1.maven.org/maven2/com/thesamet/scalapb/protoc-bridge_2.12/0.7.6/protoc-bridge_2.12-0.7.6.pom"/>
+				<evicted-by rev="0.7.7"/>
+				<caller organisation="com.thesamet" name="sbt-protoc" conf="compile" rev="0.7.6" rev-constraint-default="0.7.6" rev-constraint-dynamic="0.7.6" callerrev="0.99.21"/>
+				<artifacts>
+				</artifacts>
+			</revision>
+		</module>
+		<module organisation="com.thesamet" name="sbt-protoc">
+			<revision name="0.99.21" status="release" pubdate="20190525205219" resolver="sbt-chain" artresolver="sbt-chain" extra-scalaVersion="2.12" extra-sbtVersion="1.0" downloaded="false" searched="false" default="false" conf="compile, default(compile)" position="0">
+				<license name="Apache-2.0" url="https://www.apache.org/licenses/LICENSE-2.0.html"/>
+				<metadata-artifact status="no" details="" size="2825" time="0" location="C:\Users\lucas\.ivy2\cache\scala_2.12\sbt_1.0\com.thesamet\sbt-protoc\ivy-0.99.21.xml" searched="false" origin-is-local="false" origin-location="https://repo.scala-sbt.org/scalasbt/sbt-plugin-releases/com.thesamet/sbt-protoc/scala_2.12/sbt_1.0/0.99.21/ivys/ivy.xml"/>
+				<caller organisation="default" name="transaction-build" conf="test, compile, runtime" rev="0.99.21" rev-constraint-default="0.99.21" rev-constraint-dynamic="0.99.21" callerrev="0.1.0-SNAPSHOT" extra-scalaVersion="2.12" extra-sbtVersion="1.0"/>
+				<artifacts>
+					<artifact name="sbt-protoc" type="jar" ext="jar" status="no" details="" size="101516" time="0" location="C:\Users\lucas\.ivy2\cache\scala_2.12\sbt_1.0\com.thesamet\sbt-protoc\jars\sbt-protoc-0.99.21.jar">
+						<origin-location is-local="false" location="https://repo.scala-sbt.org/scalasbt/sbt-plugin-releases/com.thesamet/sbt-protoc/scala_2.12/sbt_1.0/0.99.21/jars/sbt-protoc.jar"/>
+					</artifact>
+				</artifacts>
+			</revision>
+		</module>
+		<module organisation="com.google.protobuf" name="protobuf-java">
+			<revision name="3.7.1" status="release" pubdate="20190402174355" resolver="sbt-chain" artresolver="sbt-chain" homepage="" downloaded="false" searched="false" default="false" conf="compile, runtime(*), master(compile), runtime, compile(*), master" position="6">
+				<license name="3-Clause BSD License" url="https://opensource.org/licenses/BSD-3-Clause"/>
+				<metadata-artifact status="no" details="" size="5561" time="0" location="C:\Users\lucas\.ivy2\cache\com.google.protobuf\protobuf-java\ivy-3.7.1.xml" searched="false" origin-is-local="false" origin-location="https://repo1.maven.org/maven2/com/google/protobuf/protobuf-java/3.7.1/protobuf-java-3.7.1.pom"/>
+				<caller organisation="com.thesamet.scalapb" name="compilerplugin_2.12" conf="default, compile, runtime, master" rev="3.7.1" rev-constraint-default="3.7.1" rev-constraint-dynamic="3.7.1" callerrev="0.9.0-M7"/>
+				<artifacts>
+					<artifact name="protobuf-java" type="bundle" ext="jar" status="no" details="" size="1424223" time="0" location="C:\Users\lucas\.ivy2\cache\com.google.protobuf\protobuf-java\bundles\protobuf-java-3.7.1.jar">
+						<origin-location is-local="false" location="https://repo1.maven.org/maven2/com/google/protobuf/protobuf-java/3.7.1/protobuf-java-3.7.1.jar"/>
+					</artifact>
+				</artifacts>
+			</revision>
+		</module>
+		<module organisation="com.github.os72" name="protoc-jar">
+			<revision name="3.7.1" status="release" pubdate="20190516073432" resolver="sbt-chain" artresolver="sbt-chain" homepage="https://github.com/os72/protoc-jar" downloaded="false" searched="false" default="false" conf="default, compile, runtime, default(compile), master" position="2">
+				<license name="The Apache Software License, Version 2.0" url="http://www.apache.org/licenses/LICENSE-2.0.txt"/>
+				<metadata-artifact status="no" details="" size="3322" time="0" location="C:\Users\lucas\.ivy2\cache\com.github.os72\protoc-jar\ivy-3.7.1.xml" searched="false" origin-is-local="false" origin-location="https://repo1.maven.org/maven2/com/github/os72/protoc-jar/3.7.1/protoc-jar-3.7.1.pom"/>
+				<caller organisation="com.thesamet" name="sbt-protoc" conf="compile" rev="3.7.1" rev-constraint-default="3.7.1" rev-constraint-dynamic="3.7.1" callerrev="0.99.21"/>
+				<artifacts>
+					<artifact name="protoc-jar" type="jar" ext="jar" status="no" details="" size="10470724" time="0" location="C:\Users\lucas\.ivy2\cache\com.github.os72\protoc-jar\jars\protoc-jar-3.7.1.jar">
+						<origin-location is-local="false" location="https://repo1.maven.org/maven2/com/github/os72/protoc-jar/3.7.1/protoc-jar-3.7.1.jar"/>
+					</artifact>
+				</artifacts>
+			</revision>
+		</module>
+		<module organisation="org.portable-scala" name="sbt-platform-deps">
+			<revision name="1.0.0" status="release" pubdate="20180410114715" resolver="sbt-chain" artresolver="sbt-chain" homepage="https://github.com/portable-scala/sbt-platform-deps" extra-scalaVersion="2.12" extra-sbtVersion="1.0" downloaded="false" searched="false" default="false" conf="compile, default(compile)" position="1">
+				<license name="BSD 3-Clause" url="https://github.com/portable-scala/sbt-platform-deps/blob/master/LICENSE"/>
+				<metadata-artifact status="no" details="" size="2439" time="0" location="C:\Users\lucas\.ivy2\cache\scala_2.12\sbt_1.0\org.portable-scala\sbt-platform-deps\ivy-1.0.0.xml" searched="false" origin-is-local="false" origin-location="https://repo.scala-sbt.org/scalasbt/sbt-plugin-releases/org.portable-scala/sbt-platform-deps/scala_2.12/sbt_1.0/1.0.0/ivys/ivy.xml"/>
+				<caller organisation="com.thesamet" name="sbt-protoc" conf="compile" rev="1.0.0" rev-constraint-default="1.0.0" rev-constraint-dynamic="1.0.0" callerrev="0.99.21" extra-scalaVersion="2.12" extra-sbtVersion="1.0"/>
+				<artifacts>
+					<artifact name="sbt-platform-deps" type="jar" ext="jar" status="no" details="" size="15047" time="0" location="C:\Users\lucas\.ivy2\cache\scala_2.12\sbt_1.0\org.portable-scala\sbt-platform-deps\jars\sbt-platform-deps-1.0.0.jar">
+						<origin-location is-local="false" location="https://repo.scala-sbt.org/scalasbt/sbt-plugin-releases/org.portable-scala/sbt-platform-deps/scala_2.12/sbt_1.0/1.0.0/jars/sbt-platform-deps.jar"/>
+					</artifact>
+				</artifacts>
+			</revision>
+		</module>
+		<module organisation="org.scala-lang" name="scala-library">
+			<revision name="2.12.7" status="release" pubdate="20180927053542" resolver="sbt-chain" artresolver="sbt-chain" homepage="http://www.scala-lang.org/" extra-info.apiURL="http://www.scala-lang.org/api/2.12.7/" downloaded="false" searched="false" default="false" conf="compile, runtime(*), master(compile), runtime, compile(*), master" position="3">
+				<license name="BSD 3-Clause" url="http://www.scala-lang.org/license.html"/>
+				<metadata-artifact status="no" details="" size="2501" time="0" location="C:\Users\lucas\.ivy2\cache\org.scala-lang\scala-library\ivy-2.12.7.xml" searched="false" origin-is-local="false" origin-location="https://repo1.maven.org/maven2/org/scala-lang/scala-library/2.12.7/scala-library-2.12.7.pom"/>
+				<caller organisation="com.thesamet.scalapb" name="protoc-bridge_2.12" conf="compile, runtime" rev="2.12.7" rev-constraint-default="2.12.7" rev-constraint-dynamic="2.12.7" callerrev="0.7.7"/>
+				<caller organisation="com.thesamet.scalapb" name="compilerplugin_2.12" conf="default, compile, runtime, master" rev="2.12.7" rev-constraint-default="2.12.7" rev-constraint-dynamic="2.12.7" callerrev="0.9.0-M7"/>
+				<caller organisation="com.thesamet.scalapb" name="protoc-bridge_2.12" conf="default, compile, runtime, master" rev="2.12.7" rev-constraint-default="2.12.7" rev-constraint-dynamic="2.12.7" callerrev="0.7.6"/>
+				<artifacts>
+					<artifact name="scala-library" type="jar" ext="jar" status="no" details="" size="5277511" time="0" location="C:\Users\lucas\.ivy2\cache\org.scala-lang\scala-library\jars\scala-library-2.12.7.jar">
+						<origin-location is-local="false" location="UNKNOWN"/>
+					</artifact>
+				</artifacts>
+			</revision>
+		</module>
+	</dependencies>
+</ivy-report>
