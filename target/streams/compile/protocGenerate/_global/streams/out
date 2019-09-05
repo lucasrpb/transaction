@@ -1,0 +1,5 @@
+[info] Compiling 1 protobuf files to D:\Users\lucas\IdeaProjects\transaction\target\scala-2.12\src_managed\main
+[debug] protoc options:
+[info] Compiling schema D:\Users\lucas\IdeaProjects\transaction\src\main\protobuf\transaction.proto
+[info] Compiling protobuf
+[info] Protoc target directory: D:\Users\lucas\IdeaProjects\transaction\target\scala-2.12\src_managed\main
