@@ -1,7 +1,7 @@
 <component name="libraryTable">
   <library name="sbt: com.github.jnr:jffi:1.2.16:native:jar">
     <CLASSES>
-      <root url="jar://$USER_HOME$/.ivy2/cache/com.github.jnr/jffi/jars/jffi-1.2.16-native.jar!/" />
+      <root url="jar://$USER_HOME$/AppData/Local/Coursier/cache/v1/https/repo1.maven.org/maven2/com/github/jnr/jffi/1.2.16/jffi-1.2.16-native.jar!/" />
     </CLASSES>
     <JAVADOC />
     <SOURCES />
