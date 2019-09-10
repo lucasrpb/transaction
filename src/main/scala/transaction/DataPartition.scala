@@ -78,7 +78,7 @@ class DataPartition(val id: String)(implicit val ec: ExecutionContext) extends S
 
   val wb = new BatchStatement()
 
-  def updateBatch(id: String): Future[Boolean] = {
+  def updateBatch(id: String, size: Int): Future[Boolean] = {
     session.executeAsync(UPDATE_BATCH.bind.setString(0, id)).map(_.wasApplied())
   }
 
@@ -122,36 +122,32 @@ class DataPartition(val id: String)(implicit val ec: ExecutionContext) extends S
     session.executeAsync(wb).map(_.wasApplied())
   }
 
-  def run2(b: Batch, offset: Int): Future[Unit] = {
-
+  def run2(b: Batch): Future[Unit] = {
     println(s"partition ${id} processing batch ${b.id}\n")
+
+    val partitions = b.partitions
 
     val c = coordinators(b.coordinator)
     val txs = b.transactions
 
-    val partitions = b.partitions//.filterNot(_._2.id.equals(id))
-
     readBatch(b.id, partitions.size).flatMap { ok =>
-
       if(ok){
-
         Future.collect(txs.map{t => checkTx(t, txs).map(t -> _)}).flatMap { reads =>
           val conflicted = reads.filter(_._2 == false).map(_._1)
           val applied = reads.filter(_._2 == true).map(_._1)
 
-          write(applied).flatMap { ok =>
+          write(applied).map { _ =>
             c(PartitionResponse(id, conflicted.map(_.id), applied.map(_.id)))
-          }.map { _ =>
+
             consumer.commit()
             consumer.resume()
+
             Ack()
           }
         }
-
       } else {
-        run2(b, 0)
+        run2(b)
       }
-
     }
   }
 
@@ -172,8 +168,10 @@ class DataPartition(val id: String)(implicit val ec: ExecutionContext) extends S
 
     consumer.pause()
 
-    updateBatch(b.id).flatMap { ok =>
-      run2(b, 0)
+    updateBatch(b.id, partitions.size).flatMap { ok =>
+      run2(b)
+    }.handle { case t =>
+      t.printStackTrace()
     }
   }
 

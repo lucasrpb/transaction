@@ -1,4 +1,6 @@
-[0m[[0m[31merror[0m] [0m[0mD:\Users\lucas\IdeaProjects\transaction\src\main\scala\transaction\Coordinator.scala:71:5: not found: value BATCHES[0m
-[0m[[0m[31merror[0m] [0m[0m    BATCHES(b).flatMap { _ =>[0m
-[0m[[0m[31merror[0m] [0m[0m    ^[0m
+[0m[[0m[31merror[0m] [0m[0mD:\Users\lucas\IdeaProjects\transaction\src\main\scala\transaction\DataPartition.scala:136:10: type mismatch;[0m
+[0m[[0m[31merror[0m] [0m[0m found   : com.twitter.util.Future[transaction.Command][0m
+[0m[[0m[31merror[0m] [0m[0m required: com.twitter.util.Future[Unit][0m
+[0m[[0m[31merror[0m] [0m[0m        c(PartitionResponse(id, conflicted.map(_.id), applied.map(_.id)))[0m
+[0m[[0m[31merror[0m] [0m[0m         ^[0m
 [0m[[0m[31merror[0m] [0m[0mone error found[0m

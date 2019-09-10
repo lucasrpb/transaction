@@ -44,7 +44,7 @@ class Coordinator(val id: String, val host: String, val port: Int)(implicit val 
 
   val session = cluster.connect("mvcc")
 
-  //session.execute("truncate batches;")
+  session.execute("truncate batches;")
 
   val INSERT_BATCH = session.prepare("insert into batches(id, n) values(?,0);")
   val READ_DATA = session.prepare("select * from data where key=?;")
