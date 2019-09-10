@@ -1,7 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="28075c15-abbf-4ce2-951e-97b6bfe1c951" name="Default Changelist" comment="" />
+    <list default="true" id="28075c15-abbf-4ce2-951e-97b6bfe1c951" name="Default Changelist" comment="">
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/test/scala/transaction/MainSpec.scala" beforeDir="false" afterPath="$PROJECT_DIR$/src/test/scala/transaction/MainSpec.scala" afterDir="false" />
+    </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -99,7 +102,7 @@
       <workItem from="1567821702444" duration="5190000" />
       <workItem from="1567859137839" duration="17525000" />
       <workItem from="1568052636237" duration="18895000" />
-      <workItem from="1568075650772" duration="5240000" />
+      <workItem from="1568075650772" duration="5374000" />
     </task>
     <task id="LOCAL-00001" summary="first commit">
       <created>1567870508099</created>
@@ -129,7 +132,21 @@
       <option name="project" value="LOCAL" />
       <updated>1568080901537</updated>
     </task>
-    <option name="localTasksCounter" value="5" />
+    <task id="LOCAL-00005" summary="Parallel execution per partition...">
+      <created>1568080920967</created>
+      <option name="number" value="00005" />
+      <option name="presentableId" value="LOCAL-00005" />
+      <option name="project" value="LOCAL" />
+      <updated>1568080920967</updated>
+    </task>
+    <task id="LOCAL-00006" summary="Parallel execution per partition...">
+      <created>1568080935763</created>
+      <option name="number" value="00006" />
+      <option name="presentableId" value="LOCAL-00006" />
+      <option name="project" value="LOCAL" />
+      <updated>1568080935763</updated>
+    </task>
+    <option name="localTasksCounter" value="7" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
