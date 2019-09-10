@@ -1,4 +1,2 @@
-[debug] Acquiring lock on file D:\Users\lucas\IdeaProjects\transaction\project\target\.sbt-compilation-infos\transaction-compile\.sbt-idea-lock ...
-[warn] there were two feature warnings; re-run with -feature for details
-[warn] one warning found
-[debug] Releasing lock on file D:\Users\lucas\IdeaProjects\transaction\project\target\.sbt-compilation-infos\transaction-compile\.sbt-idea-lock.
+[0m[[0m[33mwarn[0m] [0m[0mthere were two feature warnings; re-run with -feature for details[0m
+[0m[[0m[33mwarn[0m] [0m[0mone warning found[0m

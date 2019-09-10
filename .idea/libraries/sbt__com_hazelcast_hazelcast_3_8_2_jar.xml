@@ -1,13 +1,11 @@
 <component name="libraryTable">
   <library name="sbt: com.hazelcast:hazelcast:3.8.2:jar">
     <CLASSES>
-      <root url="jar://$USER_HOME$/AppData/Local/Coursier/cache/v1/https/repo1.maven.org/maven2/com/hazelcast/hazelcast/3.8.2/hazelcast-3.8.2.jar!/" />
+      <root url="jar://$USER_HOME$/.ivy2/cache/com.hazelcast/hazelcast/jars/hazelcast-3.8.2.jar!/" />
     </CLASSES>
-    <JAVADOC>
-      <root url="jar://$USER_HOME$/AppData/Local/Coursier/cache/v1/https/repo1.maven.org/maven2/com/hazelcast/hazelcast/3.8.2/hazelcast-3.8.2-javadoc.jar!/" />
-    </JAVADOC>
+    <JAVADOC />
     <SOURCES>
-      <root url="jar://$USER_HOME$/AppData/Local/Coursier/cache/v1/https/repo1.maven.org/maven2/com/hazelcast/hazelcast/3.8.2/hazelcast-3.8.2-sources.jar!/" />
+      <root url="jar://$USER_HOME$/.ivy2/cache/com.hazelcast/hazelcast/srcs/hazelcast-3.8.2-sources.jar!/" />
     </SOURCES>
   </library>
 </component>

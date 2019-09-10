@@ -1,13 +1,11 @@
 <component name="libraryTable">
   <library name="sbt: com.github.jnr:jnr-posix:3.0.44:jar">
     <CLASSES>
-      <root url="jar://$USER_HOME$/AppData/Local/Coursier/cache/v1/https/repo1.maven.org/maven2/com/github/jnr/jnr-posix/3.0.44/jnr-posix-3.0.44.jar!/" />
+      <root url="jar://$USER_HOME$/.ivy2/cache/com.github.jnr/jnr-posix/jars/jnr-posix-3.0.44.jar!/" />
     </CLASSES>
-    <JAVADOC>
-      <root url="jar://$USER_HOME$/AppData/Local/Coursier/cache/v1/https/repo1.maven.org/maven2/com/github/jnr/jnr-posix/3.0.44/jnr-posix-3.0.44-javadoc.jar!/" />
-    </JAVADOC>
+    <JAVADOC />
     <SOURCES>
-      <root url="jar://$USER_HOME$/AppData/Local/Coursier/cache/v1/https/repo1.maven.org/maven2/com/github/jnr/jnr-posix/3.0.44/jnr-posix-3.0.44-sources.jar!/" />
+      <root url="jar://$USER_HOME$/.ivy2/cache/com.github.jnr/jnr-posix/srcs/jnr-posix-3.0.44-sources.jar!/" />
     </SOURCES>
   </library>
 </component>

@@ -4,7 +4,7 @@ name := "transaction"
 
 version := "0.1"
 
-scalaVersion := "2.12.8"
+scalaVersion := "2.12.9"
 
 resolvers ++= Seq(
   Resolver.sonatypeRepo("releases"),

@@ -18,10 +18,12 @@ class InsertSpec extends FlatSpec {
     val session = cluster.connect("mvcc")
 
     val INSERT_DATA = session.prepare("insert into data(key, value, version) values(?,?,?);")
+    val INSERT_OFFSETS = session.prepare("insert into offsets(id, offset) values(?,0);")
 
     var tasks = Seq.empty[Future[ResultSet]]
 
     val n = 1000
+    val m = 100
 
     val rand = ThreadLocalRandom.current()
     val MAX_VALUE = 1000L
@@ -30,6 +32,10 @@ class InsertSpec extends FlatSpec {
 
     for(i<-0 until n){
       session.execute(INSERT_DATA.bind.setString(0, i.toString).setLong(1, rand.nextLong(0, MAX_VALUE)).setString(2, tid))
+    }
+
+    for(i<-0 until m){
+      session.execute(INSERT_OFFSETS.bind.setString(0, i.toString))
     }
 
     /*val READ_DATA = session.prepare("select sum(value) from data;")

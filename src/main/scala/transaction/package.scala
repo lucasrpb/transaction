@@ -1,3 +1,6 @@
+import java.util
+import java.util.Collections
+import java.util.concurrent.{ConcurrentLinkedDeque, CopyOnWriteArrayList}
 import java.util.concurrent.atomic.AtomicInteger
 
 import com.google.common.util.concurrent.{FutureCallback, Futures, ListenableFuture}
@@ -12,6 +15,7 @@ import io.netty.channel.ChannelHandlerContext
 import io.netty.handler.codec.{MessageToMessageDecoder, MessageToMessageEncoder}
 import transaction.protocol._
 
+import scala.collection.concurrent.TrieMap
 import scala.concurrent.ExecutionContext
 import scala.util.{Failure, Success}
 
@@ -25,7 +29,7 @@ package object transaction {
     val PENDING = 2
   }
 
-  val NPARTITIONS = 1000
+  //val NPARTITIONS = 10
 
   implicit def sfToTwitterFuture[T](tf: scala.concurrent.Future[T])(implicit ec: ExecutionContext): Future[T] = {
     val p = Promise[T]
@@ -79,17 +83,18 @@ package object transaction {
       msg match {
         case cmd: Ack => out.add(buf.writeBytes(Any.pack(cmd).toByteArray))
         case cmd: Nack => out.add(buf.writeBytes(Any.pack(cmd).toByteArray))
-        case cmd: Read => out.add(buf.writeBytes(Any.pack(cmd).toByteArray))
-        case cmd: ReadResult => out.add(buf.writeBytes(Any.pack(cmd).toByteArray))
+        case cmd: ReadRequest => out.add(buf.writeBytes(Any.pack(cmd).toByteArray))
+        case cmd: ReadResponse => out.add(buf.writeBytes(Any.pack(cmd).toByteArray))
         case cmd: Transaction => out.add(buf.writeBytes(Any.pack(cmd).toByteArray))
         case cmd: Batch => out.add(buf.writeBytes(Any.pack(cmd).toByteArray))
-        case cmd: VersionedValue => out.add(buf.writeBytes(Any.pack(cmd).toByteArray))
+        case cmd: MVCCVersion => out.add(buf.writeBytes(Any.pack(cmd).toByteArray))
         case cmd: PartitionResponse => out.add(buf.writeBytes(Any.pack(cmd).toByteArray))
-        case cmd: PartitionRequest => out.add(buf.writeBytes(Any.pack(cmd).toByteArray))
-        case cmd: PartitionRelease => out.add(buf.writeBytes(Any.pack(cmd).toByteArray))
         case cmd: Epoch => out.add(buf.writeBytes(Any.pack(cmd).toByteArray))
-        case cmd: GetOffset => out.add(buf.writeBytes(Any.pack(cmd).toByteArray))
-        case cmd: OffsetResult => out.add(buf.writeBytes(Any.pack(cmd).toByteArray))
+        case cmd: RequestOffset => out.add(buf.writeBytes(Any.pack(cmd).toByteArray))
+        case cmd: ResponseOffset => out.add(buf.writeBytes(Any.pack(cmd).toByteArray))
+        case cmd: GetBatch => out.add(buf.writeBytes(Any.pack(cmd).toByteArray))
+        case cmd: GetBatchResponse => out.add(buf.writeBytes(Any.pack(cmd).toByteArray))
+        case cmd: IncBatch => out.add(buf.writeBytes(Any.pack(cmd).toByteArray))
       }
 
       buf.release()
@@ -105,17 +110,18 @@ package object transaction {
       p match {
         case _ if p.is(Ack) => out.add(p.unpack(Ack))
         case _ if p.is(Nack) => out.add(p.unpack(Nack))
-        case _ if p.is(Read) => out.add(p.unpack(Read))
-        case _ if p.is(ReadResult) => out.add(p.unpack(ReadResult))
+        case _ if p.is(ReadRequest) => out.add(p.unpack(ReadRequest))
+        case _ if p.is(ReadResponse) => out.add(p.unpack(ReadResponse))
         case _ if p.is(Transaction) => out.add(p.unpack(Transaction))
         case _ if p.is(Batch) => out.add(p.unpack(Batch))
-        case _ if p.is(VersionedValue) => out.add(p.unpack(VersionedValue))
-        case _ if p.is(PartitionRequest) => out.add(p.unpack(PartitionRequest))
-        case _ if p.is(PartitionRelease) => out.add(p.unpack(PartitionRelease))
+        case _ if p.is(MVCCVersion) => out.add(p.unpack(MVCCVersion))
         case _ if p.is(PartitionResponse) => out.add(p.unpack(PartitionResponse))
         case _ if p.is(Epoch) => out.add(p.unpack(Epoch))
-        case _ if p.is(GetOffset) => out.add(p.unpack(GetOffset))
-        case _ if p.is(OffsetResult) => out.add(p.unpack(OffsetResult))
+        case _ if p.is(RequestOffset) => out.add(p.unpack(RequestOffset))
+        case _ if p.is(ResponseOffset) => out.add(p.unpack(ResponseOffset))
+        case _ if p.is(GetBatch) => out.add(p.unpack(GetBatch))
+        case _ if p.is(GetBatchResponse) => out.add(p.unpack(GetBatchResponse))
+        case _ if p.is(IncBatch) => out.add(p.unpack(IncBatch))
       }
 
     }

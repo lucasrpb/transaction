@@ -1,13 +1,11 @@
 <component name="libraryTable">
   <library name="sbt: io.netty:netty-codec-dns:4.1.15.Final:jar">
     <CLASSES>
-      <root url="jar://$USER_HOME$/AppData/Local/Coursier/cache/v1/https/repo1.maven.org/maven2/io/netty/netty-codec-dns/4.1.15.Final/netty-codec-dns-4.1.15.Final.jar!/" />
+      <root url="jar://$USER_HOME$/.ivy2/cache/io.netty/netty-codec-dns/jars/netty-codec-dns-4.1.15.Final.jar!/" />
     </CLASSES>
-    <JAVADOC>
-      <root url="jar://$USER_HOME$/AppData/Local/Coursier/cache/v1/https/repo1.maven.org/maven2/io/netty/netty-codec-dns/4.1.15.Final/netty-codec-dns-4.1.15.Final-javadoc.jar!/" />
-    </JAVADOC>
+    <JAVADOC />
     <SOURCES>
-      <root url="jar://$USER_HOME$/AppData/Local/Coursier/cache/v1/https/repo1.maven.org/maven2/io/netty/netty-codec-dns/4.1.15.Final/netty-codec-dns-4.1.15.Final-sources.jar!/" />
+      <root url="jar://$USER_HOME$/.ivy2/cache/io.netty/netty-codec-dns/srcs/netty-codec-dns-4.1.15.Final-sources.jar!/" />
     </SOURCES>
   </library>
 </component>

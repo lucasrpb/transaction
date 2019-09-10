@@ -2,8 +2,12 @@ package transaction
 
 import java.util.UUID
 import java.util.concurrent.ThreadLocalRandom
+import java.util.concurrent.atomic.AtomicInteger
 
 import com.twitter.util.{Await, Future}
+import io.vertx.core.AsyncResult
+import io.vertx.scala.core.Vertx
+import io.vertx.scala.kafka.admin.AdminUtils
 import org.scalatest.FlatSpec
 import transaction.protocol._
 
@@ -23,7 +27,9 @@ class MainSpec extends FlatSpec {
 
     var clients = Seq.empty[Client]
 
-    for(i<-0 until 1000){
+    val counter = new AtomicInteger(0)
+
+    for(i<-0 until 1500){
 
       val tid = UUID.randomUUID.toString
       val k1 = rand.nextInt(0, nAcc).toString
@@ -41,8 +47,8 @@ class MainSpec extends FlatSpec {
           val k1 = keys.head
           val k2 = keys.last
 
-          var b1 = reads(k1).value
-          var b2 = reads(k2).value
+          var b1 = reads(k1).v
+          var b2 = reads(k2).v
 
           if(b1 > 0){
             val ammount = if(b1 == 1) 1 else rand.nextLong(1, b1)
@@ -51,7 +57,7 @@ class MainSpec extends FlatSpec {
             b2 = b2 + ammount
           }
 
-          Map(k1 -> VersionedValue(tid, b1), k2 -> VersionedValue(tid, b2))
+          Map(k1 -> MVCCVersion(k1, b1, tid), k2 -> MVCCVersion(k2, b2, tid))
         }
       }
     }

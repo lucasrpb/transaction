@@ -7,9 +7,8 @@ import com.datastax.driver.core.{Cluster, Session}
 import com.google.protobuf.any.Any
 import com.twitter.finagle.Service
 import com.twitter.util.{Future, Timer}
-import transaction.protocol._
 import com.twitter.conversions.DurationOps._
-
+import transaction.protocol._
 import scala.collection.concurrent.TrieMap
 import scala.concurrent.ExecutionContext
 
@@ -23,15 +22,15 @@ class Client(val id: String, val numExecutors: Int)(implicit val ec: ExecutionCo
 
   implicit val timer = new com.twitter.util.JavaTimer()
 
-  def execute(tid: String, keys: Seq[String])(f: ((String, Map[String, VersionedValue])) => Map[String, VersionedValue]): Future[Boolean] = {
+  def execute(tid: String, keys: Seq[String])(f: ((String, Map[String, MVCCVersion])) => Map[String, MVCCVersion]): Future[Boolean] = {
 
     val conn = coordinators(rand.nextInt(0, coordinators.size).toString)
 
-    conn(Read(keys)).flatMap { r =>
-      val reads = r.asInstanceOf[ReadResult].values
-      val writes = f(tid -> reads)
+    conn(ReadRequest(keys)).flatMap { r =>
+      val reads = r.asInstanceOf[ReadResponse].values
+      val writes = f(tid -> reads.map(v => v.k -> v).toMap)
 
-      val tx = Transaction(tid, reads, writes)
+      val tx = Transaction(tid, reads, writes.map(_._2).toSeq)
 
       conn(tx).map {
         _ match {
@@ -43,7 +42,7 @@ class Client(val id: String, val numExecutors: Int)(implicit val ec: ExecutionCo
             false
         }
       }
-    }//.within(5 seconds)
+    }
   }
 
   def close(): Future[Boolean] = {

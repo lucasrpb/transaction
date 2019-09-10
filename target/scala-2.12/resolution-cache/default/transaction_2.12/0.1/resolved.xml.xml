@@ -4,7 +4,7 @@
 		module="transaction_2.12"
 		revision="0.1"
 		status="integration"
-		publication="20190831171149"
+		publication="20190906230058"
 	>
 		<description>
 		transaction
@@ -31,9 +31,9 @@
 		<artifact name="transaction_2.12" type="doc" ext="jar" conf="compile" e:classifier="javadoc"/>
 	</publications>
 	<dependencies>
-		<dependency org="org.scala-lang" name="scala-compiler" rev="2.12.8" conf="scala-tool->default,optional(default)"/>
-		<dependency org="org.scala-lang" name="scala-library" rev="2.12.8" conf="scala-tool->default,optional(default);compile->default(compile)"/>
-		<dependency org="com.thesamet.scalapb" name="scalapb-runtime_2.12" rev="0.9.0-M7" conf="compile->default(compile);protobuf->default(compile)"/>
+		<dependency org="org.scala-lang" name="scala-compiler" rev="2.12.9" conf="scala-tool->default,optional(default)"/>
+		<dependency org="org.scala-lang" name="scala-library" rev="2.12.9" conf="scala-tool->default,optional(default);compile->default(compile)"/>
+		<dependency org="com.thesamet.scalapb" name="scalapb-runtime_2.12" rev="0.9.0" conf="compile->default(compile);protobuf->default(compile)"/>
 		<dependency org="org.scalactic" name="scalactic_2.12" rev="3.0.5" conf="compile->default(compile)"/>
 		<dependency org="org.scalatest" name="scalatest_2.12" rev="3.0.5" conf="test->default(compile)"/>
 		<dependency org="com.google.guava" name="guava" rev="27.1-jre" conf="compile->default(compile)"/>

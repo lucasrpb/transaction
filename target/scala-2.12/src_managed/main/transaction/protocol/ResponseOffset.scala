@@ -6,9 +6,9 @@
 package transaction.protocol
 
 @SerialVersionUID(0L)
-final case class OffsetResult(
+final case class ResponseOffset(
     offset: _root_.scala.Long = 0L
-    ) extends scalapb.GeneratedMessage with scalapb.Message[OffsetResult] with scalapb.lenses.Updatable[OffsetResult] with transaction.Command {
+    ) extends scalapb.GeneratedMessage with scalapb.Message[ResponseOffset] with scalapb.lenses.Updatable[ResponseOffset] with transaction.Command {
     @transient
     private[this] var __serializedSizeCachedValue: _root_.scala.Int = 0
     private[this] def __computeSerializedValue(): _root_.scala.Int = {
@@ -38,7 +38,7 @@ final case class OffsetResult(
         }
       };
     }
-    def mergeFrom(`_input__`: _root_.com.google.protobuf.CodedInputStream): transaction.protocol.OffsetResult = {
+    def mergeFrom(`_input__`: _root_.com.google.protobuf.CodedInputStream): transaction.protocol.ResponseOffset = {
       var __offset = this.offset
       var _done__ = false
       while (!_done__) {
@@ -50,11 +50,11 @@ final case class OffsetResult(
           case tag => _input__.skipField(tag)
         }
       }
-      transaction.protocol.OffsetResult(
+      transaction.protocol.ResponseOffset(
           offset = __offset
       )
     }
-    def withOffset(__v: _root_.scala.Long): OffsetResult = copy(offset = __v)
+    def withOffset(__v: _root_.scala.Long): ResponseOffset = copy(offset = __v)
     def getFieldByNumber(__fieldNumber: _root_.scala.Int): _root_.scala.Any = {
       (__fieldNumber: @_root_.scala.unchecked) match {
         case 1 => {
@@ -70,40 +70,40 @@ final case class OffsetResult(
       }
     }
     def toProtoString: _root_.scala.Predef.String = _root_.scalapb.TextFormat.printToUnicodeString(this)
-    def companion = transaction.protocol.OffsetResult
+    def companion = transaction.protocol.ResponseOffset
 }
 
-object OffsetResult extends scalapb.GeneratedMessageCompanion[transaction.protocol.OffsetResult] with transaction.Command {
-  implicit def messageCompanion: scalapb.GeneratedMessageCompanion[transaction.protocol.OffsetResult] with transaction.Command = this
-  def fromFieldsMap(__fieldsMap: scala.collection.immutable.Map[_root_.com.google.protobuf.Descriptors.FieldDescriptor, _root_.scala.Any]): transaction.protocol.OffsetResult = {
+object ResponseOffset extends scalapb.GeneratedMessageCompanion[transaction.protocol.ResponseOffset] with transaction.Command {
+  implicit def messageCompanion: scalapb.GeneratedMessageCompanion[transaction.protocol.ResponseOffset] with transaction.Command = this
+  def fromFieldsMap(__fieldsMap: scala.collection.immutable.Map[_root_.com.google.protobuf.Descriptors.FieldDescriptor, _root_.scala.Any]): transaction.protocol.ResponseOffset = {
     _root_.scala.Predef.require(__fieldsMap.keys.forall(_.getContainingType() == javaDescriptor), "FieldDescriptor does not match message type.")
     val __fields = javaDescriptor.getFields
-    transaction.protocol.OffsetResult(
+    transaction.protocol.ResponseOffset(
       __fieldsMap.getOrElse(__fields.get(0), 0L).asInstanceOf[_root_.scala.Long]
     )
   }
-  implicit def messageReads: _root_.scalapb.descriptors.Reads[transaction.protocol.OffsetResult] = _root_.scalapb.descriptors.Reads{
+  implicit def messageReads: _root_.scalapb.descriptors.Reads[transaction.protocol.ResponseOffset] = _root_.scalapb.descriptors.Reads{
     case _root_.scalapb.descriptors.PMessage(__fieldsMap) =>
       _root_.scala.Predef.require(__fieldsMap.keys.forall(_.containingMessage == scalaDescriptor), "FieldDescriptor does not match message type.")
-      transaction.protocol.OffsetResult(
+      transaction.protocol.ResponseOffset(
         __fieldsMap.get(scalaDescriptor.findFieldByNumber(1).get).map(_.as[_root_.scala.Long]).getOrElse(0L)
       )
     case _ => throw new RuntimeException("Expected PMessage")
   }
-  def javaDescriptor: _root_.com.google.protobuf.Descriptors.Descriptor = TransactionProto.javaDescriptor.getMessageTypes.get(8)
-  def scalaDescriptor: _root_.scalapb.descriptors.Descriptor = TransactionProto.scalaDescriptor.messages(8)
+  def javaDescriptor: _root_.com.google.protobuf.Descriptors.Descriptor = TransactionProto.javaDescriptor.getMessageTypes.get(14)
+  def scalaDescriptor: _root_.scalapb.descriptors.Descriptor = TransactionProto.scalaDescriptor.messages(14)
   def messageCompanionForFieldNumber(__number: _root_.scala.Int): _root_.scalapb.GeneratedMessageCompanion[_] = throw new MatchError(__number)
   lazy val nestedMessagesCompanions: Seq[_root_.scalapb.GeneratedMessageCompanion[_ <: _root_.scalapb.GeneratedMessage]] = Seq.empty
   def enumCompanionForFieldNumber(__fieldNumber: _root_.scala.Int): _root_.scalapb.GeneratedEnumCompanion[_] = throw new MatchError(__fieldNumber)
-  lazy val defaultInstance = transaction.protocol.OffsetResult(
+  lazy val defaultInstance = transaction.protocol.ResponseOffset(
   )
-  implicit class OffsetResultLens[UpperPB](_l: _root_.scalapb.lenses.Lens[UpperPB, transaction.protocol.OffsetResult]) extends _root_.scalapb.lenses.ObjectLens[UpperPB, transaction.protocol.OffsetResult](_l) {
+  implicit class ResponseOffsetLens[UpperPB](_l: _root_.scalapb.lenses.Lens[UpperPB, transaction.protocol.ResponseOffset]) extends _root_.scalapb.lenses.ObjectLens[UpperPB, transaction.protocol.ResponseOffset](_l) {
     def offset: _root_.scalapb.lenses.Lens[UpperPB, _root_.scala.Long] = field(_.offset)((c_, f_) => c_.copy(offset = f_))
   }
   final val OFFSET_FIELD_NUMBER = 1
   def of(
     offset: _root_.scala.Long
-  ): _root_.transaction.protocol.OffsetResult = _root_.transaction.protocol.OffsetResult(
+  ): _root_.transaction.protocol.ResponseOffset = _root_.transaction.protocol.ResponseOffset(
     offset
   )
 }

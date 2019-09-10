@@ -8,13 +8,46 @@ option (scalapb.options) = {
   flat_package: true
 };
 
+message Ack {
+    option (scalapb.message).extends = "transaction.Command";
+    option (scalapb.message).companion_extends = "transaction.Command";
+}
+
+message Nack {
+    option (scalapb.message).extends = "transaction.Command";
+    option (scalapb.message).companion_extends = "transaction.Command";
+}
+
+message MVCCVersion {
+    option (scalapb.message).extends = "transaction.Command";
+    option (scalapb.message).companion_extends = "transaction.Command";
+
+    string k = 1;
+    uint64 v = 2;
+    string version = 3;
+}
+
+message ReadRequest {
+    option (scalapb.message).extends = "transaction.Command";
+    option (scalapb.message).companion_extends = "transaction.Command";
+
+    repeated string keys = 1;
+}
+
+message ReadResponse {
+    option (scalapb.message).extends = "transaction.Command";
+    option (scalapb.message).companion_extends = "transaction.Command";
+
+    repeated MVCCVersion values = 1;
+}
+
 message Transaction {
     option (scalapb.message).extends = "transaction.Command";
     option (scalapb.message).companion_extends = "transaction.Command";
 
     string id = 1;
-    map<string, VersionedValue> rs = 2;
-    map<string, VersionedValue> ws = 3;
+    repeated MVCCVersion rs = 2;
+    repeated MVCCVersion ws = 3;
 }
 
 message Partition {
@@ -34,31 +67,35 @@ message PartitionResponse {
     repeated string applied = 3;
 }
 
-message PartitionRequest {
-    option (scalapb.message).extends = "transaction.Command";
-    option (scalapb.message).companion_extends = "transaction.Command";
-
-    string id = 1;
-    repeated string partitions = 2;
-}
-
-message PartitionRelease {
-    option (scalapb.message).extends = "transaction.Command";
-    option (scalapb.message).companion_extends = "transaction.Command";
-
-    string id = 1;
-    repeated string partitions = 2;
-}
-
 message Batch {
     option (scalapb.message).extends = "transaction.Command";
     option (scalapb.message).companion_extends = "transaction.Command";
 
     string id = 1;
-    string coordinator = 2;
-    map<string, Transaction> transactions = 3;
-    map<string, Partition> partitions = 4;
-    uint32 total = 5;
+    repeated Transaction transactions = 2;
+    map<string, Partition> partitions = 3;
+    string coordinator = 4;
+}
+
+message GetBatch {
+    option (scalapb.message).extends = "transaction.Command";
+    option (scalapb.message).companion_extends = "transaction.Command";
+
+    string id = 1;
+}
+
+message IncBatch {
+    option (scalapb.message).extends = "transaction.Command";
+    option (scalapb.message).companion_extends = "transaction.Command";
+
+    string id = 1;
+}
+
+message GetBatchResponse {
+    option (scalapb.message).extends = "transaction.Command";
+    option (scalapb.message).companion_extends = "transaction.Command";
+
+    uint32 count = 1;
 }
 
 message Epoch {
@@ -66,49 +103,17 @@ message Epoch {
     option (scalapb.message).companion_extends = "transaction.Command";
 
     string id = 1;
-    repeated string batches = 2;
+    repeated Batch batches = 2;
 }
 
-message GetOffset {
+message RequestOffset {
     option (scalapb.message).extends = "transaction.Command";
     option (scalapb.message).companion_extends = "transaction.Command";
 }
 
-message OffsetResult {
+message ResponseOffset {
     option (scalapb.message).extends = "transaction.Command";
     option (scalapb.message).companion_extends = "transaction.Command";
 
     uint64 offset = 1;
-}
-
-message Ack {
-    option (scalapb.message).extends = "transaction.Command";
-    option (scalapb.message).companion_extends = "transaction.Command";
-}
-
-message Read {
-    option (scalapb.message).extends = "transaction.Command";
-    option (scalapb.message).companion_extends = "transaction.Command";
-
-    repeated string keys = 1;
-}
-
-message VersionedValue {
-    option (scalapb.message).extends = "transaction.Command";
-    option (scalapb.message).companion_extends = "transaction.Command";
-
-    string version = 1;
-    uint64 value = 2;
-}
-
-message ReadResult {
-    option (scalapb.message).extends = "transaction.Command";
-    option (scalapb.message).companion_extends = "transaction.Command";
-
-    map<string, VersionedValue > values = 1;
-}
-
-message Nack {
-    option (scalapb.message).extends = "transaction.Command";
-    option (scalapb.message).companion_extends = "transaction.Command";
 }

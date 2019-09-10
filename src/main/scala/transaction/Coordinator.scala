@@ -1,8 +1,7 @@
 package transaction
 
-import java.nio.ByteBuffer
 import java.util.concurrent.ConcurrentLinkedQueue
-import java.util.concurrent.atomic.{AtomicBoolean, AtomicInteger}
+import java.util.concurrent.atomic.AtomicInteger
 import java.util.{Timer, TimerTask, UUID}
 
 import com.datastax.driver.core.{Cluster, HostDistance, PoolingOptions}
@@ -45,33 +44,31 @@ class Coordinator(val id: String, val host: String, val port: Int)(implicit val 
 
   val session = cluster.connect("mvcc")
 
-  session.execute("truncate batches;")
+  //session.execute("truncate batches;")
 
-  val INSERT_BATCH = session.prepare("insert into batches(id, total, n, bin) values(?,?,?,?);")
+  //val INSERT_BATCH = session.prepare("insert into batches(id, total, n, bin) values(?,?,?,?);")
   val READ_DATA = session.prepare("select * from data where key=?;")
 
   case class Request(id: String, t: Transaction, tmp: Long = System.currentTimeMillis()){
     val p = Promise[Command]()
 
-    val rs: Seq[String] = t.rs.map(_._1).toSeq
-    val ws: Seq[String] = t.ws.map(_._1).toSeq
+    val rs: Seq[String] = t.rs.map(_.k)
+    val ws: Seq[String] = t.ws.map(_.k)
 
-    val partitions = (rs ++ ws).distinct.map(k => (k.toInt % NPARTITIONS).toString)
+    val partitions = (rs ++ ws).distinct.map(k => (k.toInt % DataPartitionMain.n).toString)
   }
 
   val batch = new ConcurrentLinkedQueue[Request]()
   val executing = TrieMap[String, Request]()
+  val BATCHES = createConnection("127.0.0.1", 5000)
 
   val timer = new Timer()
 
-  def insertBatch(b: Batch): Future[Boolean] = {
-    session.executeAsync(INSERT_BATCH.bind.setString(0, b.id).setInt(1, b.partitions.size).setInt(2, 0)
-      .setBytes(3, ByteBuffer.wrap(Any.pack(b).toByteArray))).map(_.wasApplied())
-  }
-
   def log(b: Batch): Future[Boolean] = {
-    val record = KafkaProducerRecord.create[String, Array[Byte]]("log", b.id, b.id.getBytes)
-    producer.writeFuture(record).map(_ => true)
+    BATCHES(b).flatMap { _ =>
+      val record = KafkaProducerRecord.create[String, Array[Byte]]("log", b.id, Any.pack(b).toByteArray)
+      producer.writeFuture(record).map(_ => true)
+    }
   }
 
   class Job extends TimerTask {
@@ -126,9 +123,9 @@ class Coordinator(val id: String, val host: String, val port: Int)(implicit val 
         }
       }
 
-      val b = Batch(UUID.randomUUID.toString, id, txs.map(r => r.id -> r.t).toMap, partitions, partitions.size)
+      val b = Batch(UUID.randomUUID.toString, txs.map(_.t), partitions, id)
 
-      insertBatch(b).flatMap(ok1 => log(b).map(ok1 && _)).map { ok =>
+      log(b).map { ok =>
         if(ok) {
           txs.foreach { r =>
             executing.put(r.id, r)
@@ -152,7 +149,6 @@ class Coordinator(val id: String, val host: String, val port: Int)(implicit val 
           this.run()
         }
       }
-
     }
   }
 
@@ -164,15 +160,15 @@ class Coordinator(val id: String, val host: String, val port: Int)(implicit val 
     req.p
   }
 
-  def read(key: String): Future[(String, VersionedValue)] = {
+  def read(key: String): Future[MVCCVersion] = {
     session.executeAsync(READ_DATA.bind.setString(0, key)).map { rs =>
       val one = rs.one()
-      key -> VersionedValue(one.getString("version"), one.getLong("value"))
+      MVCCVersion(one.getString("key"), one.getLong("value"), one.getString("version"))
     }
   }
 
-  def process(r: Read): Future[Command] = {
-    Future.collect(r.keys.map{read(_)}).map(r => ReadResult(r.toMap))
+  def process(r: ReadRequest): Future[Command] = {
+    Future.collect(r.keys.map{read(_)}).map(r => ReadResponse(r))
   }
 
   def process(pr: PartitionResponse): Future[Command] = {
@@ -199,7 +195,7 @@ class Coordinator(val id: String, val host: String, val port: Int)(implicit val 
   override def apply(request: Command): Future[Command] = {
     request match {
       case cmd: Transaction => process(cmd)
-      case cmd: Read => process(cmd)
+      case cmd: ReadRequest => process(cmd)
       case cmd: PartitionResponse => process(cmd)
     }
   }

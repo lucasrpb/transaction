@@ -3,7 +3,7 @@ object Dependencies {
   import sbt._
 
   object Version {
-    final val Scala     = "2.12.8"
+    final val Scala     = "2.12.9"
     final val ScalaTest = "3.0.3"
     final val Vertx     = "3.5.0"
   }
