@@ -1,1 +1,1 @@
-["transaction.BatchMain","transaction.CoordinatorMain","transaction.DataPartitionMain"]
+["transaction.CoordinatorMain","transaction.DataPartitionMain"]

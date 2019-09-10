@@ -52,12 +52,13 @@ class DataPartition(val id: String)(implicit val ec: ExecutionContext) extends S
   }
 
   var PARTITIONS = Map.empty[String, Service[Command, Command]]
-  val BATCHES = createConnection("127.0.0.1", 5000)
 
   val UPDATE_DATA = session.prepare("update data set value=?, version=? where key=?;")
   val READ_DATA = session.prepare("select * from data where key=?;")
   val READ_OFFSET = session.prepare("select offset from offsets where id=?;")
   val UPDATE_OFFSET = session.prepare("update offsets set offset = offset + 1 where id=?;")
+  val READ_BATCH = session.prepare("select n from batches where id=?;")
+  val UPDATE_BATCH = session.prepare("update batches set n = n + 1 where id=?;")
 
   def readKey(k: String, v: MVCCVersion, tx: String): Future[Boolean] = {
     session.executeAsync(READ_DATA.bind.setString(0, k)).map{rs =>
@@ -76,6 +77,16 @@ class DataPartition(val id: String)(implicit val ec: ExecutionContext) extends S
   }
 
   val wb = new BatchStatement()
+
+  def updateBatch(id: String): Future[Boolean] = {
+    session.executeAsync(UPDATE_BATCH.bind.setString(0, id)).map(_.wasApplied())
+  }
+
+  def readBatch(id: String, size: Int): Future[Boolean] = {
+    session.executeAsync(READ_BATCH.bind.setString(0, id)).map { rs =>
+      rs.one.getInt("n") == size
+    }
+  }
 
   def writeTx(t: Transaction): Future[Boolean] = {
     wb.clear()
@@ -120,10 +131,9 @@ class DataPartition(val id: String)(implicit val ec: ExecutionContext) extends S
 
     val partitions = b.partitions//.filterNot(_._2.id.equals(id))
 
-    BATCHES.apply(GetBatch(b.id)).flatMap { r =>
-      val res = r.asInstanceOf[GetBatchResponse].count
+    readBatch(b.id, partitions.size).flatMap { ok =>
 
-      if(res == partitions.size){
+      if(ok){
 
         Future.collect(txs.map{t => checkTx(t, txs).map(t -> _)}).flatMap { reads =>
           val conflicted = reads.filter(_._2 == false).map(_._1)
@@ -162,7 +172,7 @@ class DataPartition(val id: String)(implicit val ec: ExecutionContext) extends S
 
     consumer.pause()
 
-    BATCHES(IncBatch(b.id)).flatMap { _ =>
+    updateBatch(b.id).flatMap { ok =>
       run2(b, 0)
     }
   }

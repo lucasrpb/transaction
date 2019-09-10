@@ -46,7 +46,7 @@ class Coordinator(val id: String, val host: String, val port: Int)(implicit val 
 
   //session.execute("truncate batches;")
 
-  //val INSERT_BATCH = session.prepare("insert into batches(id, total, n, bin) values(?,?,?,?);")
+  val INSERT_BATCH = session.prepare("insert into batches(id, n) values(?,0);")
   val READ_DATA = session.prepare("select * from data where key=?;")
 
   case class Request(id: String, t: Transaction, tmp: Long = System.currentTimeMillis()){
@@ -60,15 +60,16 @@ class Coordinator(val id: String, val host: String, val port: Int)(implicit val 
 
   val batch = new ConcurrentLinkedQueue[Request]()
   val executing = TrieMap[String, Request]()
-  val BATCHES = createConnection("127.0.0.1", 5000)
 
   val timer = new Timer()
 
+  def insert(b: Batch): Future[Boolean] = {
+    session.executeAsync(INSERT_BATCH.bind.setString(0, b.id)).map(_.wasApplied())
+  }
+
   def log(b: Batch): Future[Boolean] = {
-    BATCHES(b).flatMap { _ =>
-      val record = KafkaProducerRecord.create[String, Array[Byte]]("log", b.id, Any.pack(b).toByteArray)
-      producer.writeFuture(record).map(_ => true)
-    }
+    val record = KafkaProducerRecord.create[String, Array[Byte]]("log", b.id, Any.pack(b).toByteArray)
+    producer.writeFuture(record).map(_ => true)
   }
 
   class Job extends TimerTask {
@@ -125,7 +126,7 @@ class Coordinator(val id: String, val host: String, val port: Int)(implicit val 
 
       val b = Batch(UUID.randomUUID.toString, txs.map(_.t), partitions, id)
 
-      log(b).map { ok =>
+      insert(b).flatMap(ok => log(b).map(_ && ok)).map { ok =>
         if(ok) {
           txs.foreach { r =>
             executing.put(r.id, r)

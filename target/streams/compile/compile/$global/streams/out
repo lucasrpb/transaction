@@ -1,2 +1,4 @@
-[0m[[0m[33mwarn[0m] [0m[0mthere were two feature warnings; re-run with -feature for details[0m
-[0m[[0m[33mwarn[0m] [0m[0mone warning found[0m
+[0m[[0m[31merror[0m] [0m[0mD:\Users\lucas\IdeaProjects\transaction\src\main\scala\transaction\Coordinator.scala:71:5: not found: value BATCHES[0m
+[0m[[0m[31merror[0m] [0m[0m    BATCHES(b).flatMap { _ =>[0m
+[0m[[0m[31merror[0m] [0m[0m    ^[0m
+[0m[[0m[31merror[0m] [0m[0mone error found[0m
