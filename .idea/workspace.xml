@@ -3,6 +3,33 @@
   <component name="ChangeListManager">
     <list default="true" id="28075c15-abbf-4ce2-951e-97b6bfe1c951" name="Default Changelist" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/scala/transaction/Coordinator.scala" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/scala/transaction/Coordinator.scala" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/scala/transaction/DataPartition.scala" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/scala/transaction/DataPartition.scala" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/scala/transaction/Scheduler.scala" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/scala-2.12/classes/transaction/Coordinator$$typecreator1$1.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/scala-2.12/classes/transaction/Coordinator$$typecreator1$1.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/scala-2.12/classes/transaction/Coordinator$$typecreator1$2.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/scala-2.12/classes/transaction/Coordinator$$typecreator1$2.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/scala-2.12/classes/transaction/Coordinator$$typecreator2$1.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/scala-2.12/classes/transaction/Coordinator$$typecreator2$1.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/scala-2.12/classes/transaction/Coordinator$$typecreator2$2.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/scala-2.12/classes/transaction/Coordinator$$typecreator2$2.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/scala-2.12/classes/transaction/Coordinator$Job$$anonfun$run$12.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/scala-2.12/classes/transaction/Coordinator$Job$$anonfun$run$12.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/scala-2.12/classes/transaction/Coordinator$Job.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/scala-2.12/classes/transaction/Coordinator$Job.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/scala-2.12/classes/transaction/Coordinator$Request$.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/scala-2.12/classes/transaction/Coordinator$Request$.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/scala-2.12/classes/transaction/Coordinator$Request.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/scala-2.12/classes/transaction/Coordinator$Request.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/scala-2.12/classes/transaction/Coordinator.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/scala-2.12/classes/transaction/Coordinator.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/scala-2.12/classes/transaction/DataPartition$$anonfun$handle$3.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/scala-2.12/classes/transaction/DataPartition$$anonfun$handle$3.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/scala-2.12/classes/transaction/DataPartition.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/scala-2.12/classes/transaction/DataPartition.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/scala-2.12/classes/transaction/Scheduler$$typecreator1$1.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/scala-2.12/classes/transaction/Scheduler$$typecreator2$1.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/scala-2.12/classes/transaction/Scheduler.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/scala-2.12/transaction_2.12-0.1.jar" beforeDir="false" afterPath="$PROJECT_DIR$/target/scala-2.12/transaction_2.12-0.1.jar" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/streams/compile/compile/$global/streams/out" beforeDir="false" afterPath="$PROJECT_DIR$/target/streams/compile/compile/$global/streams/out" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/streams/compile/compileIncSetup/$global/streams/inc_compile_2.12.zip" beforeDir="false" afterPath="$PROJECT_DIR$/target/streams/compile/compileIncSetup/$global/streams/inc_compile_2.12.zip" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/streams/compile/packageBin/$global/streams/inputs" beforeDir="false" afterPath="$PROJECT_DIR$/target/streams/compile/packageBin/$global/streams/inputs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/streams/test/compileIncSetup/$global/streams/inc_compile_2.12.zip" beforeDir="false" afterPath="$PROJECT_DIR$/target/streams/test/compileIncSetup/$global/streams/inc_compile_2.12.zip" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/streams/test/definedTests/$global/streams/out" beforeDir="false" afterPath="$PROJECT_DIR$/target/streams/test/definedTests/$global/streams/out" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/streams/test/test/$global/streams/succeeded_tests" beforeDir="false" afterPath="$PROJECT_DIR$/target/streams/test/test/$global/streams/succeeded_tests" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/streams/test/testOnly/$global/streams/out" beforeDir="false" afterPath="$PROJECT_DIR$/target/streams/test/testOnly/$global/streams/out" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/test-reports/TEST-transaction.MainSpec.xml" beforeDir="false" afterPath="$PROJECT_DIR$/target/test-reports/TEST-transaction.MainSpec.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/test-reports/transaction.MainSpec.xml" beforeDir="false" afterPath="$PROJECT_DIR$/target/test-reports/transaction.MainSpec.xml" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
@@ -107,7 +134,9 @@
       <workItem from="1567859137839" duration="17525000" />
       <workItem from="1568052636237" duration="18895000" />
       <workItem from="1568075650772" duration="6102000" />
-      <workItem from="1568145486566" duration="5697000" />
+      <workItem from="1568145486566" duration="5755000" />
+      <workItem from="1568166824858" duration="5000" />
+      <workItem from="1568223581904" duration="4803000" />
     </task>
     <task id="LOCAL-00001" summary="first commit">
       <created>1567870508099</created>
@@ -186,7 +215,14 @@
       <option name="project" value="LOCAL" />
       <updated>1568149966344</updated>
     </task>
-    <option name="localTasksCounter" value="12" />
+    <task id="LOCAL-00012" summary="Parallel execution per partition db version...">
+      <created>1568166206438</created>
+      <option name="number" value="00012" />
+      <option name="presentableId" value="LOCAL-00012" />
+      <option name="project" value="LOCAL" />
+      <updated>1568166206438</updated>
+    </task>
+    <option name="localTasksCounter" value="13" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">

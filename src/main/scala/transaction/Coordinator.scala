@@ -1,5 +1,6 @@
 package transaction
 
+import java.nio.ByteBuffer
 import java.util.concurrent.ConcurrentLinkedQueue
 import java.util.concurrent.atomic.AtomicInteger
 import java.util.{Timer, TimerTask, UUID}
@@ -46,7 +47,7 @@ class Coordinator(val id: String, val host: String, val port: Int)(implicit val 
 
   session.execute("truncate batches;")
 
-  val INSERT_BATCH = session.prepare("insert into batches(id, n) values(?,0);")
+  val INSERT_BATCH = session.prepare("insert into batches(id, n, bin, completed, leader) values(?,0,?, false, ?);")
   val READ_DATA = session.prepare("select * from data where key=?;")
 
   case class Request(id: String, t: Transaction, tmp: Long = System.currentTimeMillis()){
@@ -64,11 +65,13 @@ class Coordinator(val id: String, val host: String, val port: Int)(implicit val 
   val timer = new Timer()
 
   def insert(b: Batch): Future[Boolean] = {
-    session.executeAsync(INSERT_BATCH.bind.setString(0, b.id)).map(_.wasApplied())
+    val buf = ByteBuffer.wrap(Any.pack(b).toByteArray)
+    session.executeAsync(INSERT_BATCH.bind.setString(0, b.id).setBytes(1, buf).setString(2, b.partitions.head._1))
+      .map(_.wasApplied())
   }
 
   def log(b: Batch): Future[Boolean] = {
-    val record = KafkaProducerRecord.create[String, Array[Byte]]("log", b.id, Any.pack(b).toByteArray)
+    val record = KafkaProducerRecord.create[String, Array[Byte]]("log", b.id, b.id.getBytes)
     producer.writeFuture(record).map(_ => true)
   }
 
@@ -179,14 +182,14 @@ class Coordinator(val id: String, val host: String, val port: Int)(implicit val 
     pr.conflicted.foreach { t =>
       executing.get(t) match {
         case None =>
-        case Some(r) => if(!r.p.isDefined) r.p.setValue(Nack())
+        case Some(r) => /*if(!r.p.isDefined)*/ r.p.setValue(Nack())
       }
     }
 
     pr.applied.foreach { t =>
       executing.get(t) match {
         case None =>
-        case Some(r) => if(!r.p.isDefined) r.p.setValue(Ack())
+        case Some(r) => /*if(!r.p.isDefined)*/ r.p.setValue(Ack())
       }
     }
 
