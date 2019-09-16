@@ -14,7 +14,6 @@
     </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
-    <orderEntry type="library" name="sbt: com.101tec:zkclient:0.10:jar" level="project" />
     <orderEntry type="module-library">
       <library name="sbt: unmanaged-sources-and-docs">
         <CLASSES />
@@ -24,9 +23,11 @@
         </SOURCES>
       </library>
     </orderEntry>
-    <orderEntry type="library" name="sbt: org.xerial.snappy:snappy-java:1.1.2.6:jar" level="project" />
-    <orderEntry type="library" name="sbt: org.slf4j:slf4j-log4j12:1.7.21:jar" level="project" />
-    <orderEntry type="library" name="sbt: org.slf4j:slf4j-api:1.7.25:jar" level="project" />
+    <orderEntry type="library" name="sbt: org.xerial.snappy:snappy-java:1.1.7.3:jar" level="project" />
+    <orderEntry type="library" name="sbt: org.slf4j:slf4j-api:1.7.26:jar" level="project" />
+    <orderEntry type="library" name="sbt: org.lz4:lz4-java:1.6.0:jar" level="project" />
+    <orderEntry type="library" name="sbt: org.apache.kafka:kafka-clients:2.3.0:jar" level="project" />
+    <orderEntry type="library" name="sbt: com.github.luben:zstd-jni:1.4.0-1:jar" level="project" />
     <orderEntry type="library" scope="TEST" name="sbt: org.scalatest:scalatest_2.12:3.0.5:jar" level="project" />
     <orderEntry type="library" name="sbt: org.scalactic:scalactic_2.12:3.0.5:jar" level="project" />
     <orderEntry type="library" name="sbt: org.scala-lang.modules:scala-xml_2.12:1.0.6:jar" level="project" />
@@ -45,17 +46,9 @@
     <orderEntry type="library" name="sbt: org.hdrhistogram:HdrHistogram:2.1.11:jar" level="project" />
     <orderEntry type="library" name="sbt: org.codehaus.mojo:animal-sniffer-annotations:1.17:jar" level="project" />
     <orderEntry type="library" name="sbt: org.checkerframework:checker-qual:2.5.2:jar" level="project" />
-    <orderEntry type="library" name="sbt: org.apache.zookeeper:zookeeper:3.4.9:jar" level="project" />
-    <orderEntry type="library" name="sbt: org.apache.kafka:kafka_2.12:0.10.2.1:jar" level="project" />
-    <orderEntry type="library" name="sbt: org.apache.kafka:kafka-clients:0.10.2.1:jar" level="project" />
     <orderEntry type="library" name="sbt: org.apache.commons:commons-lang3:3.8.1:jar" level="project" />
-    <orderEntry type="library" name="sbt: net.sf.jopt-simple:jopt-simple:5.0.3:jar" level="project" />
-    <orderEntry type="library" name="sbt: net.jpountz.lz4:lz4:1.3.0:jar" level="project" />
-    <orderEntry type="library" name="sbt: log4j:log4j:1.2.16:jar" level="project" />
     <orderEntry type="library" name="sbt: io.vertx:vertx-lang-scala_2.12:3.5.0:jar" level="project" />
     <orderEntry type="library" name="sbt: io.vertx:vertx-lang-scala-on-the-fly_2.12:3.5.0:jar" level="project" />
-    <orderEntry type="library" name="sbt: io.vertx:vertx-kafka-client-scala_2.12:3.5.0:jar" level="project" />
-    <orderEntry type="library" name="sbt: io.vertx:vertx-kafka-client:3.5.0:jar" level="project" />
     <orderEntry type="library" name="sbt: io.vertx:vertx-hazelcast:3.5.0:jar" level="project" />
     <orderEntry type="library" name="sbt: io.vertx:vertx-core:3.5.0:jar" level="project" />
     <orderEntry type="library" scope="PROVIDED" name="sbt: io.vertx:vertx-codegen:3.5.0:jar" level="project" />
@@ -76,7 +69,6 @@
     <orderEntry type="library" name="sbt: io.netty:netty-buffer:4.1.31.Final:jar" level="project" />
     <orderEntry type="library" name="sbt: io.netty:netty-all:4.1.35.Final:jar" level="project" />
     <orderEntry type="library" name="sbt: io.dropwizard.metrics:metrics-core:3.2.2:jar" level="project" />
-    <orderEntry type="library" name="sbt: com.yammer.metrics:metrics-core:2.2.0:jar" level="project" />
     <orderEntry type="library" name="sbt: com.twitter:util-tunable_2.12:19.5.1:jar" level="project" />
     <orderEntry type="library" name="sbt: com.twitter:util-stats_2.12:19.5.1:jar" level="project" />
     <orderEntry type="library" name="sbt: com.twitter:util-security_2.12:19.5.1:jar" level="project" />

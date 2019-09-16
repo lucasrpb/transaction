@@ -27,6 +27,25 @@ message MVCCVersion {
     string version = 3;
 }
 
+/*message KV {
+    option (scalapb.message).extends = "transaction.Command";
+    option (scalapb.message).companion_extends = "transaction.Command";
+
+    string k = 1;
+    uint64 v = 2;
+}
+
+message Partition {
+    option (scalapb.message).extends = "transaction.Command";
+    option (scalapb.message).companion_extends = "transaction.Command";
+
+    string id = 1;
+    repeated MVCCVersion reads = 2;
+    repeated KV insertions = 3;
+    repeated KV updates = 4;
+    repeated string deletions = 5;
+}*/
+
 message ReadRequest {
     option (scalapb.message).extends = "transaction.Command";
     option (scalapb.message).companion_extends = "transaction.Command";
@@ -46,19 +65,11 @@ message Transaction {
     option (scalapb.message).companion_extends = "transaction.Command";
 
     string id = 1;
-    repeated MVCCVersion rs = 2;
-    repeated MVCCVersion ws = 3;
+    repeated string rs = 2;
+    repeated string ws = 3;
 }
 
-message Partition {
-    option (scalapb.message).extends = "transaction.Command";
-    option (scalapb.message).companion_extends = "transaction.Command";
-
-    string id = 1;
-    repeated string txs = 2;
-}
-
-message PartitionResponse {
+message CoordinatorResult {
     option (scalapb.message).extends = "transaction.Command";
     option (scalapb.message).companion_extends = "transaction.Command";
 
@@ -67,53 +78,19 @@ message PartitionResponse {
     repeated string applied = 3;
 }
 
+message TxList {
+    option (scalapb.message).extends = "transaction.Command";
+    option (scalapb.message).companion_extends = "transaction.Command";
+
+    repeated string txs = 1;
+}
+
 message Batch {
     option (scalapb.message).extends = "transaction.Command";
     option (scalapb.message).companion_extends = "transaction.Command";
 
     string id = 1;
-    repeated Transaction transactions = 2;
-    map<string, Partition> partitions = 3;
+    map<string, TxList> partitions = 2;
+    repeated string txs = 3;
     string coordinator = 4;
-}
-
-message GetBatch {
-    option (scalapb.message).extends = "transaction.Command";
-    option (scalapb.message).companion_extends = "transaction.Command";
-
-    string id = 1;
-}
-
-message IncBatch {
-    option (scalapb.message).extends = "transaction.Command";
-    option (scalapb.message).companion_extends = "transaction.Command";
-
-    string id = 1;
-}
-
-message GetBatchResponse {
-    option (scalapb.message).extends = "transaction.Command";
-    option (scalapb.message).companion_extends = "transaction.Command";
-
-    uint32 count = 1;
-}
-
-message Epoch {
-    option (scalapb.message).extends = "transaction.Command";
-    option (scalapb.message).companion_extends = "transaction.Command";
-
-    string id = 1;
-    repeated Batch batches = 2;
-}
-
-message RequestOffset {
-    option (scalapb.message).extends = "transaction.Command";
-    option (scalapb.message).companion_extends = "transaction.Command";
-}
-
-message ResponseOffset {
-    option (scalapb.message).extends = "transaction.Command";
-    option (scalapb.message).companion_extends = "transaction.Command";
-
-    uint64 offset = 1;
 }

@@ -2,16 +2,13 @@ package transaction
 
 import java.nio.ByteBuffer
 import java.util.concurrent.ConcurrentLinkedQueue
-import java.util.concurrent.atomic.AtomicInteger
-import java.util.{Timer, TimerTask, UUID}
+import java.util.concurrent.atomic.AtomicLong
+import java.util.{Properties, Timer, TimerTask, UUID}
 
 import com.datastax.driver.core.{Cluster, HostDistance, PoolingOptions}
 import com.google.protobuf.any.Any
 import com.twitter.finagle.Service
 import com.twitter.util.{Future, Promise}
-import io.vertx.scala.core.Vertx
-import io.vertx.scala.kafka.client.producer.{KafkaProducer, KafkaProducerRecord}
-import org.apache.kafka.clients.producer.ProducerConfig
 import transaction.protocol._
 
 import scala.collection.concurrent.TrieMap
@@ -19,18 +16,6 @@ import scala.concurrent.ExecutionContext
 
 class Coordinator(val id: String, val host: String, val port: Int)(implicit val ec: ExecutionContext)
   extends Service[Command, Command]{
-
-  val config = scala.collection.mutable.Map[String, String]()
-
-  config += (ProducerConfig.BOOTSTRAP_SERVERS_CONFIG -> "localhost:9092")
-  config += (ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG -> "org.apache.kafka.common.serialization.StringSerializer")
-  config += (ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG -> "org.apache.kafka.common.serialization.ByteArraySerializer")
-  config += (ProducerConfig.ACKS_CONFIG -> "1")
-
-  val vertx = Vertx.vertx()
-
-  // use producer for interacting with Apache Kafka
-  val producer = KafkaProducer.create[String, Array[Byte]](vertx, config)
 
   val poolingOptions = new PoolingOptions()
     //.setConnectionsPerHost(HostDistance.LOCAL, 1, 200)
@@ -47,15 +32,16 @@ class Coordinator(val id: String, val host: String, val port: Int)(implicit val 
 
   session.execute("truncate batches;")
 
-  val INSERT_BATCH = session.prepare("insert into batches(id, n, bin, completed, leader) values(?,0,?, false, ?);")
+  val POS = new AtomicLong(id.toLong)
+
+  val INSERT_BATCH = session.prepare("insert into batches(coordinator, pos, bin) values(?,?,?);")
+  val INSERT_BATCH_EMPTY = session.prepare("insert into batches(coordinator, pos) values(?,?);")
   val READ_DATA = session.prepare("select * from data where key=?;")
 
   case class Request(id: String, t: Transaction, tmp: Long = System.currentTimeMillis()){
     val p = Promise[Command]()
-
-    val rs: Seq[String] = t.rs.map(_.k)
-    val ws: Seq[String] = t.ws.map(_.k)
-
+    val rs = t.rs
+    val ws = t.ws
     val partitions = (rs ++ ws).distinct.map(k => (k.toInt % DataPartitionMain.n).toString)
   }
 
@@ -64,22 +50,27 @@ class Coordinator(val id: String, val host: String, val port: Int)(implicit val 
 
   val timer = new Timer()
 
-  def insert(b: Batch): Future[Boolean] = {
-    val buf = ByteBuffer.wrap(Any.pack(b).toByteArray)
-    session.executeAsync(INSERT_BATCH.bind.setString(0, b.id).setBytes(1, buf).setString(2, b.partitions.head._1))
-      .map(_.wasApplied())
-  }
+  def insert(opt: Option[Batch]): Future[Boolean] = {
+    val pos = POS.getAndAdd(CoordinatorMain.n)
 
-  def log(b: Batch): Future[Boolean] = {
-    val record = KafkaProducerRecord.create[String, Array[Byte]]("log", b.id, b.id.getBytes)
-    producer.writeFuture(record).map(_ => true)
+    if(opt.isEmpty){
+      return session.executeAsync(INSERT_BATCH_EMPTY.bind.setString(0, id).setLong(1, pos)).map(_.wasApplied())
+    }
+
+    val b = opt.get
+
+    val buf = ByteBuffer.wrap(Any.pack(b).toByteArray)
+    session.executeAsync(INSERT_BATCH.bind.setString(0, id).setLong(1, pos).setBytes(2, buf)).map(_.wasApplied())
   }
 
   class Job extends TimerTask {
     override def run(): Unit = {
 
       if(batch.isEmpty){
-        timer.schedule(new Job(), 10L)
+        insert(None).onSuccess { _ =>
+          timer.schedule(new Job(), 10L)
+        }
+
         return
       }
 
@@ -111,25 +102,16 @@ class Coordinator(val id: String, val host: String, val port: Int)(implicit val 
         }
       }
 
-      if(txs.isEmpty) return
-
-      var partitions = Map[String, Partition]()
-
-      txs.foreach { r =>
-
-        //println(s"partitions ${r.partitions}\n")
-
-        r.partitions.foreach { p =>
-          partitions.get(p) match {
-            case None => partitions = partitions + (p -> Partition(p, Seq(r.id)))
-            case Some(pt) => partitions = partitions + (p -> Partition(p, pt.txs :+ r.id))
-          }
-        }
+      if(txs.isEmpty) {
+        insert(None)
+        return
       }
 
-      val b = Batch(UUID.randomUUID.toString, txs.map(_.t), partitions, id)
 
-      insert(b).flatMap(ok => log(b).map(_ && ok)).map { ok =>
+
+      val b = Batch(UUID.randomUUID.toString, partitions, txs.map(_.id), id)
+
+      insert(Some(b)).map { ok =>
         if(ok) {
           txs.foreach { r =>
             executing.put(r.id, r)
@@ -140,17 +122,13 @@ class Coordinator(val id: String, val host: String, val port: Int)(implicit val 
             r.p.setValue(Nack())
           }
         }
+      }.map { _ =>
+        timer.schedule(new Job(), 10L)
       }.handle { case t =>
         t.printStackTrace()
 
         txs.foreach { r =>
           r.p.setValue(Nack())
-        }
-      }.ensure {
-        if(batch.isEmpty){
-          timer.schedule(new Job(), 10L)
-        } else {
-          this.run()
         }
       }
     }
@@ -175,7 +153,7 @@ class Coordinator(val id: String, val host: String, val port: Int)(implicit val 
     Future.collect(r.keys.map{read(_)}).map(r => ReadResponse(r))
   }
 
-  def process(pr: PartitionResponse): Future[Command] = {
+  def process(pr: CoordinatorResult): Future[Command] = {
     println(s"conflicted ${pr.conflicted}")
     println(s"applied ${pr.applied}\n")
 
@@ -200,7 +178,7 @@ class Coordinator(val id: String, val host: String, val port: Int)(implicit val 
     request match {
       case cmd: Transaction => process(cmd)
       case cmd: ReadRequest => process(cmd)
-      case cmd: PartitionResponse => process(cmd)
+      case cmd: CoordinatorResult => process(cmd)
     }
   }
 

@@ -1,8 +1,3 @@
-import java.util
-import java.util.Collections
-import java.util.concurrent.{ConcurrentLinkedDeque, CopyOnWriteArrayList}
-import java.util.concurrent.atomic.AtomicInteger
-
 import com.google.common.util.concurrent.{FutureCallback, Futures, ListenableFuture}
 import com.google.protobuf.any.Any
 import com.twitter.finagle.Service
@@ -88,13 +83,7 @@ package object transaction {
         case cmd: Transaction => out.add(buf.writeBytes(Any.pack(cmd).toByteArray))
         case cmd: Batch => out.add(buf.writeBytes(Any.pack(cmd).toByteArray))
         case cmd: MVCCVersion => out.add(buf.writeBytes(Any.pack(cmd).toByteArray))
-        case cmd: PartitionResponse => out.add(buf.writeBytes(Any.pack(cmd).toByteArray))
-        case cmd: Epoch => out.add(buf.writeBytes(Any.pack(cmd).toByteArray))
-        case cmd: RequestOffset => out.add(buf.writeBytes(Any.pack(cmd).toByteArray))
-        case cmd: ResponseOffset => out.add(buf.writeBytes(Any.pack(cmd).toByteArray))
-        case cmd: GetBatch => out.add(buf.writeBytes(Any.pack(cmd).toByteArray))
-        case cmd: GetBatchResponse => out.add(buf.writeBytes(Any.pack(cmd).toByteArray))
-        case cmd: IncBatch => out.add(buf.writeBytes(Any.pack(cmd).toByteArray))
+        case cmd: CoordinatorResult => out.add(buf.writeBytes(Any.pack(cmd).toByteArray))
       }
 
       buf.release()
@@ -115,13 +104,7 @@ package object transaction {
         case _ if p.is(Transaction) => out.add(p.unpack(Transaction))
         case _ if p.is(Batch) => out.add(p.unpack(Batch))
         case _ if p.is(MVCCVersion) => out.add(p.unpack(MVCCVersion))
-        case _ if p.is(PartitionResponse) => out.add(p.unpack(PartitionResponse))
-        case _ if p.is(Epoch) => out.add(p.unpack(Epoch))
-        case _ if p.is(RequestOffset) => out.add(p.unpack(RequestOffset))
-        case _ if p.is(ResponseOffset) => out.add(p.unpack(ResponseOffset))
-        case _ if p.is(GetBatch) => out.add(p.unpack(GetBatch))
-        case _ if p.is(GetBatchResponse) => out.add(p.unpack(GetBatchResponse))
-        case _ if p.is(IncBatch) => out.add(p.unpack(IncBatch))
+        case _ if p.is(CoordinatorResult) => out.add(p.unpack(CoordinatorResult))
       }
 
     }

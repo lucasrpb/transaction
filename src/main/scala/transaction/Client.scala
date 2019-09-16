@@ -30,7 +30,7 @@ class Client(val id: String, val numExecutors: Int)(implicit val ec: ExecutionCo
       val reads = r.asInstanceOf[ReadResponse].values
       val writes = f(tid -> reads.map(v => v.k -> v).toMap)
 
-      val tx = Transaction(tid, reads, writes.map(_._2).toSeq)
+      val tx = Transaction(tid)
 
       conn(tx).map {
         _ match {

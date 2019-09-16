@@ -1,7 +1,73 @@
-[0m[[0m[33mwarn[0m] [0m[0mD:\Users\lucas\IdeaProjects\transaction\src\main\scala\transaction\DataPartition.scala:147:13: a pure expression does nothing in statement position[0m
-[0m[[0m[33mwarn[0m] [0m[0m            true[0m
-[0m[[0m[33mwarn[0m] [0m[0m            ^[0m
-[0m[[0m[33mwarn[0m] [0m[0mD:\Users\lucas\IdeaProjects\transaction\src\main\scala\transaction\DataPartition.scala:160:27: a pure expression does nothing in statement position[0m
-[0m[[0m[33mwarn[0m] [0m[0m      return Future.value(true)[0m
-[0m[[0m[33mwarn[0m] [0m[0m                          ^[0m
-[0m[[0m[33mwarn[0m] [0m[0mtwo warnings found[0m
+[0m[[0m[31merror[0m] [0m[0mD:\Users\lucas\IdeaProjects\transaction\src\main\scala\transaction\Coordinator.scala:53:35: inferred type arguments [Option[transaction.protocol.Batch]] do not conform to method pack's type parameter bounds [A <: scalapb.GeneratedMessage with scalapb.Message[A]][0m
+[0m[[0m[31merror[0m] [0m[0m    val buf = ByteBuffer.wrap(Any.pack(b).toByteArray)[0m
+[0m[[0m[31merror[0m] [0m[0m                                  ^[0m
+[0m[[0m[31merror[0m] [0m[0mD:\Users\lucas\IdeaProjects\transaction\src\main\scala\transaction\Coordinator.scala:53:40: type mismatch;[0m
+[0m[[0m[31merror[0m] [0m[0m found   : Option[transaction.protocol.Batch][0m
+[0m[[0m[31merror[0m] [0m[0m required: A[0m
+[0m[[0m[31merror[0m] [0m[0m    val buf = ByteBuffer.wrap(Any.pack(b).toByteArray)[0m
+[0m[[0m[31merror[0m] [0m[0m                                       ^[0m
+[0m[[0m[31merror[0m] [0m[0mD:\Users\lucas\IdeaProjects\transaction\src\main\scala\transaction\Coordinator.scala:98:54: type mismatch;[0m
+[0m[[0m[31merror[0m] [0m[0m found   : Seq[String][0m
+[0m[[0m[31merror[0m] [0m[0m required: scala.collection.immutable.Map[String,transaction.protocol.TxList][0m
+[0m[[0m[31merror[0m] [0m[0m      val b = Batch(UUID.randomUUID.toString, txs.map(_.id), null, id)[0m
+[0m[[0m[31merror[0m] [0m[0m                                                     ^[0m
+[0m[[0m[31merror[0m] [0m[0mD:\Users\lucas\IdeaProjects\transaction\src\main\scala\transaction\CoordinatorMain.scala:9:23: object kafka is not a member of package io.vertx.scala[0m
+[0m[[0m[31merror[0m] [0m[0mimport io.vertx.scala.kafka.admin.AdminUtils[0m
+[0m[[0m[31merror[0m] [0m[0m                      ^[0m
+[0m[[0m[31merror[0m] [0m[0mD:\Users\lucas\IdeaProjects\transaction\src\main\scala\transaction\CoordinatorMain.scala:25:22: not found: value AdminUtils[0m
+[0m[[0m[31merror[0m] [0m[0m    val adminUtils = AdminUtils.create(Vertx.vertx(), "localhost:2181", false)[0m
+[0m[[0m[31merror[0m] [0m[0m                     ^[0m
+[0m[[0m[31merror[0m] [0m[0mD:\Users\lucas\IdeaProjects\transaction\src\main\scala\transaction\DataPartition.scala:11:23: object kafka is not a member of package io.vertx.scala[0m
+[0m[[0m[31merror[0m] [0m[0mimport io.vertx.scala.kafka.client.common.TopicPartition[0m
+[0m[[0m[31merror[0m] [0m[0m                      ^[0m
+[0m[[0m[31merror[0m] [0m[0mD:\Users\lucas\IdeaProjects\transaction\src\main\scala\transaction\DataPartition.scala:12:23: object kafka is not a member of package io.vertx.scala[0m
+[0m[[0m[31merror[0m] [0m[0mimport io.vertx.scala.kafka.client.consumer.{KafkaConsumer, KafkaConsumerRecord}[0m
+[0m[[0m[31merror[0m] [0m[0m                      ^[0m
+[0m[[0m[31merror[0m] [0m[0mD:\Users\lucas\IdeaProjects\transaction\src\main\scala\transaction\DataPartition.scala:45:18: not found: value KafkaConsumer[0m
+[0m[[0m[31merror[0m] [0m[0m  var consumer = KafkaConsumer.create[String, Array[Byte]](vertx, config)[0m
+[0m[[0m[31merror[0m] [0m[0m                 ^[0m
+[0m[[0m[31merror[0m] [0m[0mD:\Users\lucas\IdeaProjects\transaction\src\main\scala\transaction\DataPartition.scala:76:44: value k is not a member of String[0m
+[0m[[0m[31merror[0m] [0m[0m    Future.collect(t.rs.map{r => readKey(r.k, r, txs.find(_.ws.exists(x => x.k.equals(r.k))).get.id)})[0m
+[0m[[0m[31merror[0m] [0m[0m                                           ^[0m
+[0m[[0m[31merror[0m] [0m[0mD:\Users\lucas\IdeaProjects\transaction\src\main\scala\transaction\DataPartition.scala:76:47: type mismatch;[0m
+[0m[[0m[31merror[0m] [0m[0m found   : String[0m
+[0m[[0m[31merror[0m] [0m[0m required: transaction.protocol.MVCCVersion[0m
+[0m[[0m[31merror[0m] [0m[0m    Future.collect(t.rs.map{r => readKey(r.k, r, txs.find(_.ws.exists(x => x.k.equals(r.k))).get.id)})[0m
+[0m[[0m[31merror[0m] [0m[0m                                              ^[0m
+[0m[[0m[31merror[0m] [0m[0mD:\Users\lucas\IdeaProjects\transaction\src\main\scala\transaction\DataPartition.scala:76:78: value k is not a member of String[0m
+[0m[[0m[31merror[0m] [0m[0m    Future.collect(t.rs.map{r => readKey(r.k, r, txs.find(_.ws.exists(x => x.k.equals(r.k))).get.id)})[0m
+[0m[[0m[31merror[0m] [0m[0m                                                                             ^[0m
+[0m[[0m[31merror[0m] [0m[0mD:\Users\lucas\IdeaProjects\transaction\src\main\scala\transaction\DataPartition.scala:76:89: value k is not a member of String[0m
+[0m[[0m[31merror[0m] [0m[0m    Future.collect(t.rs.map{r => readKey(r.k, r, txs.find(_.ws.exists(x => x.k.equals(r.k))).get.id)})[0m
+[0m[[0m[31merror[0m] [0m[0m                                                                                        ^[0m
+[0m[[0m[31merror[0m] [0m[0mD:\Users\lucas\IdeaProjects\transaction\src\main\scala\transaction\DataPartition.scala:102:17: value k is not a member of String[0m
+[0m[[0m[31merror[0m] [0m[0m      val k = x.k[0m
+[0m[[0m[31merror[0m] [0m[0m                ^[0m
+[0m[[0m[31merror[0m] [0m[0mD:\Users\lucas\IdeaProjects\transaction\src\main\scala\transaction\DataPartition.scala:103:17: value v is not a member of String[0m
+[0m[[0m[31merror[0m] [0m[0m      val v = x.v[0m
+[0m[[0m[31merror[0m] [0m[0m                ^[0m
+[0m[[0m[31merror[0m] [0m[0mD:\Users\lucas\IdeaProjects\transaction\src\main\scala\transaction\DataPartition.scala:104:23: value version is not a member of String[0m
+[0m[[0m[31merror[0m] [0m[0m      val version = x.version[0m
+[0m[[0m[31merror[0m] [0m[0m                      ^[0m
+[0m[[0m[31merror[0m] [0m[0mD:\Users\lucas\IdeaProjects\transaction\src\main\scala\transaction\DataPartition.scala:119:19: value k is not a member of String[0m
+[0m[[0m[31merror[0m] [0m[0m        val k = x.k[0m
+[0m[[0m[31merror[0m] [0m[0m                  ^[0m
+[0m[[0m[31merror[0m] [0m[0mD:\Users\lucas\IdeaProjects\transaction\src\main\scala\transaction\DataPartition.scala:120:19: value v is not a member of String[0m
+[0m[[0m[31merror[0m] [0m[0m        val v = x.v[0m
+[0m[[0m[31merror[0m] [0m[0m                  ^[0m
+[0m[[0m[31merror[0m] [0m[0mD:\Users\lucas\IdeaProjects\transaction\src\main\scala\transaction\DataPartition.scala:121:25: value version is not a member of String[0m
+[0m[[0m[31merror[0m] [0m[0m        val version = x.version[0m
+[0m[[0m[31merror[0m] [0m[0m                        ^[0m
+[0m[[0m[31merror[0m] [0m[0mD:\Users\lucas\IdeaProjects\transaction\src\main\scala\transaction\DataPartition.scala:141:9: not found: value PartitionResponse[0m
+[0m[[0m[31merror[0m] [0m[0m      c(PartitionResponse.apply(id, conflicted, applied))[0m
+[0m[[0m[31merror[0m] [0m[0m        ^[0m
+[0m[[0m[31merror[0m] [0m[0mD:\Users\lucas\IdeaProjects\transaction\src\main\scala\transaction\DataPartition.scala:150:17: value transactions is not a member of transaction.protocol.Batch[0m
+[0m[[0m[31merror[0m] [0m[0m    val txs = b.transactions[0m
+[0m[[0m[31merror[0m] [0m[0m                ^[0m
+[0m[[0m[31merror[0m] [0m[0mD:\Users\lucas\IdeaProjects\transaction\src\main\scala\transaction\DataPartition.scala:184:19: not found: type KafkaConsumerRecord[0m
+[0m[[0m[31merror[0m] [0m[0m  def handle(evt: KafkaConsumerRecord[String, Array[Byte]]): Unit = {[0m
+[0m[[0m[31merror[0m] [0m[0m                  ^[0m
+[0m[[0m[31merror[0m] [0m[0mD:\Users\lucas\IdeaProjects\transaction\src\main\scala\transaction\DataPartitionMain.scala:8:23: object kafka is not a member of package io.vertx.scala[0m
+[0m[[0m[31merror[0m] [0m[0mimport io.vertx.scala.kafka.admin.AdminUtils[0m
+[0m[[0m[31merror[0m] [0m[0m                      ^[0m
+[0m[[0m[31merror[0m] [0m[0m22 errors found[0m

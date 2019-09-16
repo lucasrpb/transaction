@@ -27,8 +27,9 @@ libraryDependencies ++= Seq(
   Library.vertx_lang_scala,
   Library.vertx_hazelcast,
 
-  Library.vertx_kafka_client ,
   Library.vertx_codegen,
+
+  "org.apache.kafka" % "kafka-clients" % "2.3.0",
 
   "com.twitter" %% "finagle-http" % "19.5.1",
   "com.twitter" %% "finagle-core" % "19.5.1",
