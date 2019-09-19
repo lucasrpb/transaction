@@ -15,7 +15,7 @@ import transaction.protocol._
 import scala.concurrent.ExecutionContext
 import scala.util.{Failure, Success}
 
-class Aggregator()(implicit val ec: ExecutionContext) extends Service [Command, Command]{
+class Aggregator()(implicit val ec: ExecutionContext){
 
   val cconfig = scala.collection.mutable.Map[String, String]()
 
@@ -64,8 +64,4 @@ class Aggregator()(implicit val ec: ExecutionContext) extends Service [Command, 
 
   consumer.handler(_ => _)
   consumer.batchHandler(handle)
-
-  override def apply(request: Command): Future[Command] = {
-    null
-  }
 }
