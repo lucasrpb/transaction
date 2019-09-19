@@ -1,3 +1,27 @@
 [0m[[0m[0minfo[0m] [0m[0m[32mMainSpec:[0m[0m
 [0m[[0m[0minfo[0m] [0m[0m[32mamount of money[0m[0m
-[0m[[0m[0minfo[0m] [0m[0m[32m- should be equal after transactions[0m[0m
+[0m[[0m[0minfo[0m] [0m[0m[31m- should be equal after transactions *** FAILED ***[0m[0m
+[0m[[0m[0minfo[0m] [0m[0m[31m  com.twitter.finagle.ChannelClosedException: An existing connection was forcibly closed by the remote host at remote address: /127.0.0.1:3002. Remote Info: Not Available[0m[0m
+[0m[[0m[0minfo[0m] [0m[0m[31m  at com.twitter.finagle.ChannelException$.apply(Exceptions.scala:272)[0m[0m
+[0m[[0m[0minfo[0m] [0m[0m[31m  at com.twitter.finagle.netty4.transport.ChannelTransport$$anon$2.exceptionCaught(ChannelTransport.scala:179)[0m[0m
+[0m[[0m[0minfo[0m] [0m[0m[31m  at io.netty.channel.AbstractChannelHandlerContext.invokeExceptionCaught(AbstractChannelHandlerContext.java:285)[0m[0m
+[0m[[0m[0minfo[0m] [0m[0m[31m  at io.netty.channel.AbstractChannelHandlerContext.invokeExceptionCaught(AbstractChannelHandlerContext.java:264)[0m[0m
+[0m[[0m[0minfo[0m] [0m[0m[31m  at io.netty.channel.AbstractChannelHandlerContext.fireExceptionCaught(AbstractChannelHandlerContext.java:256)[0m[0m
+[0m[[0m[0minfo[0m] [0m[0m[31m  at io.netty.channel.ChannelInboundHandlerAdapter.exceptionCaught(ChannelInboundHandlerAdapter.java:131)[0m[0m
+[0m[[0m[0minfo[0m] [0m[0m[31m  at io.netty.channel.AbstractChannelHandlerContext.invokeExceptionCaught(AbstractChannelHandlerContext.java:285)[0m[0m
+[0m[[0m[0minfo[0m] [0m[0m[31m  at io.netty.channel.AbstractChannelHandlerContext.invokeExceptionCaught(AbstractChannelHandlerContext.java:264)[0m[0m
+[0m[[0m[0minfo[0m] [0m[0m[31m  at io.netty.channel.AbstractChannelHandlerContext.fireExceptionCaught(AbstractChannelHandlerContext.java:256)[0m[0m
+[0m[[0m[0minfo[0m] [0m[0m[31m  at io.netty.channel.ChannelHandlerAdapter.exceptionCaught(ChannelHandlerAdapter.java:87)[0m[0m
+[0m[[0m[0minfo[0m] [0m[0m[31m  ...[0m[0m
+[0m[[0m[0minfo[0m] [0m[0m[31m  Cause: java.io.IOException: An existing connection was forcibly closed by the remote host[0m[0m
+[0m[[0m[0minfo[0m] [0m[0m[31m  at java.base/sun.nio.ch.SocketDispatcher.read0(Native Method)[0m[0m
+[0m[[0m[0minfo[0m] [0m[0m[31m  at java.base/sun.nio.ch.SocketDispatcher.read(SocketDispatcher.java:43)[0m[0m
+[0m[[0m[0minfo[0m] [0m[0m[31m  at java.base/sun.nio.ch.IOUtil.readIntoNativeBuffer(IOUtil.java:276)[0m[0m
+[0m[[0m[0minfo[0m] [0m[0m[31m  at java.base/sun.nio.ch.IOUtil.read(IOUtil.java:233)[0m[0m
+[0m[[0m[0minfo[0m] [0m[0m[31m  at java.base/sun.nio.ch.IOUtil.read(IOUtil.java:223)[0m[0m
+[0m[[0m[0minfo[0m] [0m[0m[31m  at java.base/sun.nio.ch.SocketChannelImpl.read(SocketChannelImpl.java:358)[0m[0m
+[0m[[0m[0minfo[0m] [0m[0m[31m  at io.netty.buffer.PooledUnsafeDirectByteBuf.setBytes(PooledUnsafeDirectByteBuf.java:288)[0m[0m
+[0m[[0m[0minfo[0m] [0m[0m[31m  at io.netty.buffer.AbstractByteBuf.writeBytes(AbstractByteBuf.java:1132)[0m[0m
+[0m[[0m[0minfo[0m] [0m[0m[31m  at io.netty.channel.socket.nio.NioSocketChannel.doReadBytes(NioSocketChannel.java:347)[0m[0m
+[0m[[0m[0minfo[0m] [0m[0m[31m  at io.netty.channel.nio.AbstractNioByteChannel$NioByteUnsafe.read(AbstractNioByteChannel.java:148)[0m[0m
+[0m[[0m[0minfo[0m] [0m[0m[31m  ...[0m[0m

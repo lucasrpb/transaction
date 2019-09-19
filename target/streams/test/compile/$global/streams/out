@@ -1,0 +1,4 @@
+[0m[[0m[31merror[0m] [0m[0mD:\Users\lucas\IdeaProjects\transaction\src\test\scala\transaction\MainSpec.scala:10:23: object kafka is not a member of package io.vertx.scala[0m
+[0m[[0m[31merror[0m] [0m[0mimport io.vertx.scala.kafka.admin.AdminUtils[0m
+[0m[[0m[31merror[0m] [0m[0m                      ^[0m
+[0m[[0m[31merror[0m] [0m[0mone error found[0m

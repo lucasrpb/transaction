@@ -84,6 +84,7 @@ package object transaction {
         case cmd: Batch => out.add(buf.writeBytes(Any.pack(cmd).toByteArray))
         case cmd: MVCCVersion => out.add(buf.writeBytes(Any.pack(cmd).toByteArray))
         case cmd: CoordinatorResult => out.add(buf.writeBytes(Any.pack(cmd).toByteArray))
+        case cmd: TxList => out.add(buf.writeBytes(Any.pack(cmd).toByteArray))
       }
 
       buf.release()
@@ -105,6 +106,7 @@ package object transaction {
         case _ if p.is(Batch) => out.add(p.unpack(Batch))
         case _ if p.is(MVCCVersion) => out.add(p.unpack(MVCCVersion))
         case _ if p.is(CoordinatorResult) => out.add(p.unpack(CoordinatorResult))
+        case _ if p.is(TxList) => out.add(p.unpack(TxList))
       }
 
     }

@@ -27,25 +27,6 @@ message MVCCVersion {
     string version = 3;
 }
 
-/*message KV {
-    option (scalapb.message).extends = "transaction.Command";
-    option (scalapb.message).companion_extends = "transaction.Command";
-
-    string k = 1;
-    uint64 v = 2;
-}
-
-message Partition {
-    option (scalapb.message).extends = "transaction.Command";
-    option (scalapb.message).companion_extends = "transaction.Command";
-
-    string id = 1;
-    repeated MVCCVersion reads = 2;
-    repeated KV insertions = 3;
-    repeated KV updates = 4;
-    repeated string deletions = 5;
-}*/
-
 message ReadRequest {
     option (scalapb.message).extends = "transaction.Command";
     option (scalapb.message).companion_extends = "transaction.Command";
@@ -65,8 +46,8 @@ message Transaction {
     option (scalapb.message).companion_extends = "transaction.Command";
 
     string id = 1;
-    repeated string rs = 2;
-    repeated string ws = 3;
+    repeated MVCCVersion rs = 2;
+    repeated MVCCVersion ws = 3;
 }
 
 message CoordinatorResult {
@@ -91,6 +72,6 @@ message Batch {
 
     string id = 1;
     map<string, TxList> partitions = 2;
-    repeated string txs = 3;
+    repeated Transaction txs = 3;
     string coordinator = 4;
 }

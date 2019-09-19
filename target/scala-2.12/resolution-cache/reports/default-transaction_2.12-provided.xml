@@ -7,7 +7,7 @@
 		revision="0.1"
 		conf="provided"
 		confs="compile, runtime, test, provided, optional, protobuf, compile-internal, runtime-internal, test-internal, plugin, pom, scala-tool"
-		date="20190913190419"/>
+		date="20190918143806"/>
 	<dependencies>
 		<module organisation="io.vertx" name="vertx-codegen">
 			<revision name="3.5.0" status="release" pubdate="20171017114808" resolver="sbt-chain" artresolver="sbt-chain" homepage="" downloaded="false" searched="false" default="false" conf="default, compile, runtime, default(compile), master" position="0">

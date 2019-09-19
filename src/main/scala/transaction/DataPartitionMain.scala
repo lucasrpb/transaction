@@ -1,11 +1,8 @@
 package transaction
 
 import java.net.InetSocketAddress
-import java.util.UUID
 
-import com.twitter.util.{Await, Future}
-import io.vertx.scala.core.Vertx
-import io.vertx.scala.kafka.admin.AdminUtils
+import com.twitter.util.Await
 
 import scala.concurrent.ExecutionContext.Implicits.global
 

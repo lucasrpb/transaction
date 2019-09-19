@@ -30,18 +30,13 @@ class Coordinator(val id: String, val host: String, val port: Int)(implicit val 
 
   val session = cluster.connect("mvcc")
 
-  session.execute("truncate batches;")
-
-  val POS = new AtomicLong(id.toLong)
-
-  val INSERT_BATCH = session.prepare("insert into batches(coordinator, pos, bin) values(?,?,?);")
-  val INSERT_BATCH_EMPTY = session.prepare("insert into batches(coordinator, pos) values(?,?);")
+  val INSERT_BATCH = session.prepare("insert into batches(id, bin, completed, n) values(?,?, false, 0) if not exists;")
   val READ_DATA = session.prepare("select * from data where key=?;")
 
   case class Request(id: String, t: Transaction, tmp: Long = System.currentTimeMillis()){
     val p = Promise[Command]()
-    val rs = t.rs
-    val ws = t.ws
+    val rs = t.rs.map(_.k)
+    val ws = t.ws.map(_.k)
     val partitions = (rs ++ ws).distinct.map(k => (k.toInt % DataPartitionMain.n).toString)
   }
 
@@ -50,45 +45,35 @@ class Coordinator(val id: String, val host: String, val port: Int)(implicit val 
 
   val timer = new Timer()
 
-  def insert(opt: Option[Batch]): Future[Boolean] = {
-    val pos = POS.getAndAdd(CoordinatorMain.n)
-
-    if(opt.isEmpty){
-      return session.executeAsync(INSERT_BATCH_EMPTY.bind.setString(0, id).setLong(1, pos)).map(_.wasApplied())
-    }
-
-    val b = opt.get
-
+  def insert(b: Batch): Future[Boolean] = {
     val buf = ByteBuffer.wrap(Any.pack(b).toByteArray)
-    session.executeAsync(INSERT_BATCH.bind.setString(0, id).setLong(1, pos).setBytes(2, buf)).map(_.wasApplied())
+    session.executeAsync(INSERT_BATCH.bind.setString(0, b.id).setBytes(1, buf)).map(_.wasApplied())
+  }
+
+  def log(b: Batch): Future[Boolean] = {
+
   }
 
   class Job extends TimerTask {
     override def run(): Unit = {
 
       if(batch.isEmpty){
-        insert(None).onSuccess { _ =>
-          timer.schedule(new Job(), 10L)
-        }
-
+        timer.schedule(new Job(), 10L)
         return
       }
 
       val now = System.currentTimeMillis()
 
       var txs = Seq.empty[Request]
-      val it = batch.iterator()
 
-      while(it.hasNext()){
-        txs = txs :+ it.next()
+      while(!batch.isEmpty()){
+        txs = txs :+ batch.poll()
       }
 
       var keys = Seq.empty[String]
 
       txs = txs.sortBy(_.id).filter { r =>
         val elapsed = now - r.tmp
-
-        batch.remove(r)
 
         if(elapsed >= TIMEOUT){
           r.p.setValue(Nack())
@@ -103,33 +88,44 @@ class Coordinator(val id: String, val host: String, val port: Int)(implicit val 
       }
 
       if(txs.isEmpty) {
-        insert(None)
+        timer.schedule(new Job(), 10L)
         return
       }
 
+      var partitions = Map[String, TxList]()
 
+      txs.foreach { r =>
 
-      val b = Batch(UUID.randomUUID.toString, partitions, txs.map(_.id), id)
+        //println(s"partitions ${r.partitions}\n")
 
-      insert(Some(b)).map { ok =>
+        r.partitions.foreach { p =>
+          partitions.get(p) match {
+            case None => partitions = partitions + (p -> TxList(Seq(r.t.id)))
+            case Some(pt) => partitions = partitions + (p -> TxList(pt.txs :+ r.t.id))
+          }
+        }
+      }
+
+      val b = Batch(UUID.randomUUID.toString, partitions, txs.map(_.t), id)
+
+      insert(b).flatMap(ok => log(b).map(_ && ok)).map { ok =>
         if(ok) {
           txs.foreach { r =>
             executing.put(r.id, r)
           }
         } else {
           txs.foreach { r =>
-            batch.remove(r)
             r.p.setValue(Nack())
           }
         }
-      }.map { _ =>
-        timer.schedule(new Job(), 10L)
       }.handle { case t =>
         t.printStackTrace()
 
         txs.foreach { r =>
           r.p.setValue(Nack())
         }
+      }.ensure {
+        timer.schedule(new Job(), 10L)
       }
     }
   }

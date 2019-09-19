@@ -4,7 +4,7 @@
 		module="transaction_2.12"
 		revision="0.1"
 		status="integration"
-		publication="20190913190419"
+		publication="20190918143806"
 	>
 		<description>
 		transaction
@@ -42,7 +42,7 @@
 		<dependency org="io.vertx" name="vertx-codegen" rev="3.5.0" conf="provided->default(compile)"/>
 		<dependency org="io.vertx" name="vertx-lang-scala_2.12" rev="3.5.0" conf="compile->default(compile)"/>
 		<dependency org="io.vertx" name="vertx-hazelcast" rev="3.5.0" conf="compile->default(compile)"/>
-		<dependency org="org.apache.kafka" name="kafka-clients" rev="2.3.0" conf="compile->default(compile)"/>
+		<dependency org="io.vertx" name="vertx-kafka-client-scala_2.12" rev="3.5.0" conf="compile->default(compile)"/>
 		<dependency org="com.twitter" name="finagle-http_2.12" rev="19.5.1" conf="compile->default(compile)"/>
 		<dependency org="com.twitter" name="finagle-core_2.12" rev="19.5.1" conf="compile->default(compile)"/>
 		<dependency org="io.netty" name="netty-all" rev="4.1.35.Final" conf="compile->default(compile)"/>

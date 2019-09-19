@@ -4,10 +4,8 @@ import java.util.UUID
 import java.util.concurrent.ThreadLocalRandom
 import java.util.concurrent.atomic.AtomicInteger
 
+import com.datastax.driver.core.Cluster
 import com.twitter.util.{Await, Future}
-import io.vertx.core.AsyncResult
-import io.vertx.scala.core.Vertx
-import io.vertx.scala.kafka.admin.AdminUtils
 import org.scalatest.FlatSpec
 import transaction.protocol._
 
@@ -16,6 +14,13 @@ import scala.concurrent.ExecutionContext.Implicits.global
 class MainSpec extends FlatSpec {
 
   "amount of money" should " be equal after transactions" in {
+
+    val cluster = Cluster.builder()
+      .addContactPoint("127.0.0.1")
+      .build()
+
+    val session = cluster.connect("mvcc")
+    session.execute("truncate batches;")
 
     val rand = ThreadLocalRandom.current()
 
@@ -29,7 +34,7 @@ class MainSpec extends FlatSpec {
 
     val counter = new AtomicInteger(0)
 
-    for(i<-0 until 1000){
+    for(i<-0 until 100){
 
       val tid = UUID.randomUUID.toString
       val k1 = rand.nextInt(0, nAcc).toString

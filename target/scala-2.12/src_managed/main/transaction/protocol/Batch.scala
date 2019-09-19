@@ -9,7 +9,7 @@ package transaction.protocol
 final case class Batch(
     id: _root_.scala.Predef.String = "",
     partitions: _root_.scala.collection.immutable.Map[_root_.scala.Predef.String, transaction.protocol.TxList] = _root_.scala.collection.immutable.Map.empty,
-    txs: _root_.scala.Seq[_root_.scala.Predef.String] = _root_.scala.Seq.empty,
+    txs: _root_.scala.Seq[transaction.protocol.Transaction] = _root_.scala.Seq.empty,
     coordinator: _root_.scala.Predef.String = ""
     ) extends scalapb.GeneratedMessage with scalapb.Message[Batch] with scalapb.lenses.Updatable[Batch] with transaction.Command {
     @transient
@@ -29,7 +29,7 @@ final case class Batch(
       }
       txs.foreach { __item =>
         val __value = __item
-        __size += _root_.com.google.protobuf.CodedOutputStream.computeStringSize(3, __value)
+        __size += 1 + _root_.com.google.protobuf.CodedOutputStream.computeUInt32SizeNoTag(__value.serializedSize) + __value.serializedSize
       }
       
       {
@@ -63,7 +63,9 @@ final case class Batch(
       };
       txs.foreach { __v =>
         val __m = __v
-        _output__.writeString(3, __m)
+        _output__.writeTag(3, 2)
+        _output__.writeUInt32NoTag(__m.serializedSize)
+        __m.writeTo(_output__)
       };
       {
         val __v = coordinator
@@ -75,7 +77,7 @@ final case class Batch(
     def mergeFrom(`_input__`: _root_.com.google.protobuf.CodedInputStream): transaction.protocol.Batch = {
       var __id = this.id
       val __partitions = (_root_.scala.collection.immutable.Map.newBuilder[_root_.scala.Predef.String, transaction.protocol.TxList] ++= this.partitions)
-      val __txs = (_root_.scala.collection.immutable.Vector.newBuilder[_root_.scala.Predef.String] ++= this.txs)
+      val __txs = (_root_.scala.collection.immutable.Vector.newBuilder[transaction.protocol.Transaction] ++= this.txs)
       var __coordinator = this.coordinator
       var _done__ = false
       while (!_done__) {
@@ -87,7 +89,7 @@ final case class Batch(
           case 18 =>
             __partitions += transaction.protocol.Batch._typemapper_partitions.toCustom(_root_.scalapb.LiteParser.readMessage(_input__, transaction.protocol.Batch.PartitionsEntry.defaultInstance))
           case 26 =>
-            __txs += _input__.readString()
+            __txs += _root_.scalapb.LiteParser.readMessage(_input__, transaction.protocol.Transaction.defaultInstance)
           case 34 =>
             __coordinator = _input__.readString()
           case tag => _input__.skipField(tag)
@@ -106,9 +108,9 @@ final case class Batch(
     def addAllPartitions(__vs: Iterable[(_root_.scala.Predef.String, transaction.protocol.TxList)]): Batch = copy(partitions = partitions ++ __vs)
     def withPartitions(__v: _root_.scala.collection.immutable.Map[_root_.scala.Predef.String, transaction.protocol.TxList]): Batch = copy(partitions = __v)
     def clearTxs = copy(txs = _root_.scala.Seq.empty)
-    def addTxs(__vs: _root_.scala.Predef.String*): Batch = addAllTxs(__vs)
-    def addAllTxs(__vs: Iterable[_root_.scala.Predef.String]): Batch = copy(txs = txs ++ __vs)
-    def withTxs(__v: _root_.scala.Seq[_root_.scala.Predef.String]): Batch = copy(txs = __v)
+    def addTxs(__vs: transaction.protocol.Transaction*): Batch = addAllTxs(__vs)
+    def addAllTxs(__vs: Iterable[transaction.protocol.Transaction]): Batch = copy(txs = txs ++ __vs)
+    def withTxs(__v: _root_.scala.Seq[transaction.protocol.Transaction]): Batch = copy(txs = __v)
     def withCoordinator(__v: _root_.scala.Predef.String): Batch = copy(coordinator = __v)
     def getFieldByNumber(__fieldNumber: _root_.scala.Int): _root_.scala.Any = {
       (__fieldNumber: @_root_.scala.unchecked) match {
@@ -129,7 +131,7 @@ final case class Batch(
       (__field.number: @_root_.scala.unchecked) match {
         case 1 => _root_.scalapb.descriptors.PString(id)
         case 2 => _root_.scalapb.descriptors.PRepeated(partitions.iterator.map(transaction.protocol.Batch._typemapper_partitions.toBase(_).toPMessage).toVector)
-        case 3 => _root_.scalapb.descriptors.PRepeated(txs.iterator.map(_root_.scalapb.descriptors.PString).toVector)
+        case 3 => _root_.scalapb.descriptors.PRepeated(txs.iterator.map(_.toPMessage).toVector)
         case 4 => _root_.scalapb.descriptors.PString(coordinator)
       }
     }
@@ -145,7 +147,7 @@ object Batch extends scalapb.GeneratedMessageCompanion[transaction.protocol.Batc
     transaction.protocol.Batch(
       __fieldsMap.getOrElse(__fields.get(0), "").asInstanceOf[_root_.scala.Predef.String],
       __fieldsMap.getOrElse(__fields.get(1), Nil).asInstanceOf[_root_.scala.Seq[transaction.protocol.Batch.PartitionsEntry]].iterator.map(transaction.protocol.Batch._typemapper_partitions.toCustom).toMap,
-      __fieldsMap.getOrElse(__fields.get(2), Nil).asInstanceOf[_root_.scala.Seq[_root_.scala.Predef.String]],
+      __fieldsMap.getOrElse(__fields.get(2), Nil).asInstanceOf[_root_.scala.Seq[transaction.protocol.Transaction]],
       __fieldsMap.getOrElse(__fields.get(3), "").asInstanceOf[_root_.scala.Predef.String]
     )
   }
@@ -155,7 +157,7 @@ object Batch extends scalapb.GeneratedMessageCompanion[transaction.protocol.Batc
       transaction.protocol.Batch(
         __fieldsMap.get(scalaDescriptor.findFieldByNumber(1).get).map(_.as[_root_.scala.Predef.String]).getOrElse(""),
         __fieldsMap.get(scalaDescriptor.findFieldByNumber(2).get).map(_.as[_root_.scala.Seq[transaction.protocol.Batch.PartitionsEntry]]).getOrElse(_root_.scala.Seq.empty).iterator.map(transaction.protocol.Batch._typemapper_partitions.toCustom).toMap,
-        __fieldsMap.get(scalaDescriptor.findFieldByNumber(3).get).map(_.as[_root_.scala.Seq[_root_.scala.Predef.String]]).getOrElse(_root_.scala.Seq.empty),
+        __fieldsMap.get(scalaDescriptor.findFieldByNumber(3).get).map(_.as[_root_.scala.Seq[transaction.protocol.Transaction]]).getOrElse(_root_.scala.Seq.empty),
         __fieldsMap.get(scalaDescriptor.findFieldByNumber(4).get).map(_.as[_root_.scala.Predef.String]).getOrElse("")
       )
     case _ => throw new RuntimeException("Expected PMessage")
@@ -166,6 +168,7 @@ object Batch extends scalapb.GeneratedMessageCompanion[transaction.protocol.Batc
     var __out: _root_.scalapb.GeneratedMessageCompanion[_] = null
     (__number: @_root_.scala.unchecked) match {
       case 2 => __out = transaction.protocol.Batch.PartitionsEntry
+      case 3 => __out = transaction.protocol.Transaction
     }
     __out
   }
@@ -317,7 +320,7 @@ object Batch extends scalapb.GeneratedMessageCompanion[transaction.protocol.Batc
   implicit class BatchLens[UpperPB](_l: _root_.scalapb.lenses.Lens[UpperPB, transaction.protocol.Batch]) extends _root_.scalapb.lenses.ObjectLens[UpperPB, transaction.protocol.Batch](_l) {
     def id: _root_.scalapb.lenses.Lens[UpperPB, _root_.scala.Predef.String] = field(_.id)((c_, f_) => c_.copy(id = f_))
     def partitions: _root_.scalapb.lenses.Lens[UpperPB, _root_.scala.collection.immutable.Map[_root_.scala.Predef.String, transaction.protocol.TxList]] = field(_.partitions)((c_, f_) => c_.copy(partitions = f_))
-    def txs: _root_.scalapb.lenses.Lens[UpperPB, _root_.scala.Seq[_root_.scala.Predef.String]] = field(_.txs)((c_, f_) => c_.copy(txs = f_))
+    def txs: _root_.scalapb.lenses.Lens[UpperPB, _root_.scala.Seq[transaction.protocol.Transaction]] = field(_.txs)((c_, f_) => c_.copy(txs = f_))
     def coordinator: _root_.scalapb.lenses.Lens[UpperPB, _root_.scala.Predef.String] = field(_.coordinator)((c_, f_) => c_.copy(coordinator = f_))
   }
   final val ID_FIELD_NUMBER = 1
@@ -329,7 +332,7 @@ object Batch extends scalapb.GeneratedMessageCompanion[transaction.protocol.Batc
   def of(
     id: _root_.scala.Predef.String,
     partitions: _root_.scala.collection.immutable.Map[_root_.scala.Predef.String, transaction.protocol.TxList],
-    txs: _root_.scala.Seq[_root_.scala.Predef.String],
+    txs: _root_.scala.Seq[transaction.protocol.Transaction],
     coordinator: _root_.scala.Predef.String
   ): _root_.transaction.protocol.Batch = _root_.transaction.protocol.Batch(
     id,

@@ -1,20 +1,16 @@
 package transaction
 
-import java.util.TimerTask
-import java.util.concurrent.atomic.{AtomicInteger, AtomicLong, AtomicReference}
+import java.util.concurrent.atomic.AtomicLong
+import java.util.{Timer, TimerTask}
 
-import com.datastax.driver.core.{BatchStatement, Cluster, ResultSet, Row}
+import com.datastax.driver.core.{BatchStatement, Cluster, Row}
 import com.google.protobuf.any.Any
 import com.twitter.finagle.Service
-import com.twitter.util.{Await, Future, Promise}
-import io.vertx.scala.core.Vertx
-import io.vertx.scala.kafka.client.common.TopicPartition
-import io.vertx.scala.kafka.client.consumer.{KafkaConsumer, KafkaConsumerRecord}
-import org.apache.kafka.clients.consumer.ConsumerConfig
+import com.twitter.util.Future
 import transaction.protocol._
-import collection.JavaConverters._
+
+import scala.collection.JavaConverters._
 import scala.concurrent.ExecutionContext
-import scala.util.{Failure, Success}
 
 class DataPartition(val id: String)(implicit val ec: ExecutionContext) extends Service [Command, Command]{
 
@@ -30,36 +26,15 @@ class DataPartition(val id: String)(implicit val ec: ExecutionContext) extends S
 
   val session = cluster.connect("mvcc")
 
-  val config = scala.collection.mutable.Map[String, String]()
-
-  config += (ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG -> "localhost:9092")
-  config += (ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG -> "org.apache.kafka.common.serialization.StringDeserializer")
-  config += (ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG -> "org.apache.kafka.common.serialization.ByteArrayDeserializer")
-  config += (ConsumerConfig.GROUP_ID_CONFIG -> s"partition_${id}")
-  config += (ConsumerConfig.AUTO_OFFSET_RESET_CONFIG -> "latest")
-  config += (ConsumerConfig.ENABLE_AUTO_COMMIT_CONFIG -> "false")
-
-  val vertx = Vertx.vertx()
-
-  // use consumer for interacting with Apache Kafka
-  var consumer = KafkaConsumer.create[String, Array[Byte]](vertx, config)
-
-  consumer.subscribeFuture("log").onComplete {
-    case Success(result) => {
-      println(s"Consumer subscribed")
-    }
-    case Failure(cause) => println("Failure")
-  }
-
   var PARTITIONS = Map.empty[String, Service[Command, Command]]
 
   val UPDATE_DATA = session.prepare("update data set value=?, version=? where key=?;")
   val READ_DATA = session.prepare("select * from data where key=?;")
   val READ_OFFSET = session.prepare("select offset from offsets where id=?;")
   val UPDATE_OFFSET = session.prepare("update offsets set offset = offset + 1 where id=?;")
-  val READ_BATCH = session.prepare("select * from batches where id=?;")
-  val INC_BATCH = session.prepare("update batches set n = n + 1 where id=?;")
-  val UPDATE_BATCH = session.prepare("update batches set completed = true, aborted = ?, applied = ? where id=?;")
+  val GET_BATCH = session.prepare("select * from batches where coordinator=?;")
+  val INC_BATCH = session.prepare("update batches set n = n + 1 where coordinator=?;")
+  val UPDATE_BATCH = session.prepare("update batches set completed = true, aborted = ?, applied = ? where coordinator=?;")
 
   def readKey(k: String, v: MVCCVersion, tx: String): Future[Boolean] = {
     session.executeAsync(READ_DATA.bind.setString(0, k)).map{rs =>
@@ -79,18 +54,25 @@ class DataPartition(val id: String)(implicit val ec: ExecutionContext) extends S
 
   val wb = new BatchStatement()
 
-  def updateBatch(id: String, size: Int): Future[Boolean] = {
-    session.executeAsync(INC_BATCH.bind.setString(0, id)).map(_.wasApplied())
+  def updateBatch(c: String, pos: Long, size: Int): Future[Boolean] = {
+    session.executeAsync(INC_BATCH.bind.setString(0, s"$c-$pos")).map(_.wasApplied())
   }
 
-  def getBatch(id: String): Future[Batch] = {
-    session.executeAsync(READ_BATCH.bind.setString(0, id)).map{ r =>
-      Any.parseFrom(r.one.getBytes("bin").array()).unpack(Batch)
+  def getBatch(c: String, pos: Long): Future[Option[Batch]] = {
+    session.executeAsync(GET_BATCH.bind.setString(0, s"$c-$pos")).map { r =>
+      val one = r.one()
+
+      if(one == null) {
+        None
+      } else {
+        val bytes = one.getBytes("bin")
+        if(bytes == null) Some(null) else Some(Any.parseFrom(r.one.getBytes("bin").array()).unpack(Batch))
+      }
     }
   }
 
-  def readBatch(id: String): Future[Row] = {
-    session.executeAsync(READ_BATCH.bind.setString(0, id)).map { rs =>
+  def readBatch(c: String, pos: Long): Future[Row] = {
+    session.executeAsync(GET_BATCH.bind.setString(0, s"$c-$pos")).map { rs =>
       rs.one
     }
   }
@@ -129,27 +111,28 @@ class DataPartition(val id: String)(implicit val ec: ExecutionContext) extends S
     session.executeAsync(wb).map(_.wasApplied())
   }
 
-  def completeBatch(id: String, conflicted: Seq[String], applied: Seq[String]): Future[Boolean] = {
+  def completeBatch(c: String, pos: Long, conflicted: Seq[String], applied: Seq[String]): Future[Boolean] = {
     session.executeAsync(UPDATE_BATCH.bind.setSet(0, conflicted.toSet.asJava)
       .setSet(1, applied.toSet.asJava).setString(2, id)).map(_.wasApplied())
   }
 
-  def sendToCoordinator(b: Batch, conflicted: Seq[String], applied: Seq[String], isLeader: Boolean): Future[Boolean] = {
+  def sendToCoordinator(b: Batch, c: String, pos: Long,
+                        conflicted: Seq[String], applied: Seq[String], isLeader: Boolean): Future[Boolean] = {
     if(!isLeader) return Future.value(true)
-    val c = coordinators(b.coordinator)
-    completeBatch(b.id, conflicted, applied).map { ok =>
-      c(PartitionResponse.apply(id, conflicted, applied))
+    val coord = coordinators(b.coordinator)
+    completeBatch(c, pos, conflicted, applied).map { ok =>
+      coord(CoordinatorResult.apply(id, conflicted, applied))
       ok
     }
   }
 
-  def run2(b: Batch): Future[Boolean] = {
+  def run2(b: Batch, c: String, pos: Long): Future[Boolean] = {
     println(s"partition ${id} processing batch ${b.id}\n")
 
     val partitions = b.partitions
-    val txs = b.transactions
+    val txs = b.txs
 
-    readBatch(b.id).flatMap { data =>
+    readBatch(c, pos).flatMap { data =>
 
       val n = data.getInt("n")
       val leader = data.getString("leader")
@@ -160,48 +143,70 @@ class DataPartition(val id: String)(implicit val ec: ExecutionContext) extends S
           val applied = reads.filter(_._2 == true).map(_._1)
 
           write(applied).flatMap { _ =>
-            sendToCoordinator(b, conflicted.map(_.id), applied.map(_.id), leader.equals(id))
+            sendToCoordinator(b, c, pos, conflicted.map(_.id), applied.map(_.id), leader.equals(id))
           }
         }
       } else {
-        run2(b)
+        run2(b, c, pos)
       }
     }
   }
 
-  def increment(b: Batch): Future[Boolean] = {
+  def increment(b: Batch, c: String, pos: Long): Future[Boolean] = {
     val partitions = b.partitions
 
     if(!partitions.isDefinedAt(id)){
       return Future.value(true)
     }
 
-    updateBatch(b.id, partitions.size).flatMap { ok =>
-      run2(b)
+    updateBatch(c, pos, partitions.size).flatMap { ok =>
+      run2(b, c, pos)
     }
   }
 
-  def handle(evt: KafkaConsumerRecord[String, Array[Byte]]): Unit = {
+  val timer = new Timer()
+  val POS = new AtomicLong(10L)
 
-    if(PARTITIONS.isEmpty) PARTITIONS = DataPartitionMain.partitions.map{ case (id, (host, port)) =>
-      id -> createConnection(host, port)
-    }
+  class Job() extends TimerTask {
+    override def run(): Unit = {
 
-    val bid = new String(evt.value())
+      val pos = POS.get()
+      val c = (pos % CoordinatorMain.n).toString
 
-    consumer.pause()
+      //println(s"processing position $pos at partition $id...\n")
 
-    getBatch(bid).flatMap { b =>
-      increment(b)
-    }.handle { case t =>
-      t.printStackTrace()
-    }.ensure {
-      consumer.commit()
-      consumer.resume()
+      if(PARTITIONS.isEmpty) PARTITIONS = DataPartitionMain.partitions.map{ case (id, (host, port)) =>
+        id -> createConnection(host, port)
+      }
+
+      getBatch(c, pos).flatMap { opt =>
+        opt match {
+          case None =>
+            Future.value(true)
+          case Some(b) =>
+
+            if(b == null){
+              POS.incrementAndGet()
+              Future.value(false)
+            } else {
+              println(s"processing position $pos at partition $id...\n")
+
+              increment(b, c, pos).map { ok =>
+                POS.incrementAndGet()
+                ok
+              }
+            }
+        }
+      }.handle { case t  =>
+        t.printStackTrace()
+      }.ensure {
+        timer.schedule(new Job(), 10L)
+      }
+
     }
   }
 
-  consumer.handler(handle)
+  timer.schedule(new Job(), 10L)
 
   override def apply(request: Command): Future[Command] = {
     null
