@@ -165,7 +165,6 @@ class DataPartition(val id: String)(implicit val ec: ExecutionContext) extends S
   }
 
   val timer = new Timer()
-  val POS = new AtomicLong(10L)
 
   class Job() extends TimerTask {
     override def run(): Unit = {

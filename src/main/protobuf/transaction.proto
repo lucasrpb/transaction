@@ -75,3 +75,11 @@ message Batch {
     repeated Transaction txs = 3;
     string coordinator = 4;
 }
+
+message Epoch {
+    option (scalapb.message).extends = "transaction.Command";
+    option (scalapb.message).companion_extends = "transaction.Command";
+
+    string id = 1;
+    repeated string batches = 2;
+}

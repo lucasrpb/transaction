@@ -2,13 +2,15 @@ package transaction
 
 import java.nio.ByteBuffer
 import java.util.concurrent.ConcurrentLinkedQueue
-import java.util.concurrent.atomic.AtomicLong
-import java.util.{Properties, Timer, TimerTask, UUID}
+import java.util.{Timer, TimerTask, UUID}
 
 import com.datastax.driver.core.{Cluster, HostDistance, PoolingOptions}
 import com.google.protobuf.any.Any
 import com.twitter.finagle.Service
 import com.twitter.util.{Future, Promise}
+import io.vertx.scala.core.Vertx
+import io.vertx.scala.kafka.client.producer.{KafkaProducer, KafkaProducerRecord}
+import org.apache.kafka.clients.producer.ProducerConfig
 import transaction.protocol._
 
 import scala.collection.concurrent.TrieMap
@@ -29,6 +31,18 @@ class Coordinator(val id: String, val host: String, val port: Int)(implicit val 
     .build()
 
   val session = cluster.connect("mvcc")
+
+  val config = scala.collection.mutable.Map[String, String]()
+
+  config += (ProducerConfig.BOOTSTRAP_SERVERS_CONFIG -> "localhost:9092")
+  config += (ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG -> "org.apache.kafka.common.serialization.StringSerializer")
+  config += (ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG -> "org.apache.kafka.common.serialization.ByteArraySerializer")
+  config += (ProducerConfig.ACKS_CONFIG -> "1")
+
+  val vertx = Vertx.vertx()
+
+  // use producer for interacting with Apache Kafka
+  val producer = KafkaProducer.create[String, Array[Byte]](vertx, config)
 
   val INSERT_BATCH = session.prepare("insert into batches(id, bin, completed, n) values(?,?, false, 0) if not exists;")
   val READ_DATA = session.prepare("select * from data where key=?;")
@@ -51,7 +65,8 @@ class Coordinator(val id: String, val host: String, val port: Int)(implicit val 
   }
 
   def log(b: Batch): Future[Boolean] = {
-
+    val record = KafkaProducerRecord.create[String, Array[Byte]]("batches", b.id, b.id.getBytes)
+    producer.writeFuture(record).map(_ => true)
   }
 
   class Job extends TimerTask {

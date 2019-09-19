@@ -1,2 +1,16 @@
-[0m[[0m[33mwarn[0m] [0m[0mthere were two feature warnings; re-run with -feature for details[0m
-[0m[[0m[33mwarn[0m] [0m[0mone warning found[0m
+[0m[[0m[31merror[0m] [0m[0mD:\Users\lucas\IdeaProjects\transaction\src\main\scala\transaction\Aggregator.scala:57:17: not found: value Epoch[0m
+[0m[[0m[31merror[0m] [0m[0m    val epoch = Epoch[0m
+[0m[[0m[31merror[0m] [0m[0m                ^[0m
+[0m[[0m[31merror[0m] [0m[0mD:\Users\lucas\IdeaProjects\transaction\src\main\scala\transaction\Aggregator.scala:60:20: missing parameter type[0m
+[0m[[0m[31merror[0m] [0m[0m  consumer.handler(_ => _)[0m
+[0m[[0m[31merror[0m] [0m[0m                   ^[0m
+[0m[[0m[31merror[0m] [0m[0mD:\Users\lucas\IdeaProjects\transaction\src\main\scala\transaction\DataPartition.scala:172:17: not found: value POS[0m
+[0m[[0m[31merror[0m] [0m[0m      val pos = POS.get()[0m
+[0m[[0m[31merror[0m] [0m[0m                ^[0m
+[0m[[0m[31merror[0m] [0m[0mD:\Users\lucas\IdeaProjects\transaction\src\main\scala\transaction\DataPartition.scala:188:15: not found: value POS[0m
+[0m[[0m[31merror[0m] [0m[0m              POS.incrementAndGet()[0m
+[0m[[0m[31merror[0m] [0m[0m              ^[0m
+[0m[[0m[31merror[0m] [0m[0mD:\Users\lucas\IdeaProjects\transaction\src\main\scala\transaction\DataPartition.scala:194:17: not found: value POS[0m
+[0m[[0m[31merror[0m] [0m[0m                POS.incrementAndGet()[0m
+[0m[[0m[31merror[0m] [0m[0m                ^[0m
+[0m[[0m[31merror[0m] [0m[0m5 errors found[0m

@@ -19,7 +19,8 @@ object TransactionProto extends _root_.scalapb.GeneratedFileObject {
       transaction.protocol.Transaction,
       transaction.protocol.CoordinatorResult,
       transaction.protocol.TxList,
-      transaction.protocol.Batch
+      transaction.protocol.Batch,
+      transaction.protocol.Epoch
     )
   private lazy val ProtoBytes: Array[Byte] =
       scalapb.Encoding.fromBase64(scala.collection.immutable.Seq(
@@ -40,7 +41,9 @@ object TransactionProto extends _root_.scalapb.GeneratedFileObject {
   igKA3R4cxgDIAMoCzIMLlRyYW5zYWN0aW9uQgjiPwUSA3R4c1IDdHhzEjIKC2Nvb3JkaW5hdG9yGAQgASgJQhDiPw0SC2Nvb3Jka
   W5hdG9yUgtjb29yZGluYXRvchpcCg9QYXJ0aXRpb25zRW50cnkSGgoDa2V5GAEgASgJQgjiPwUSA2tleVIDa2V5EikKBXZhbHVlG
   AIgASgLMgcuVHhMaXN0QgriPwcSBXZhbHVlUgV2YWx1ZToCOAE6LeI/KgoTdHJhbnNhY3Rpb24uQ29tbWFuZBITdHJhbnNhY3Rpb
-  24uQ29tbWFuZEId4j8aChR0cmFuc2FjdGlvbi5wcm90b2NvbBABWABiBnByb3RvMw=="""
+  24uQ29tbWFuZCJ3CgVFcG9jaBIXCgJpZBgBIAEoCUIH4j8EEgJpZFICaWQSJgoHYmF0Y2hlcxgCIAMoCUIM4j8JEgdiYXRjaGVzU
+  gdiYXRjaGVzOi3iPyoKE3RyYW5zYWN0aW9uLkNvbW1hbmQSE3RyYW5zYWN0aW9uLkNvbW1hbmRCHeI/GgoUdHJhbnNhY3Rpb24uc
+  HJvdG9jb2wQAVgAYgZwcm90bzM="""
       ).mkString)
   lazy val scalaDescriptor: _root_.scalapb.descriptors.FileDescriptor = {
     val scalaProto = com.google.protobuf.descriptor.FileDescriptorProto.parseFrom(ProtoBytes)

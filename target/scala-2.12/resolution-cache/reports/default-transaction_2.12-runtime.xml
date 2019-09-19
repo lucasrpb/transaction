@@ -7,7 +7,7 @@
 		revision="0.1"
 		conf="runtime"
 		confs="compile, runtime, test, provided, optional, protobuf, compile-internal, runtime-internal, test-internal, plugin, pom, scala-tool"
-		date="20190918143806"/>
+		date="20190919163707"/>
 	<dependencies>
 		<module organisation="com.datastax.cassandra" name="cassandra-driver-core">
 			<revision name="3.7.2" status="release" pubdate="20190709070033" resolver="sbt-chain" artresolver="sbt-chain" homepage="" downloaded="false" searched="false" default="false" conf="default, compile, runtime, default(compile), master" position="84">
