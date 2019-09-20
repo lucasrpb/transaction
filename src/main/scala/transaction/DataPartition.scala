@@ -45,7 +45,7 @@ class DataPartition(val id: String)(implicit val ec: ExecutionContext) extends S
 
   consumer.subscribeFuture("log").onComplete {
     case Success(result) => {
-      println(s"Consumer subscribed")
+      println(s"Consumer ${id} subscribed")
     }
     case Failure(cause) => println("Failure")
   }
@@ -54,7 +54,7 @@ class DataPartition(val id: String)(implicit val ec: ExecutionContext) extends S
   val READ_DATA = session.prepare("select * from data where key=?;")
   val READ_BATCH = session.prepare("select * from batches where id=?;")
   val INCREMENT_BATCH = session.prepare("update batches set n = n + 1 where id=?;")
-  val COMPLETE_BATCH = session.prepare("update batches set completed=true, aborted=?, applied=? where id=?;")
+  val COMPLETE_BATCH = session.prepare("update batches set completed=true, conflicted=?, applied=? where id=?;")
 
   def getBatch(id: String): Future[Batch] = {
     session.executeAsync(READ_BATCH.bind.setString(0, id)).map { rs =>
@@ -129,14 +129,16 @@ class DataPartition(val id: String)(implicit val ec: ExecutionContext) extends S
       .setSet(1, applied.toSet.asJava).setString(2, id)).map(_.wasApplied())
   }
 
-  def sendToCoordinator(c: String, p: String, conflicted: Seq[String], applied: Seq[String]): Future[Boolean] = {
-    if(!id.equals(p)){
+  def sendToCoordinator(b: Batch, conflicted: Seq[String], applied: Seq[String]): Future[Boolean] = {
+    if(!id.equals(b.partitions.keys.toSeq.sorted.head)){
       return Future.value(true)
     }
 
-    val coord = coordinators(c)
+    println(s"partition ${id} sending ack to coordinator ${b.coordinator}\n")
 
-    complete(id, conflicted, applied).map { ok =>
+    val coord = coordinators(b.coordinator)
+
+    complete(b.id, conflicted, applied).map { ok =>
       coord(CoordinatorResult(id, conflicted, applied))
       ok
     }
@@ -146,35 +148,36 @@ class DataPartition(val id: String)(implicit val ec: ExecutionContext) extends S
 
     println(s"partition ${id} processing batch ${b.id}\n")
 
-    val c = coordinators(b.coordinator)
     val txs = b.txs
-
     val partitions = b.partitions
 
     readBatch(b.id).flatMap { n =>
       if(n == partitions.size){
+
+        println(s"completed batch ${id}\n")
 
         Future.collect(txs.map{t => checkTx(t, txs).map(t -> _)}).flatMap { reads =>
           val conflicted = reads.filter(_._2 == false).map(_._1)
           val applied = reads.filter(_._2 == true).map(_._1)
 
           write(applied).flatMap { ok =>
-            sendToCoordinator(b.coordinator, b.partitions.keys.toSeq.sorted.head, conflicted.map(_.id), applied.map(_.id))
+            sendToCoordinator(b, conflicted.map(_.id), applied.map(_.id))
           }
         }
 
       } else {
+
         val timer = new Timer()
         val p = Promise[Boolean]
 
         timer.schedule(new TimerTask {
           override def run(): Unit = {
-            timer.purge()
-
             run2(b).onSuccess { ok =>
               p.setValue(ok)
             }.onFailure { ex =>
               p.setException(ex)
+            }.ensure {
+              timer.purge()
             }
           }
         }, 10L)
@@ -184,12 +187,15 @@ class DataPartition(val id: String)(implicit val ec: ExecutionContext) extends S
     }
   }
 
-  def processBatch(id: String): Future[Boolean] = {
-    getBatch(id).flatMap { b =>
+  def processBatch(bid: String): Future[Boolean] = {
+    getBatch(bid).flatMap { b =>
+
+      println(s"partition ${id} read batch ${b.id} \n")
+
       if(!b.partitions.isDefinedAt(id)){
         Future.value(true)
       } else {
-        increment(id).flatMap { _ =>
+        increment(b.id).flatMap { _ =>
           run2(b)
         }
       }
@@ -197,12 +203,15 @@ class DataPartition(val id: String)(implicit val ec: ExecutionContext) extends S
   }
 
   def handle(evt: KafkaConsumerRecord[String, Array[Byte]]): Unit = {
-    val epoch = Any.parseFrom(evt.value()).unpack(Epoch)
+    consumer.pause()
 
-    Future.traverseSequentially(epoch.batches) { id =>
-      processBatch(id)
-    }.onSuccess { _ =>
+    val bid = new String(evt.value())
+
+    processBatch(bid).onSuccess { _ =>
+      consumer.resume()
       consumer.commit()
+    }.handle { case ex =>
+      ex.printStackTrace()
     }
   }
 

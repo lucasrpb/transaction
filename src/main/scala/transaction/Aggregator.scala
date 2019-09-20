@@ -31,6 +31,7 @@ class Aggregator()(implicit val ec: ExecutionContext){
   pconfig += (ProducerConfig.BOOTSTRAP_SERVERS_CONFIG -> "localhost:9092")
   pconfig += (ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG -> "org.apache.kafka.common.serialization.StringSerializer")
   pconfig += (ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG -> "org.apache.kafka.common.serialization.ByteArraySerializer")
+  pconfig += (ProducerConfig.BATCH_SIZE_CONFIG -> "16384")
   pconfig += (ProducerConfig.ACKS_CONFIG -> "1")
 
   val vertx = Vertx.vertx()
@@ -55,13 +56,19 @@ class Aggregator()(implicit val ec: ExecutionContext){
 
   def handle(evts: KafkaConsumerRecords[String, Array[Byte]]): Unit = {
     val batches = (0 until evts.size()).map {i => new String(evts.recordAt(i).value)}
-    val epoch = Epoch(UUID.randomUUID.toString, batches)
 
-    log(epoch).ensure {
-      consumer.commit()
+    //println(s"creating batch ${epoch.id} with batches ${batches}\n")
+
+    batches.sorted.foreach { id =>
+      val record = KafkaProducerRecord.create[String, Array[Byte]]("log", id, id.getBytes)
+      producer.write(record)
     }
+
+    producer.flush(_ => {
+      consumer.commit()
+    })
   }
 
-  consumer.handler(_ => _)
+  consumer.handler(_ => {})
   consumer.batchHandler(handle)
 }
