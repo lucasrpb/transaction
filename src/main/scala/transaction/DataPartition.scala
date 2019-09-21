@@ -1,19 +1,16 @@
 package transaction
 
+import java.util.concurrent.atomic.AtomicLong
 import java.util.{Timer, TimerTask}
 
 import com.datastax.driver.core.{BatchStatement, Cluster}
 import com.google.protobuf.any.Any
 import com.twitter.finagle.Service
-import com.twitter.util.{Future, Promise}
-import io.vertx.scala.core.Vertx
-import io.vertx.scala.kafka.client.consumer.{KafkaConsumer, KafkaConsumerRecord}
-import org.apache.kafka.clients.consumer.ConsumerConfig
+import com.twitter.util.{Await, Future, Promise}
 import transaction.protocol._
 
-import scala.concurrent.ExecutionContext
-import scala.util.{Failure, Success}
 import scala.collection.JavaConverters._
+import scala.concurrent.ExecutionContext
 
 class DataPartition(val id: String)(implicit val ec: ExecutionContext) extends Service [Command, Command]{
 
@@ -23,38 +20,16 @@ class DataPartition(val id: String)(implicit val ec: ExecutionContext) extends S
     .addContactPoint("127.0.0.1")
     .build()
 
-  val session = cluster.connect("mvcc")
+  val session = cluster.connect("mvcc2")
 
-  val coordinators = CoordinatorMain.coordinators.map{ case (id, (host, port)) =>
-    id -> createConnection(host, port)
-  }
-
-  val config = scala.collection.mutable.Map[String, String]()
-
-  config += (ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG -> "localhost:9092")
-  config += (ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG -> "org.apache.kafka.common.serialization.StringDeserializer")
-  config += (ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG -> "org.apache.kafka.common.serialization.ByteArrayDeserializer")
-  config += (ConsumerConfig.GROUP_ID_CONFIG -> s"partition_${id}")
-  config += (ConsumerConfig.AUTO_OFFSET_RESET_CONFIG -> "latest")
-  config += (ConsumerConfig.ENABLE_AUTO_COMMIT_CONFIG -> "false")
-
-  val vertx = Vertx.vertx()
-
-  // use consumer for interacting with Apache Kafka
-  var consumer = KafkaConsumer.create[String, Array[Byte]](vertx, config)
-
-  consumer.subscribeFuture("log").onComplete {
-    case Success(result) => {
-      println(s"Consumer ${id} subscribed")
-    }
-    case Failure(cause) => println("Failure")
-  }
+  var coordinators = Map.empty[String, Service[Command, Command]]
 
   val UPDATE_DATA = session.prepare("update data set value=?, version=? where key=?;")
   val READ_DATA = session.prepare("select * from data where key=?;")
   val READ_BATCH = session.prepare("select * from batches where id=?;")
   val INCREMENT_BATCH = session.prepare("update batches set n = n + 1 where id=?;")
   val COMPLETE_BATCH = session.prepare("update batches set completed=true, conflicted=?, applied=? where id=?;")
+  val READ_EPOCH = session.prepare("select * from log where offset=?;")
 
   def getBatch(id: String): Future[Batch] = {
     session.executeAsync(READ_BATCH.bind.setString(0, id)).map { rs =>
@@ -202,20 +177,41 @@ class DataPartition(val id: String)(implicit val ec: ExecutionContext) extends S
     }
   }
 
-  def handle(evt: KafkaConsumerRecord[String, Array[Byte]]): Unit = {
-    consumer.pause()
+  def readEpoch(offset: Long): Option[String] = {
+    val rs = session.execute(READ_EPOCH.bind.setLong(0, offset))
+    val one = rs.one()
+    if(one == null) None else Some(one.getString("batch"))
+  }
 
-    val bid = new String(evt.value())
+  val pos = new AtomicLong(0L)
 
-    processBatch(bid).onSuccess { _ =>
-      consumer.resume()
-      consumer.commit()
-    }.handle { case ex =>
-      ex.printStackTrace()
+  val timer = new java.util.Timer()
+
+  class Job extends TimerTask {
+    override def run(): Unit = {
+
+      if(coordinators.isEmpty) coordinators = CoordinatorMain.coordinators.map{ case (id, (host, port)) =>
+        id -> createConnection(host, port)
+      }
+
+      val opt = readEpoch(pos.get())
+
+      if(opt.isEmpty) {
+        timer.schedule(new Job(), 10L)
+        return
+      }
+
+      processBatch(opt.get).onSuccess { _ =>
+        pos.incrementAndGet()
+        timer.schedule(new Job(), 10L)
+      }.handle { case ex =>
+        ex.printStackTrace()
+      }
+
     }
   }
 
-  consumer.handler(handle)
+  timer.schedule(new Job(), 10L)
 
   override def apply(request: Command): Future[Command] = {
     null

@@ -15,10 +15,10 @@ class InsertSpec extends FlatSpec {
       .addContactPoint("127.0.0.1")
       .build();
 
-    val session = cluster.connect("mvcc")
+    val session = cluster.connect("mvcc2")
 
     val INSERT_DATA = session.prepare("insert into data(key, value, version) values(?,?,?);")
-    val INSERT_OFFSETS = session.prepare("insert into offsets(id, offset) values(?,0);")
+    //val INSERT_OFFSETS = session.prepare("insert into offsets(id, offset) values(?,0);")
 
     var tasks = Seq.empty[Future[ResultSet]]
 
@@ -34,9 +34,9 @@ class InsertSpec extends FlatSpec {
       session.execute(INSERT_DATA.bind.setString(0, i.toString).setLong(1, rand.nextLong(0, MAX_VALUE)).setString(2, tid))
     }
 
-    for(i<-0 until m){
+   /* for(i<-0 until m){
       session.execute(INSERT_OFFSETS.bind.setString(0, i.toString))
-    }
+    }*/
 
     /*val READ_DATA = session.prepare("select sum(value) from data;")
 

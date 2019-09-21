@@ -16,8 +16,6 @@ object CoordinatorMain {
 
   def main(args: Array[String]): Unit = {
 
-    val aggregator = new Aggregator()
-
     Await.all(coordinators.map { case (id, (host, port)) =>
       TransactorServer.Server().serve(new InetSocketAddress(host, port), new Coordinator(id, host, port))
     }.toSeq: _*)
