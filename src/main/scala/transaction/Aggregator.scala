@@ -39,7 +39,6 @@ class Aggregator()(implicit val ec: ExecutionContext) extends Service[Command, C
 
   def process(b: Batch): Future[Command] = {
     batch.add(b.id)
-    println(s"adding batch ${b.id}\n")
     Future.value(Ack())
   }
 
