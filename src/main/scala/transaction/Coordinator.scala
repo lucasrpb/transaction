@@ -48,8 +48,6 @@ class Coordinator(val id: String, val host: String, val port: Int)(implicit val 
 
   def insert(b: Batch): Future[Boolean] = {
 
-    if(aggregator == null) aggregator = createConnection("127.0.0.1", 4000)
-
     val buf = ByteBuffer.wrap(Any.pack(b).toByteArray)
     session.executeAsync(INSERT_BATCH.bind.setString(0, b.id).setBytes(1, buf)).map(_.wasApplied())
       .flatMap(ok => aggregator(b).map(_.isInstanceOf[Ack] && ok))
@@ -57,6 +55,10 @@ class Coordinator(val id: String, val host: String, val port: Int)(implicit val 
 
   class Job extends TimerTask {
     override def run(): Unit = {
+
+      if(aggregator == null) aggregator = createConnection("127.0.0.1", 4000)
+
+      //while(!aggregator.isAvailable){}
 
       if(batch.isEmpty){
         timer.schedule(new Job(), 10L)

@@ -11,6 +11,7 @@ import transaction.protocol._
 
 import scala.collection.JavaConverters._
 import scala.concurrent.ExecutionContext
+import scala.collection.JavaConverters._
 
 class DataPartition(val id: String)(implicit val ec: ExecutionContext) extends Service [Command, Command]{
 
@@ -177,10 +178,10 @@ class DataPartition(val id: String)(implicit val ec: ExecutionContext) extends S
     }
   }
 
-  def readEpoch(offset: Long): Option[String] = {
+  def readEpoch(offset: Long): Option[Seq[String]] = {
     val rs = session.execute(READ_EPOCH.bind.setLong(0, offset))
     val one = rs.one()
-    if(one == null) None else Some(one.getString("batch"))
+    if(one == null) None else Some(one.getSet("batches", classOf[String]).asScala.toSeq)
   }
 
   val pos = new AtomicLong(0L)
@@ -201,7 +202,11 @@ class DataPartition(val id: String)(implicit val ec: ExecutionContext) extends S
         return
       }
 
-      processBatch(opt.get).onSuccess { _ =>
+      println(s"processing epoch ${opt.get}\n")
+
+      Future.traverseSequentially(opt.get) { id =>
+        processBatch(id)
+      }.onSuccess { _ =>
         pos.incrementAndGet()
         timer.schedule(new Job(), 10L)
       }.handle { case ex =>
