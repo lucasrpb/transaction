@@ -1,4 +1,7 @@
-[0m[[0m[31merror[0m] [0m[0mD:\Users\lucas\IdeaProjects\transaction\src\main\scala\transaction\DataPartition.scala:164:116: too many arguments (4) for method sendToCoordinator: (b: transaction.protocol.Batch, conflicted: Seq[String], applied: Seq[String])com.twitter.util.Future[Boolean][0m
-[0m[[0m[31merror[0m] [0m[0m            sendToCoordinator(b.coordinator, b.partitions.keys.toSeq.sorted.head, conflicted.map(_.id), applied.map(_.id))[0m
-[0m[[0m[31merror[0m] [0m[0m                                                                                                                   ^[0m
-[0m[[0m[31merror[0m] [0m[0mone error found[0m
+[0m[[0m[31merror[0m] [0m[0mD:\Users\lucas\IdeaProjects\transaction\src\main\scala\transaction\Coordinator.scala:12:23: object kafka is not a member of package io.vertx.scala[0m
+[0m[[0m[31merror[0m] [0m[0mimport io.vertx.scala.kafka.client.producer.{KafkaProducer, KafkaProducerRecord}[0m
+[0m[[0m[31merror[0m] [0m[0m                      ^[0m
+[0m[[0m[31merror[0m] [0m[0mD:\Users\lucas\IdeaProjects\transaction\src\main\scala\transaction\Coordinator.scala:13:19: object kafka is not a member of package org.apache[0m
+[0m[[0m[31merror[0m] [0m[0mimport org.apache.kafka.clients.producer.ProducerConfig[0m
+[0m[[0m[31merror[0m] [0m[0m                  ^[0m
+[0m[[0m[31merror[0m] [0m[0mtwo errors found[0m

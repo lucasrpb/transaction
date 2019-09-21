@@ -1,1 +1,1 @@
-["transaction.CoordinatorMain","transaction.DataPartitionMain"]
+["transaction.AggregatorMain","transaction.CoordinatorMain","transaction.DataPartitionMain"]
