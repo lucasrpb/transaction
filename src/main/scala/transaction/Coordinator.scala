@@ -36,14 +36,14 @@ class Coordinator(val id: String, val host: String, val port: Int)(implicit val 
     //.setNewConnectionThreshold(HostDistance.LOCAL, 2000)
     //.setCoreConnectionsPerHost(HostDistance.LOCAL, 2000)
 
-  val READ_DATA = session.prepare("select * from data where key=?;")
-
   val cluster = Cluster.builder()
     .addContactPoint("127.0.0.1")
     .withPoolingOptions(poolingOptions)
     .build()
 
   val session = cluster.connect("mvcc")
+
+  val READ_DATA = session.prepare("select * from data where key=?;")
 
   case class Request(id: String, t: Transaction, tmp: Long = System.currentTimeMillis()){
     val p = Promise[Command]()

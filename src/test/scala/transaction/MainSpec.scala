@@ -36,7 +36,7 @@ class MainSpec extends FlatSpec {
 
     val counter = new AtomicInteger(0)
 
-    for(i<-0 until 100){
+    for(i<-0 until 1000){
 
       val tid = UUID.randomUUID.toString
       val k1 = rand.nextInt(0, nAcc).toString

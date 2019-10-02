@@ -1,7 +1,5 @@
-[0m[[0m[31merror[0m] [0m[0mD:\Users\lucas\IdeaProjects\transaction\src\main\scala\transaction\Coordinator.scala:12:23: object kafka is not a member of package io.vertx.scala[0m
-[0m[[0m[31merror[0m] [0m[0mimport io.vertx.scala.kafka.client.producer.{KafkaProducer, KafkaProducerRecord}[0m
-[0m[[0m[31merror[0m] [0m[0m                      ^[0m
-[0m[[0m[31merror[0m] [0m[0mD:\Users\lucas\IdeaProjects\transaction\src\main\scala\transaction\Coordinator.scala:13:19: object kafka is not a member of package org.apache[0m
-[0m[[0m[31merror[0m] [0m[0mimport org.apache.kafka.clients.producer.ProducerConfig[0m
-[0m[[0m[31merror[0m] [0m[0m                  ^[0m
-[0m[[0m[31merror[0m] [0m[0mtwo errors found[0m
+[0m[[0m[33mwarn[0m] [0m[0mD:\Users\lucas\IdeaProjects\transaction\src\main\scala\transaction\Coordinator.scala:39:19: Reference to uninitialized value session[0m
+[0m[[0m[33mwarn[0m] [0m[0m  val READ_DATA = session.prepare("select * from data where key=?;")[0m
+[0m[[0m[33mwarn[0m] [0m[0m                  ^[0m
+[0m[[0m[33mwarn[0m] [0m[0mthere were two feature warnings; re-run with -feature for details[0m
+[0m[[0m[33mwarn[0m] [0m[0mtwo warnings found[0m
