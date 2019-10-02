@@ -1,6 +1,5 @@
 package transaction
 
-import java.nio.ByteBuffer
 import java.util.concurrent.ConcurrentLinkedQueue
 import java.util.{Timer, TimerTask, UUID}
 
@@ -8,6 +7,9 @@ import com.datastax.driver.core.{Cluster, HostDistance, PoolingOptions}
 import com.google.protobuf.any.Any
 import com.twitter.finagle.Service
 import com.twitter.util.{Future, Promise}
+import io.vertx.scala.core.Vertx
+import io.vertx.scala.kafka.client.producer.{KafkaProducer, KafkaProducerRecord}
+import org.apache.kafka.clients.producer.ProducerConfig
 import transaction.protocol._
 
 import scala.collection.concurrent.TrieMap
@@ -16,29 +18,38 @@ import scala.concurrent.ExecutionContext
 class Coordinator(val id: String, val host: String, val port: Int)(implicit val ec: ExecutionContext)
   extends Service[Command, Command]{
 
+  val config = scala.collection.mutable.Map[String, String]()
+
+  config += (ProducerConfig.BOOTSTRAP_SERVERS_CONFIG -> "localhost:9092")
+  config += (ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG -> "org.apache.kafka.common.serialization.StringSerializer")
+  config += (ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG -> "org.apache.kafka.common.serialization.ByteArraySerializer")
+  config += (ProducerConfig.ACKS_CONFIG -> "1")
+
+  val vertx = Vertx.vertx()
+
+  // use producer for interacting with Apache Kafka
+  val producer = KafkaProducer.create[String, Array[Byte]](vertx, config)
+
   val poolingOptions = new PoolingOptions()
     //.setConnectionsPerHost(HostDistance.LOCAL, 1, 200)
     .setMaxRequestsPerConnection(HostDistance.LOCAL, 3000)
     //.setNewConnectionThreshold(HostDistance.LOCAL, 2000)
     //.setCoreConnectionsPerHost(HostDistance.LOCAL, 2000)
 
+  val READ_DATA = session.prepare("select * from data where key=?;")
+
   val cluster = Cluster.builder()
     .addContactPoint("127.0.0.1")
     .withPoolingOptions(poolingOptions)
     .build()
 
-  val session = cluster.connect("mvcc2")
-
-  var aggregator: Service[Command, Command] = null
-
-  val INSERT_BATCH = session.prepare("insert into batches(id, bin, completed, n) values(?,?, false, 0) if not exists;")
-  val READ_DATA = session.prepare("select * from data where key=?;")
+  val session = cluster.connect("mvcc")
 
   case class Request(id: String, t: Transaction, tmp: Long = System.currentTimeMillis()){
     val p = Promise[Command]()
     val rs = t.rs.map(_.k)
     val ws = t.ws.map(_.k)
-    val partitions = (rs ++ ws).distinct.map(k => (k.toInt % DataPartitionMain.n).toString)
+    val partitions = (rs ++ ws).distinct.map(k => (k.toInt % WorkerMain.n).toString)
   }
 
   val batch = new ConcurrentLinkedQueue[Request]()
@@ -46,19 +57,14 @@ class Coordinator(val id: String, val host: String, val port: Int)(implicit val 
 
   val timer = new Timer()
 
-  def insert(b: Batch): Future[Boolean] = {
-
-    val buf = ByteBuffer.wrap(Any.pack(b).toByteArray)
-    session.executeAsync(INSERT_BATCH.bind.setString(0, b.id).setBytes(1, buf)).map(_.wasApplied())
-      .flatMap(ok => aggregator(b).map(_.isInstanceOf[Ack] && ok))
+  def log(b: Batch): Future[Boolean] = {
+    val buf = Any.pack(b).toByteArray
+    val record = KafkaProducerRecord.create[String, Array[Byte]]("log", b.id, buf)
+    producer.writeFuture(record).map(_ => true)
   }
 
   class Job extends TimerTask {
     override def run(): Unit = {
-
-      if(aggregator == null) aggregator = createConnection("127.0.0.1", 4000)
-
-      //while(!aggregator.isAvailable){}
 
       if(batch.isEmpty){
         timer.schedule(new Job(), 10L)
@@ -99,8 +105,6 @@ class Coordinator(val id: String, val host: String, val port: Int)(implicit val 
 
       txs.foreach { r =>
 
-        //println(s"partitions ${r.partitions}\n")
-
         r.partitions.foreach { p =>
           partitions.get(p) match {
             case None => partitions = partitions + (p -> TxList(Seq(r.t.id)))
@@ -111,7 +115,7 @@ class Coordinator(val id: String, val host: String, val port: Int)(implicit val 
 
       val b = Batch(UUID.randomUUID.toString, partitions, txs.map(_.t), id)
 
-      insert(b).map { ok =>
+      log(b).map { ok =>
         if(ok) {
           txs.foreach { r =>
             executing.put(r.id, r)
@@ -159,14 +163,14 @@ class Coordinator(val id: String, val host: String, val port: Int)(implicit val 
     pr.conflicted.foreach { t =>
       executing.get(t) match {
         case None =>
-        case Some(r) => /*if(!r.p.isDefined)*/ r.p.setValue(Nack())
+        case Some(r) => r.p.setValue(Nack())
       }
     }
 
     pr.applied.foreach { t =>
       executing.get(t) match {
         case None =>
-        case Some(r) => /*if(!r.p.isDefined)*/ r.p.setValue(Ack())
+        case Some(r) => r.p.setValue(Ack())
       }
     }
 

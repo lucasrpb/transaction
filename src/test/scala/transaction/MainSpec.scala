@@ -22,10 +22,12 @@ class MainSpec extends FlatSpec {
     val session = cluster.connect("mvcc")
     session.execute("truncate batches;")
 
+    val tb = session.execute("select sum(value) as total from data;").one.getLong("total")
+
     val rand = ThreadLocalRandom.current()
 
     val nAccounts = 1000
-    val numExecutors = DataPartitionMain.partitions.size
+    val numExecutors = WorkerMain.workers.size
 
     var tasks = Seq.empty[Future[Boolean]]
     val nAcc = 1000
@@ -34,7 +36,7 @@ class MainSpec extends FlatSpec {
 
     val counter = new AtomicInteger(0)
 
-    for(i<-0 until 1500){
+    for(i<-0 until 100){
 
       val tid = UUID.randomUUID.toString
       val k1 = rand.nextInt(0, nAcc).toString
@@ -78,6 +80,15 @@ class MainSpec extends FlatSpec {
 
     println(s"elapsed: ${elapsed}ms, req/s: ${reqs} avg. latency: ${elapsed.toDouble/len} ms\n")
     println(s"${result.count(_ == true)}/${len}\n")
+
+    val ta = session.execute("select sum(value) as total from data;").one.getLong("total")
+
+    println(s"${Console.YELLOW}total before ${tb} total after ${ta}${Console.YELLOW}\n\n")
+
+    session.close()
+    cluster.close()
+
+    assert(ta == tb)
 
     Await.all(clients.map(_.close()): _*)
   }
