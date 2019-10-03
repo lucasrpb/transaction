@@ -3,39 +3,7 @@
   <component name="ChangeListManager">
     <list default="true" id="28075c15-abbf-4ce2-951e-97b6bfe1c951" name="Default Changelist" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/scala/transaction/Client.scala" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/scala/transaction/Client.scala" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/scala/transaction/Coordinator.scala" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/scala/transaction/Coordinator.scala" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/scala/transaction/Scheduler.scala" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/scala/transaction/Scheduler.scala" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/scala/transaction/SchedulerMain.scala" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/scala/transaction/SchedulerMain.scala" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/scala/transaction/WorkerMain.scala" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/scala/transaction/WorkerMain.scala" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/scala/transaction/package.scala" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/scala/transaction/package.scala" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/test/scala/transaction/InsertSpec.scala" beforeDir="false" afterPath="$PROJECT_DIR$/src/test/scala/transaction/InsertSpec.scala" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/test/scala/transaction/MainSpec.scala" beforeDir="false" afterPath="$PROJECT_DIR$/src/test/scala/transaction/MainSpec.scala" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/scala-2.12/classes/transaction/Coordinator$Request.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/scala-2.12/classes/transaction/Coordinator$Request.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/scala-2.12/classes/transaction/Scheduler$$anonfun$handle$4.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/scala-2.12/classes/transaction/Scheduler$$typecreator1$1.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/scala-2.12/classes/transaction/Scheduler$$typecreator1$1.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/scala-2.12/classes/transaction/Scheduler$$typecreator2$1.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/scala-2.12/classes/transaction/Scheduler$$typecreator2$1.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/scala-2.12/classes/transaction/Scheduler.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/scala-2.12/classes/transaction/Scheduler.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/scala-2.12/classes/transaction/SchedulerMain$.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/scala-2.12/classes/transaction/SchedulerMain$.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/scala-2.12/classes/transaction/WorkerMain$.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/scala-2.12/classes/transaction/WorkerMain$.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/scala-2.12/classes/transaction/WorkerMain.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/scala-2.12/classes/transaction/WorkerMain.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/scala-2.12/test-classes/transaction/InsertSpec.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/scala-2.12/test-classes/transaction/InsertSpec.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/scala-2.12/transaction_2.12-0.1.jar" beforeDir="false" afterPath="$PROJECT_DIR$/target/scala-2.12/transaction_2.12-0.1.jar" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/streams/compile/compileIncSetup/$global/streams/inc_compile_2.12.zip" beforeDir="false" afterPath="$PROJECT_DIR$/target/streams/compile/compileIncSetup/$global/streams/inc_compile_2.12.zip" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/streams/compile/compileIncremental/$global/streams/export" beforeDir="false" afterPath="$PROJECT_DIR$/target/streams/compile/compileIncremental/$global/streams/export" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/streams/compile/compileIncremental/$global/streams/out" beforeDir="false" afterPath="$PROJECT_DIR$/target/streams/compile/compileIncremental/$global/streams/out" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/streams/compile/packageBin/$global/streams/inputs" beforeDir="false" afterPath="$PROJECT_DIR$/target/streams/compile/packageBin/$global/streams/inputs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/streams/test/$global/$global/definedTestNames/data" beforeDir="false" afterPath="$PROJECT_DIR$/target/streams/test/$global/$global/definedTestNames/data" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/streams/test/compileIncSetup/$global/streams/inc_compile_2.12.zip" beforeDir="false" afterPath="$PROJECT_DIR$/target/streams/test/compileIncSetup/$global/streams/inc_compile_2.12.zip" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/streams/test/compileIncremental/$global/streams/export" beforeDir="false" afterPath="$PROJECT_DIR$/target/streams/test/compileIncremental/$global/streams/export" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/streams/test/compileIncremental/$global/streams/out" beforeDir="false" afterPath="$PROJECT_DIR$/target/streams/test/compileIncremental/$global/streams/out" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/streams/test/definedTests/$global/streams/out" beforeDir="false" afterPath="$PROJECT_DIR$/target/streams/test/definedTests/$global/streams/out" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/streams/test/test/$global/streams/succeeded_tests" beforeDir="false" afterPath="$PROJECT_DIR$/target/streams/test/test/$global/streams/succeeded_tests" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/streams/test/testOnly/$global/streams/out" beforeDir="false" afterPath="$PROJECT_DIR$/target/streams/test/testOnly/$global/streams/out" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/test-reports/TEST-transaction.InsertSpec.xml" beforeDir="false" afterPath="$PROJECT_DIR$/target/test-reports/TEST-transaction.InsertSpec.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/test-reports/TEST-transaction.MainSpec.xml" beforeDir="false" afterPath="$PROJECT_DIR$/target/test-reports/TEST-transaction.MainSpec.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/test-reports/transaction.InsertSpec.xml" beforeDir="false" afterPath="$PROJECT_DIR$/target/test-reports/transaction.InsertSpec.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/test-reports/transaction.MainSpec.xml" beforeDir="false" afterPath="$PROJECT_DIR$/target/test-reports/transaction.MainSpec.xml" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
@@ -153,7 +121,7 @@
       <workItem from="1569020790074" duration="104000" />
       <workItem from="1569020910026" duration="10149000" />
       <workItem from="1569097752513" duration="209000" />
-      <workItem from="1570056911646" duration="4154000" />
+      <workItem from="1570056911646" duration="4554000" />
     </task>
     <task id="LOCAL-00001" summary="first commit">
       <created>1567870508099</created>
@@ -344,7 +312,14 @@
       <option name="project" value="LOCAL" />
       <updated>1570042841392</updated>
     </task>
-    <option name="localTasksCounter" value="28" />
+    <task id="LOCAL-00028" summary="Version with only storage (in this case YugaByteDB)">
+      <created>1570061357091</created>
+      <option name="number" value="00028" />
+      <option name="presentableId" value="LOCAL-00028" />
+      <option name="project" value="LOCAL" />
+      <updated>1570061357091</updated>
+    </task>
+    <option name="localTasksCounter" value="29" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
