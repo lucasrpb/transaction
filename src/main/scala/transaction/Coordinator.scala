@@ -49,7 +49,7 @@ class Coordinator(val id: String, val host: String, val port: Int)(implicit val 
     val p = Promise[Command]()
     val rs = t.rs.map(_.k)
     val ws = t.ws.map(_.k)
-    val partitions = (rs ++ ws).distinct.map(k => (k.toInt % WorkerMain.n).toString)
+    val partitions = (rs ++ ws).distinct.map(k => (accounts.computeHash(k) % PARTITIONS).toString)
   }
 
   val batch = new ConcurrentLinkedQueue[Request]()

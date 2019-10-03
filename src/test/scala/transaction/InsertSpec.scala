@@ -15,7 +15,7 @@ class InsertSpec extends FlatSpec {
       .addContactPoint("127.0.0.1")
       .build();
 
-    val session = cluster.connect("mvcc2")
+    val session = cluster.connect("mvcc")
 
     val INSERT_DATA = session.prepare("insert into data(key, value, version) values(?,?,?);")
     //val INSERT_OFFSETS = session.prepare("insert into offsets(id, offset) values(?,0);")
@@ -31,7 +31,8 @@ class InsertSpec extends FlatSpec {
     val tid = UUID.randomUUID.toString
 
     for(i<-0 until n){
-      session.execute(INSERT_DATA.bind.setString(0, i.toString).setLong(1, rand.nextLong(0, MAX_VALUE)).setString(2, tid))
+      val key = UUID.randomUUID.toString
+      session.execute(INSERT_DATA.bind.setString(0, key).setLong(1, rand.nextLong(0, MAX_VALUE)).setString(2, tid))
     }
 
    /* for(i<-0 until m){

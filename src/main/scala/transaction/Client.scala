@@ -1,6 +1,7 @@
 package transaction
 
 import java.nio.ByteBuffer
+import java.util.UUID
 import java.util.concurrent.ThreadLocalRandom
 
 import com.datastax.driver.core.{Cluster, Session}
@@ -9,11 +10,13 @@ import com.twitter.finagle.Service
 import com.twitter.util.{Future, Timer}
 import com.twitter.conversions.DurationOps._
 import transaction.protocol._
+
 import scala.collection.concurrent.TrieMap
 import scala.concurrent.ExecutionContext
 
-class Client(val id: String, val numExecutors: Int)(implicit val ec: ExecutionContext) {
+class Client()(implicit val ec: ExecutionContext) {
 
+  val tid = UUID.randomUUID.toString()
   val rand = ThreadLocalRandom.current()
 
   val coordinators = CoordinatorMain.coordinators.map{ case (id, (host, port)) =>
@@ -22,8 +25,14 @@ class Client(val id: String, val numExecutors: Int)(implicit val ec: ExecutionCo
 
   implicit val timer = new com.twitter.util.JavaTimer()
 
-  def execute(tid: String, keys: Seq[String])(f: ((String, Map[String, MVCCVersion])) => Map[String, MVCCVersion]): Future[Boolean] = {
+  def execute(f: ((String, Map[String, MVCCVersion])) => Map[String, MVCCVersion]): Future[Boolean] = {
 
+    val accs = accounts.keys.toSeq
+
+    val keys = Seq(
+      accs(rand.nextInt(0, accs.length)).toString,
+      accs(rand.nextInt(0, accs.length)).toString
+    )
     val conn = coordinators(rand.nextInt(0, coordinators.size).toString)
 
     conn(ReadRequest(keys)).flatMap { r =>

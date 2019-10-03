@@ -1,5 +1,7 @@
 package transaction
 
+import java.util.{Timer, TimerTask}
+
 import com.google.protobuf.any.Any
 import com.twitter.finagle.Service
 import com.twitter.util.Future
@@ -8,10 +10,11 @@ import io.vertx.scala.kafka.client.consumer.{KafkaConsumer, KafkaConsumerRecords
 import org.apache.kafka.clients.consumer.ConsumerConfig
 import transaction.protocol._
 
+import scala.collection.concurrent.TrieMap
 import scala.concurrent.ExecutionContext
 import scala.util.{Failure, Success}
 
-class Scheduler()(implicit val ec: ExecutionContext){
+class Scheduler()(implicit val ec: ExecutionContext) extends Service[Command, Command]{
 
   var workers = Map.empty[String, Service[Command, Command]]
 
@@ -36,17 +39,66 @@ class Scheduler()(implicit val ec: ExecutionContext){
     case Failure(cause) => cause.printStackTrace()
   }
 
+  val executing = TrieMap[String, Batch]()
+  //val batches = TrieMap[String, Batch]()
+
   def handle(evts: KafkaConsumerRecords[String, Array[Byte]]): Unit = {
+
+    consumer.pause()
 
     if(workers.isEmpty) workers = WorkerMain.workers.map{ case (id, (host, port)) =>
       id -> createConnection(host, port)
     }
 
-    val batches = (0 until evts.size).map { idx =>
-      Any.parseFrom(evts.recordAt(idx).value()).unpack(Batch)
+    val batches = TrieMap[String, Batch]()
+
+    (0 until evts.size).foreach { idx =>
+      val b = Any.parseFrom(evts.recordAt(idx).value()).unpack(Batch)
+      batches.put(b.id, b)
     }
 
-    val w = workers.head._2
+    def execute(): Future[Boolean] = {
+
+      var partitions = Seq.empty[String]
+
+      var list = batches.filter { case (_, b) =>
+        val pset = b.partitions.keys.toSeq
+
+        if(!pset.exists{partitions.contains(_)}){
+          partitions = partitions ++ pset
+          true
+        } else {
+          false
+        }
+      }.values.toSeq
+
+      println(s"not conflicting ${list.size}\n")
+
+      val WORKERS = workers.values.toSeq
+      list = list.slice(0, Math.min(WORKERS.size, list.size))
+
+      Future.collect(list.zipWithIndex.map{case (b, idx) => WORKERS(idx)(b)}).flatMap { acks =>
+
+        println(s"executed ${list.size}\n...")
+
+        list.foreach { b =>
+          batches.remove(b.id)
+        }
+
+        if(batches.isEmpty){
+          Future.value(true)
+        } else {
+          execute()
+        }
+      }
+    }
+
+    execute().ensure {
+      consumer.resume()
+      consumer.commit()
+    }
+
+    /*val w = workers.head._2
 
     Future.traverseSequentially(batches) { b =>
       w.apply(b)
@@ -54,9 +106,25 @@ class Scheduler()(implicit val ec: ExecutionContext){
       ex.printStackTrace()
     }.ensure {
       consumer.commit()
+    }*/
+  }
+
+  /*val timer = new Timer()
+
+  class Job() extends TimerTask {
+    override def run(): Unit = {
+
+
+
     }
   }
 
+  timer.schedule(new Job(), 10L)*/
+
   consumer.handler(_ => {})
   consumer.batchHandler(handle)
+
+  override def apply(request: Command): Future[Command] = {
+    null
+  }
 }

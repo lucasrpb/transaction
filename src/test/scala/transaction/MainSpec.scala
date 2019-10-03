@@ -9,6 +9,7 @@ import com.twitter.util.{Await, Future}
 import org.scalatest.FlatSpec
 import transaction.protocol._
 
+import scala.collection.concurrent.TrieMap
 import scala.concurrent.ExecutionContext.Implicits.global
 
 class MainSpec extends FlatSpec {
@@ -34,38 +35,39 @@ class MainSpec extends FlatSpec {
 
     var clients = Seq.empty[Client]
 
+    val results = session.execute(s"select * from data;")
+
+    results.forEach(r => {
+      val key = r.getString("key")
+      val value = r.getLong("value")
+      accounts.put(key, value)
+    })
+
     val counter = new AtomicInteger(0)
 
     for(i<-0 until 1000){
 
-      val tid = UUID.randomUUID.toString
-      val k1 = rand.nextInt(0, nAcc).toString
-      val k2 = rand.nextInt(0, nAcc).toString
+      val c = new Client()
+      clients = clients :+ c
 
-      if(!k1.equals(k2)){
+      tasks = tasks :+ c.execute{ case (tid, reads) =>
 
-        val c = new Client(i.toString, numExecutors)
-        clients = clients :+ c
+        val keys = reads.keys
 
-        tasks = tasks :+ c.execute(tid, Seq(k1, k2)){ case (tid, reads) =>
+        val k1 = keys.head
+        val k2 = keys.last
 
-          val keys = reads.keys
+        var b1 = reads(k1).v
+        var b2 = reads(k2).v
 
-          val k1 = keys.head
-          val k2 = keys.last
+        if(b1 > 0){
+          val ammount = if(b1 == 1) 1 else rand.nextLong(1, b1)
 
-          var b1 = reads(k1).v
-          var b2 = reads(k2).v
-
-          if(b1 > 0){
-            val ammount = if(b1 == 1) 1 else rand.nextLong(1, b1)
-
-            b1 = b1 - ammount
-            b2 = b2 + ammount
-          }
-
-          Map(k1 -> MVCCVersion(k1, b1, tid), k2 -> MVCCVersion(k2, b2, tid))
+          b1 = b1 - ammount
+          b2 = b2 + ammount
         }
+
+        Map(k1 -> MVCCVersion(k1, b1, tid), k2 -> MVCCVersion(k2, b2, tid))
       }
     }
 

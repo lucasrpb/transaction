@@ -1,5 +1,2 @@
-[0m[[0m[33mwarn[0m] [0m[0mD:\Users\lucas\IdeaProjects\transaction\src\main\scala\transaction\Coordinator.scala:39:19: Reference to uninitialized value session[0m
-[0m[[0m[33mwarn[0m] [0m[0m  val READ_DATA = session.prepare("select * from data where key=?;")[0m
-[0m[[0m[33mwarn[0m] [0m[0m                  ^[0m
 [0m[[0m[33mwarn[0m] [0m[0mthere were two feature warnings; re-run with -feature for details[0m
-[0m[[0m[33mwarn[0m] [0m[0mtwo warnings found[0m
+[0m[[0m[33mwarn[0m] [0m[0mone warning found[0m

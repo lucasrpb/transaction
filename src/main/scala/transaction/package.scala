@@ -24,7 +24,9 @@ package object transaction {
     val PENDING = 2
   }
 
-  //val NPARTITIONS = 10
+  val PARTITIONS = 100
+
+  val accounts = TrieMap[String, Long]()
 
   implicit def sfToTwitterFuture[T](tf: scala.concurrent.Future[T])(implicit ec: ExecutionContext): Future[T] = {
     val p = Promise[T]

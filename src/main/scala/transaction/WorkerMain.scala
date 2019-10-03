@@ -8,7 +8,8 @@ import scala.concurrent.ExecutionContext.Implicits.global
 object WorkerMain {
 
   val port = 2000
-  val n = 10
+  val n = 5
+  val partitions = 100
   var workers = Map.empty[String, (String, Int)]
 
   for(i<-0 until n){
