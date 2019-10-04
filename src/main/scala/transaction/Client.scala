@@ -29,10 +29,13 @@ class Client()(implicit val ec: ExecutionContext) {
 
     val accs = accounts.keys.toSeq
 
-    val keys = Seq(
-      accs(rand.nextInt(0, accs.length)).toString,
-      accs(rand.nextInt(0, accs.length)).toString
-    )
+    val k1 = accs(rand.nextInt(0, accs.length)).toString
+    val k2 = accs(rand.nextInt(0, accs.length)).toString
+
+   // if(k1.equals(k2)) return Future.value(true)
+
+    val keys = Seq(k1, k2)
+
     val conn = coordinators(rand.nextInt(0, coordinators.size).toString)
 
     conn(ReadRequest(keys)).flatMap { r =>

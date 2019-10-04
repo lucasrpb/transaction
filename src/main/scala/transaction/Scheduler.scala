@@ -4,9 +4,9 @@ import java.util.{Timer, TimerTask}
 
 import com.google.protobuf.any.Any
 import com.twitter.finagle.Service
-import com.twitter.util.Future
+import com.twitter.util.{Await, Future}
 import io.vertx.scala.core.Vertx
-import io.vertx.scala.kafka.client.consumer.{KafkaConsumer, KafkaConsumerRecords}
+import io.vertx.scala.kafka.client.consumer.{KafkaConsumer, KafkaConsumerRecord, KafkaConsumerRecords}
 import org.apache.kafka.clients.consumer.ConsumerConfig
 import transaction.protocol._
 
@@ -39,18 +39,18 @@ class Scheduler()(implicit val ec: ExecutionContext) extends Service[Command, Co
     case Failure(cause) => cause.printStackTrace()
   }
 
-  val executing = TrieMap[String, Batch]()
+  //val executing = TrieMap[String, Batch]()
   //val batches = TrieMap[String, Batch]()
 
   def handle(evts: KafkaConsumerRecords[String, Array[Byte]]): Unit = {
-
-    consumer.pause()
 
     if(workers.isEmpty) workers = WorkerMain.workers.map{ case (id, (host, port)) =>
       id -> createConnection(host, port)
     }
 
-    val batches = TrieMap[String, Batch]()
+    consumer.pause()
+
+    /*val batches = TrieMap[String, Batch]()
 
     (0 until evts.size).foreach { idx =>
       val b = Any.parseFrom(evts.recordAt(idx).value()).unpack(Batch)
@@ -72,8 +72,6 @@ class Scheduler()(implicit val ec: ExecutionContext) extends Service[Command, Co
         }
       }.values.toSeq
 
-      println(s"not conflicting ${list.size}\n")
-
       val WORKERS = workers.values.toSeq
       list = list.slice(0, Math.min(WORKERS.size, list.size))
 
@@ -93,20 +91,27 @@ class Scheduler()(implicit val ec: ExecutionContext) extends Service[Command, Co
       }
     }
 
-    execute().ensure {
+    execute().onSuccess { _ =>
       consumer.resume()
       consumer.commit()
+    }.handle { case e =>
+      e.printStackTrace()
+    }*/
+
+    val batches = (0 until evts.size).map { idx =>
+      Any.parseFrom(evts.recordAt(idx).value()).unpack(Batch)
     }
 
-    /*val w = workers.head._2
+    val w = workers.head._2
 
     Future.traverseSequentially(batches) { b =>
       w.apply(b)
     }.handle { case ex =>
       ex.printStackTrace()
-    }.ensure {
+    }.onSuccess { _ =>
+      consumer.resume()
       consumer.commit()
-    }*/
+    }
   }
 
   /*val timer = new Timer()
@@ -121,8 +126,27 @@ class Scheduler()(implicit val ec: ExecutionContext) extends Service[Command, Co
 
   timer.schedule(new Job(), 10L)*/
 
-  consumer.handler(_ => {})
-  consumer.batchHandler(handle)
+  def handle(evt: KafkaConsumerRecord[String, Array[Byte]]): Unit = {
+
+    if(workers.isEmpty) workers = WorkerMain.workers.map{ case (id, (host, port)) =>
+      id -> createConnection(host, port)
+    }
+
+    val b = Any.parseFrom(evt.value()).unpack(Transaction)
+
+    val w = workers("0")
+
+    w(b).map{_ =>
+      consumer.commit()
+    }.handle { case ex =>
+      ex.printStackTrace()
+    }
+  }
+
+  //consumer.handler(_ => {})
+  //consumer.batchHandler(handle)
+
+  consumer.handler(handle)
 
   override def apply(request: Command): Future[Command] = {
     null

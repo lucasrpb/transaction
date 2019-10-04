@@ -3,7 +3,54 @@
   <component name="ChangeListManager">
     <list default="true" id="28075c15-abbf-4ce2-951e-97b6bfe1c951" name="Default Changelist" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/project/target/scala-2.12/sbt-1.0/resolution-cache/default/transaction-build/scala_2.12/sbt_1.0/0.1.0-SNAPSHOT/resolved.xml.properties" beforeDir="false" afterPath="$PROJECT_DIR$/project/target/scala-2.12/sbt-1.0/resolution-cache/default/transaction-build/scala_2.12/sbt_1.0/0.1.0-SNAPSHOT/resolved.xml.properties" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/project/target/scala-2.12/sbt-1.0/resolution-cache/default/transaction-build/scala_2.12/sbt_1.0/0.1.0-SNAPSHOT/resolved.xml.xml" beforeDir="false" afterPath="$PROJECT_DIR$/project/target/scala-2.12/sbt-1.0/resolution-cache/default/transaction-build/scala_2.12/sbt_1.0/0.1.0-SNAPSHOT/resolved.xml.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/project/target/scala-2.12/sbt-1.0/resolution-cache/reports/default-transaction-build-compile-internal.xml" beforeDir="false" afterPath="$PROJECT_DIR$/project/target/scala-2.12/sbt-1.0/resolution-cache/reports/default-transaction-build-compile-internal.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/project/target/scala-2.12/sbt-1.0/resolution-cache/reports/default-transaction-build-compile.xml" beforeDir="false" afterPath="$PROJECT_DIR$/project/target/scala-2.12/sbt-1.0/resolution-cache/reports/default-transaction-build-compile.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/project/target/scala-2.12/sbt-1.0/resolution-cache/reports/default-transaction-build-optional.xml" beforeDir="false" afterPath="$PROJECT_DIR$/project/target/scala-2.12/sbt-1.0/resolution-cache/reports/default-transaction-build-optional.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/project/target/scala-2.12/sbt-1.0/resolution-cache/reports/default-transaction-build-plugin.xml" beforeDir="false" afterPath="$PROJECT_DIR$/project/target/scala-2.12/sbt-1.0/resolution-cache/reports/default-transaction-build-plugin.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/project/target/scala-2.12/sbt-1.0/resolution-cache/reports/default-transaction-build-pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/project/target/scala-2.12/sbt-1.0/resolution-cache/reports/default-transaction-build-pom.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/project/target/scala-2.12/sbt-1.0/resolution-cache/reports/default-transaction-build-provided.xml" beforeDir="false" afterPath="$PROJECT_DIR$/project/target/scala-2.12/sbt-1.0/resolution-cache/reports/default-transaction-build-provided.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/project/target/scala-2.12/sbt-1.0/resolution-cache/reports/default-transaction-build-runtime-internal.xml" beforeDir="false" afterPath="$PROJECT_DIR$/project/target/scala-2.12/sbt-1.0/resolution-cache/reports/default-transaction-build-runtime-internal.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/project/target/scala-2.12/sbt-1.0/resolution-cache/reports/default-transaction-build-runtime.xml" beforeDir="false" afterPath="$PROJECT_DIR$/project/target/scala-2.12/sbt-1.0/resolution-cache/reports/default-transaction-build-runtime.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/project/target/scala-2.12/sbt-1.0/resolution-cache/reports/default-transaction-build-scala-tool.xml" beforeDir="false" afterPath="$PROJECT_DIR$/project/target/scala-2.12/sbt-1.0/resolution-cache/reports/default-transaction-build-scala-tool.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/project/target/scala-2.12/sbt-1.0/resolution-cache/reports/default-transaction-build-test-internal.xml" beforeDir="false" afterPath="$PROJECT_DIR$/project/target/scala-2.12/sbt-1.0/resolution-cache/reports/default-transaction-build-test-internal.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/project/target/scala-2.12/sbt-1.0/resolution-cache/reports/default-transaction-build-test.xml" beforeDir="false" afterPath="$PROJECT_DIR$/project/target/scala-2.12/sbt-1.0/resolution-cache/reports/default-transaction-build-test.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/project/target/streams/$global/update/$global/streams/out" beforeDir="false" afterPath="$PROJECT_DIR$/project/target/streams/$global/update/$global/streams/out" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/project/target/streams/$global/update/$global/streams/update_cache_2.12/output" beforeDir="false" afterPath="$PROJECT_DIR$/project/target/streams/$global/update/$global/streams/update_cache_2.12/output" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/scala/transaction/Client.scala" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/scala/transaction/Client.scala" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/scala/transaction/Coordinator.scala" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/scala/transaction/Coordinator.scala" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/scala/transaction/CoordinatorMain.scala" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/scala/transaction/CoordinatorMain.scala" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/scala/transaction/Scheduler.scala" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/scala/transaction/Scheduler.scala" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/scala/transaction/SchedulerMain.scala" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/scala/transaction/SchedulerMain.scala" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/scala/transaction/Worker.scala" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/scala/transaction/Worker.scala" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/scala/transaction/WorkerMain.scala" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/scala/transaction/WorkerMain.scala" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/test/scala/transaction/MainSpec.scala" beforeDir="false" afterPath="$PROJECT_DIR$/src/test/scala/transaction/MainSpec.scala" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/scala-2.12/classes/transaction/Client.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/scala-2.12/classes/transaction/Client.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/scala-2.12/classes/transaction/Coordinator$$typecreator1$2.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/scala-2.12/classes/transaction/Coordinator$$typecreator1$2.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/scala-2.12/classes/transaction/Coordinator$$typecreator2$2.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/scala-2.12/classes/transaction/Coordinator$$typecreator2$2.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/scala-2.12/classes/transaction/Coordinator$Job$$anonfun$run$10.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/scala-2.12/classes/transaction/Coordinator$Job.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/scala-2.12/classes/transaction/Coordinator$Request.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/scala-2.12/classes/transaction/Coordinator$Request.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/scala-2.12/classes/transaction/Coordinator.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/scala-2.12/classes/transaction/Coordinator.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/scala-2.12/classes/transaction/CoordinatorMain$.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/scala-2.12/classes/transaction/CoordinatorMain$.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/scala-2.12/classes/transaction/Scheduler.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/scala-2.12/classes/transaction/Scheduler.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/scala-2.12/classes/transaction/SchedulerMain$.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/scala-2.12/classes/transaction/SchedulerMain$.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/scala-2.12/classes/transaction/Worker.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/scala-2.12/classes/transaction/Worker.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/scala-2.12/classes/transaction/WorkerMain$.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/scala-2.12/classes/transaction/WorkerMain$.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/scala-2.12/classes/transaction/WorkerMain.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/scala-2.12/classes/transaction/WorkerMain.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/scala-2.12/test-classes/transaction/MainSpec.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/scala-2.12/test-classes/transaction/MainSpec.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/scala-2.12/transaction_2.12-0.1.jar" beforeDir="false" afterPath="$PROJECT_DIR$/target/scala-2.12/transaction_2.12-0.1.jar" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/streams/compile/compileIncSetup/$global/streams/inc_compile_2.12.zip" beforeDir="false" afterPath="$PROJECT_DIR$/target/streams/compile/compileIncSetup/$global/streams/inc_compile_2.12.zip" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/streams/compile/compileIncremental/$global/streams/export" beforeDir="false" afterPath="$PROJECT_DIR$/target/streams/compile/compileIncremental/$global/streams/export" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/streams/compile/packageBin/$global/streams/inputs" beforeDir="false" afterPath="$PROJECT_DIR$/target/streams/compile/packageBin/$global/streams/inputs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/streams/compile/packageBin/$global/streams/out" beforeDir="false" afterPath="$PROJECT_DIR$/target/streams/compile/packageBin/$global/streams/out" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/streams/test/compileIncSetup/$global/streams/inc_compile_2.12.zip" beforeDir="false" afterPath="$PROJECT_DIR$/target/streams/test/compileIncSetup/$global/streams/inc_compile_2.12.zip" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/streams/test/definedTests/$global/streams/out" beforeDir="false" afterPath="$PROJECT_DIR$/target/streams/test/definedTests/$global/streams/out" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/streams/test/test/$global/streams/succeeded_tests" beforeDir="false" afterPath="$PROJECT_DIR$/target/streams/test/test/$global/streams/succeeded_tests" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/streams/test/testOnly/$global/streams/out" beforeDir="false" afterPath="$PROJECT_DIR$/target/streams/test/testOnly/$global/streams/out" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/test-reports/TEST-transaction.MainSpec.xml" beforeDir="false" afterPath="$PROJECT_DIR$/target/test-reports/TEST-transaction.MainSpec.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/test-reports/transaction.MainSpec.xml" beforeDir="false" afterPath="$PROJECT_DIR$/target/test-reports/transaction.MainSpec.xml" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
@@ -121,7 +168,11 @@
       <workItem from="1569020790074" duration="104000" />
       <workItem from="1569020910026" duration="10149000" />
       <workItem from="1569097752513" duration="209000" />
-      <workItem from="1570056911646" duration="4554000" />
+      <workItem from="1570056911646" duration="14691000" />
+      <workItem from="1570075961285" duration="1128000" />
+      <workItem from="1570123653874" duration="9815000" />
+      <workItem from="1570149673236" duration="1139000" />
+      <workItem from="1570211615376" duration="464000" />
     </task>
     <task id="LOCAL-00001" summary="first commit">
       <created>1567870508099</created>
@@ -319,7 +370,14 @@
       <option name="project" value="LOCAL" />
       <updated>1570061357091</updated>
     </task>
-    <option name="localTasksCounter" value="29" />
+    <task id="LOCAL-00029" summary="Version with only storage (in this case YugaByteDB)">
+      <created>1570061532600</created>
+      <option name="number" value="00029" />
+      <option name="presentableId" value="LOCAL-00029" />
+      <option name="project" value="LOCAL" />
+      <updated>1570061532600</updated>
+    </task>
+    <option name="localTasksCounter" value="30" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">

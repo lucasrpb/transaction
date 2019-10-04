@@ -23,8 +23,6 @@ class MainSpec extends FlatSpec {
     val session = cluster.connect("mvcc")
     session.execute("truncate batches;")
 
-    val tb = session.execute("select sum(value) as total from data;").one.getLong("total")
-
     val rand = ThreadLocalRandom.current()
 
     val nAccounts = 1000
@@ -43,9 +41,11 @@ class MainSpec extends FlatSpec {
       accounts.put(key, value)
     })
 
+    val tb = session.execute("select sum(value) as total from data;").one.getLong("total")
+
     val counter = new AtomicInteger(0)
 
-    for(i<-0 until 1000){
+    for(i<-0 until 1500){
 
       val c = new Client()
       clients = clients :+ c
@@ -60,13 +60,13 @@ class MainSpec extends FlatSpec {
         var b1 = reads(k1).v
         var b2 = reads(k2).v
 
-        if(b1 > 0){
+        if(b1 > 0 && !k1.equals(k2)){
           val ammount = if(b1 == 1) 1 else rand.nextLong(1, b1)
 
           b1 = b1 - ammount
           b2 = b2 + ammount
         }
-
+        
         Map(k1 -> MVCCVersion(k1, b1, tid), k2 -> MVCCVersion(k2, b2, tid))
       }
     }

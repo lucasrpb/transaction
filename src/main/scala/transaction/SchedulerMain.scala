@@ -2,7 +2,7 @@ package transaction
 
 import java.net.InetSocketAddress
 
-import com.twitter.util.Await
+import com.twitter.util.{Await, Promise}
 import io.vertx.scala.core.Vertx
 import io.vertx.scala.kafka.admin.AdminUtils
 
@@ -14,11 +14,18 @@ object SchedulerMain {
 
     val adminUtils = AdminUtils.create(Vertx.vertx(), "localhost:2181", true)
 
-    val task = adminUtils.deleteTopicFuture("log").flatMap { r =>
-      adminUtils.createTopicFuture("log", 1, 1)
-    }
+    val p = Promise[Boolean]()
 
-    println(s"admin task ${Await.result(task)}\n")
+    // Delete topic 'myNewTopic'
+    adminUtils.deleteTopic("log", (r) => {
+      println(s"topic log deleted ${r.succeeded()}\n")
+      adminUtils.createTopic("log", 1, 1, (r) => {
+        println(s"topic log created ${r.succeeded()}\n")
+        p.setValue(true)
+      })
+    })
+
+    Await.result(p)
 
     Await.ready(TransactorServer.Server().serve(new InetSocketAddress("127.0.0.1", 4000), new Scheduler()))
   }
