@@ -41,6 +41,13 @@ message ReadResponse {
     repeated MVCCVersion values = 1;
 }
 
+message KeyList {
+    option (scalapb.message).extends = "transaction.Command";
+    option (scalapb.message).companion_extends = "transaction.Command";
+
+    repeated string keys = 1;
+}
+
 message Transaction {
     option (scalapb.message).extends = "transaction.Command";
     option (scalapb.message).companion_extends = "transaction.Command";
@@ -48,6 +55,8 @@ message Transaction {
     string id = 1;
     repeated MVCCVersion rs = 2;
     repeated MVCCVersion ws = 3;
+    map<string, KeyList> partitions = 4;
+    repeated string keys = 5;
 }
 
 message CoordinatorResult {
@@ -82,4 +91,28 @@ message Epoch {
 
     string id = 1;
     repeated string batches = 2;
+}
+
+message PartitionRequest {
+    option (scalapb.message).extends = "transaction.Command";
+    option (scalapb.message).companion_extends = "transaction.Command";
+
+    string id = 1;
+    repeated Transaction txs = 2;
+}
+
+message PartitionResponse {
+    option (scalapb.message).extends = "transaction.Command";
+    option (scalapb.message).companion_extends = "transaction.Command";
+
+    string id = 1;
+    repeated Transaction txs = 2;
+}
+
+message PartitionRelease {
+    option (scalapb.message).extends = "transaction.Command";
+    option (scalapb.message).companion_extends = "transaction.Command";
+
+    string id = 1;
+    repeated string txs = 2;
 }

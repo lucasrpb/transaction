@@ -42,7 +42,18 @@ class Client()(implicit val ec: ExecutionContext) {
       val reads = r.asInstanceOf[ReadResponse].values
       val writes = f(tid -> reads.map(v => v.k -> v).toMap)
 
-      val tx = Transaction(tid, reads, writes.map(_._2).toSeq)
+      var partitions = Map[String, KeyList]()
+
+      keys.distinct.foreach { k =>
+        val p = (accounts.computeHash(k).abs % PartitionMain.n).toString
+
+        partitions.get(p) match {
+          case None => partitions = partitions + (p -> KeyList(Seq(k)))
+          case Some(klist) => partitions = partitions + (p -> KeyList(klist.keys :+ k))
+        }
+      }
+
+      val tx = Transaction(tid, reads, writes.map(_._2).toSeq, partitions, keys.distinct)
 
       conn(tx).map {
         _ match {

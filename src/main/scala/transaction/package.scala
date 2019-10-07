@@ -87,6 +87,9 @@ package object transaction {
         case cmd: MVCCVersion => out.add(buf.writeBytes(Any.pack(cmd).toByteArray))
         case cmd: CoordinatorResult => out.add(buf.writeBytes(Any.pack(cmd).toByteArray))
         case cmd: TxList => out.add(buf.writeBytes(Any.pack(cmd).toByteArray))
+        case cmd: KeyList => out.add(buf.writeBytes(Any.pack(cmd).toByteArray))
+        case cmd: PartitionRequest => out.add(buf.writeBytes(Any.pack(cmd).toByteArray))
+        case cmd: PartitionResponse => out.add(buf.writeBytes(Any.pack(cmd).toByteArray))
         case cmd: Epoch => out.add(buf.writeBytes(Any.pack(cmd).toByteArray))
       }
 
@@ -111,6 +114,9 @@ package object transaction {
         case _ if p.is(CoordinatorResult) => out.add(p.unpack(CoordinatorResult))
         case _ if p.is(TxList) => out.add(p.unpack(TxList))
         case _ if p.is(Epoch) => out.add(p.unpack(Epoch))
+        case _ if p.is(KeyList) => out.add(p.unpack(KeyList))
+        case _ if p.is(PartitionRequest) => out.add(p.unpack(PartitionRequest))
+        case _ if p.is(PartitionResponse) => out.add(p.unpack(PartitionResponse))
       }
 
     }

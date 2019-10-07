@@ -1,2 +1,19 @@
-[0m[[0m[33mwarn[0m] [0m[0mthere were two feature warnings; re-run with -feature for details[0m
-[0m[[0m[33mwarn[0m] [0m[0mone warning found[0m
+[0m[[0m[31merror[0m] [0m[0mD:\Users\lucas\IdeaProjects\transaction\src\main\scala\transaction\Worker.scala:153:62: type mismatch;[0m
+[0m[[0m[31merror[0m] [0m[0m found   : Seq[transaction.protocol.Transaction][0m
+[0m[[0m[31merror[0m] [0m[0m required: String[0m
+[0m[[0m[31merror[0m] [0m[0m            case None => requests.put(p, PartitionRequest(Seq(t)))[0m
+[0m[[0m[31merror[0m] [0m[0m                                                             ^[0m
+[0m[[0m[31merror[0m] [0m[0mD:\Users\lucas\IdeaProjects\transaction\src\main\scala\transaction\Worker.scala:154:71: type mismatch;[0m
+[0m[[0m[31merror[0m] [0m[0m found   : Seq[transaction.protocol.Transaction][0m
+[0m[[0m[31merror[0m] [0m[0m required: String[0m
+[0m[[0m[31merror[0m] [0m[0m            case Some(r) => requests.update(p, PartitionRequest(r.txs :+ t))[0m
+[0m[[0m[31merror[0m] [0m[0m                                                                      ^[0m
+[0m[[0m[31merror[0m] [0m[0mD:\Users\lucas\IdeaProjects\transaction\src\main\scala\transaction\Worker.scala:197:50: not found: value PartitionRe[0m
+[0m[[0m[31merror[0m] [0m[0m              case Some(r) => requests.update(p, PartitionRe(r.txs :+ t))[0m
+[0m[[0m[31merror[0m] [0m[0m                                                 ^[0m
+[0m[[0m[31merror[0m] [0m[0mD:\Users\lucas\IdeaProjects\transaction\src\main\scala\transaction\Worker.scala:193:21: type mismatch;[0m
+[0m[[0m[31merror[0m] [0m[0m found   : Unit[0m
+[0m[[0m[31merror[0m] [0m[0m required: com.twitter.util.Future[?][0m
+[0m[[0m[31merror[0m] [0m[0m        txs.foreach { t =>[0m
+[0m[[0m[31merror[0m] [0m[0m                    ^[0m
+[0m[[0m[31merror[0m] [0m[0mfour errors found[0m

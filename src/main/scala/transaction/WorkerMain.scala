@@ -8,7 +8,7 @@ import scala.concurrent.ExecutionContext.Implicits.global
 object WorkerMain {
 
   val port = 2000
-  val n = 1
+  val n = CoordinatorMain.n
   var workers = Map.empty[String, (String, Int)]
 
   for(i<-0 until n){
@@ -20,7 +20,6 @@ object WorkerMain {
       val worker = new Worker(id)
       TransactorServer.Server().serve(new InetSocketAddress(host, port), worker)
     }.toSeq: _*)
-
   }
 
 }

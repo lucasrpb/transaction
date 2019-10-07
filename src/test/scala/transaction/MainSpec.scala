@@ -45,7 +45,7 @@ class MainSpec extends FlatSpec {
 
     val counter = new AtomicInteger(0)
 
-    for(i<-0 until 1500){
+    for(i<-0 until 100){
 
       val c = new Client()
       clients = clients :+ c

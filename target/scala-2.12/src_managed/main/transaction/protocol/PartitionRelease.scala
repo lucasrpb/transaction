@@ -6,10 +6,10 @@
 package transaction.protocol
 
 @SerialVersionUID(0L)
-final case class Epoch(
+final case class PartitionRelease(
     id: _root_.scala.Predef.String = "",
-    batches: _root_.scala.Seq[_root_.scala.Predef.String] = _root_.scala.Seq.empty
-    ) extends scalapb.GeneratedMessage with scalapb.Message[Epoch] with scalapb.lenses.Updatable[Epoch] with transaction.Command {
+    txs: _root_.scala.Seq[_root_.scala.Predef.String] = _root_.scala.Seq.empty
+    ) extends scalapb.GeneratedMessage with scalapb.Message[PartitionRelease] with scalapb.lenses.Updatable[PartitionRelease] with transaction.Command {
     @transient
     private[this] var __serializedSizeCachedValue: _root_.scala.Int = 0
     private[this] def __computeSerializedValue(): _root_.scala.Int = {
@@ -21,7 +21,7 @@ final case class Epoch(
           __size += _root_.com.google.protobuf.CodedOutputStream.computeStringSize(1, __value)
         }
       };
-      batches.foreach { __item =>
+      txs.foreach { __item =>
         val __value = __item
         __size += _root_.com.google.protobuf.CodedOutputStream.computeStringSize(2, __value)
       }
@@ -42,14 +42,14 @@ final case class Epoch(
           _output__.writeString(1, __v)
         }
       };
-      batches.foreach { __v =>
+      txs.foreach { __v =>
         val __m = __v
         _output__.writeString(2, __m)
       };
     }
-    def mergeFrom(`_input__`: _root_.com.google.protobuf.CodedInputStream): transaction.protocol.Epoch = {
+    def mergeFrom(`_input__`: _root_.com.google.protobuf.CodedInputStream): transaction.protocol.PartitionRelease = {
       var __id = this.id
-      val __batches = (_root_.scala.collection.immutable.Vector.newBuilder[_root_.scala.Predef.String] ++= this.batches)
+      val __txs = (_root_.scala.collection.immutable.Vector.newBuilder[_root_.scala.Predef.String] ++= this.txs)
       var _done__ = false
       while (!_done__) {
         val _tag__ = _input__.readTag()
@@ -58,77 +58,77 @@ final case class Epoch(
           case 10 =>
             __id = _input__.readString()
           case 18 =>
-            __batches += _input__.readString()
+            __txs += _input__.readString()
           case tag => _input__.skipField(tag)
         }
       }
-      transaction.protocol.Epoch(
+      transaction.protocol.PartitionRelease(
           id = __id,
-          batches = __batches.result()
+          txs = __txs.result()
       )
     }
-    def withId(__v: _root_.scala.Predef.String): Epoch = copy(id = __v)
-    def clearBatches = copy(batches = _root_.scala.Seq.empty)
-    def addBatches(__vs: _root_.scala.Predef.String*): Epoch = addAllBatches(__vs)
-    def addAllBatches(__vs: Iterable[_root_.scala.Predef.String]): Epoch = copy(batches = batches ++ __vs)
-    def withBatches(__v: _root_.scala.Seq[_root_.scala.Predef.String]): Epoch = copy(batches = __v)
+    def withId(__v: _root_.scala.Predef.String): PartitionRelease = copy(id = __v)
+    def clearTxs = copy(txs = _root_.scala.Seq.empty)
+    def addTxs(__vs: _root_.scala.Predef.String*): PartitionRelease = addAllTxs(__vs)
+    def addAllTxs(__vs: Iterable[_root_.scala.Predef.String]): PartitionRelease = copy(txs = txs ++ __vs)
+    def withTxs(__v: _root_.scala.Seq[_root_.scala.Predef.String]): PartitionRelease = copy(txs = __v)
     def getFieldByNumber(__fieldNumber: _root_.scala.Int): _root_.scala.Any = {
       (__fieldNumber: @_root_.scala.unchecked) match {
         case 1 => {
           val __t = id
           if (__t != "") __t else null
         }
-        case 2 => batches
+        case 2 => txs
       }
     }
     def getField(__field: _root_.scalapb.descriptors.FieldDescriptor): _root_.scalapb.descriptors.PValue = {
       _root_.scala.Predef.require(__field.containingMessage eq companion.scalaDescriptor)
       (__field.number: @_root_.scala.unchecked) match {
         case 1 => _root_.scalapb.descriptors.PString(id)
-        case 2 => _root_.scalapb.descriptors.PRepeated(batches.iterator.map(_root_.scalapb.descriptors.PString).toVector)
+        case 2 => _root_.scalapb.descriptors.PRepeated(txs.iterator.map(_root_.scalapb.descriptors.PString).toVector)
       }
     }
     def toProtoString: _root_.scala.Predef.String = _root_.scalapb.TextFormat.printToUnicodeString(this)
-    def companion = transaction.protocol.Epoch
+    def companion = transaction.protocol.PartitionRelease
 }
 
-object Epoch extends scalapb.GeneratedMessageCompanion[transaction.protocol.Epoch] with transaction.Command {
-  implicit def messageCompanion: scalapb.GeneratedMessageCompanion[transaction.protocol.Epoch] with transaction.Command = this
-  def fromFieldsMap(__fieldsMap: scala.collection.immutable.Map[_root_.com.google.protobuf.Descriptors.FieldDescriptor, _root_.scala.Any]): transaction.protocol.Epoch = {
+object PartitionRelease extends scalapb.GeneratedMessageCompanion[transaction.protocol.PartitionRelease] with transaction.Command {
+  implicit def messageCompanion: scalapb.GeneratedMessageCompanion[transaction.protocol.PartitionRelease] with transaction.Command = this
+  def fromFieldsMap(__fieldsMap: scala.collection.immutable.Map[_root_.com.google.protobuf.Descriptors.FieldDescriptor, _root_.scala.Any]): transaction.protocol.PartitionRelease = {
     _root_.scala.Predef.require(__fieldsMap.keys.forall(_.getContainingType() == javaDescriptor), "FieldDescriptor does not match message type.")
     val __fields = javaDescriptor.getFields
-    transaction.protocol.Epoch(
+    transaction.protocol.PartitionRelease(
       __fieldsMap.getOrElse(__fields.get(0), "").asInstanceOf[_root_.scala.Predef.String],
       __fieldsMap.getOrElse(__fields.get(1), Nil).asInstanceOf[_root_.scala.Seq[_root_.scala.Predef.String]]
     )
   }
-  implicit def messageReads: _root_.scalapb.descriptors.Reads[transaction.protocol.Epoch] = _root_.scalapb.descriptors.Reads{
+  implicit def messageReads: _root_.scalapb.descriptors.Reads[transaction.protocol.PartitionRelease] = _root_.scalapb.descriptors.Reads{
     case _root_.scalapb.descriptors.PMessage(__fieldsMap) =>
       _root_.scala.Predef.require(__fieldsMap.keys.forall(_.containingMessage == scalaDescriptor), "FieldDescriptor does not match message type.")
-      transaction.protocol.Epoch(
+      transaction.protocol.PartitionRelease(
         __fieldsMap.get(scalaDescriptor.findFieldByNumber(1).get).map(_.as[_root_.scala.Predef.String]).getOrElse(""),
         __fieldsMap.get(scalaDescriptor.findFieldByNumber(2).get).map(_.as[_root_.scala.Seq[_root_.scala.Predef.String]]).getOrElse(_root_.scala.Seq.empty)
       )
     case _ => throw new RuntimeException("Expected PMessage")
   }
-  def javaDescriptor: _root_.com.google.protobuf.Descriptors.Descriptor = TransactionProto.javaDescriptor.getMessageTypes.get(10)
-  def scalaDescriptor: _root_.scalapb.descriptors.Descriptor = TransactionProto.scalaDescriptor.messages(10)
+  def javaDescriptor: _root_.com.google.protobuf.Descriptors.Descriptor = TransactionProto.javaDescriptor.getMessageTypes.get(13)
+  def scalaDescriptor: _root_.scalapb.descriptors.Descriptor = TransactionProto.scalaDescriptor.messages(13)
   def messageCompanionForFieldNumber(__number: _root_.scala.Int): _root_.scalapb.GeneratedMessageCompanion[_] = throw new MatchError(__number)
   lazy val nestedMessagesCompanions: Seq[_root_.scalapb.GeneratedMessageCompanion[_ <: _root_.scalapb.GeneratedMessage]] = Seq.empty
   def enumCompanionForFieldNumber(__fieldNumber: _root_.scala.Int): _root_.scalapb.GeneratedEnumCompanion[_] = throw new MatchError(__fieldNumber)
-  lazy val defaultInstance = transaction.protocol.Epoch(
+  lazy val defaultInstance = transaction.protocol.PartitionRelease(
   )
-  implicit class EpochLens[UpperPB](_l: _root_.scalapb.lenses.Lens[UpperPB, transaction.protocol.Epoch]) extends _root_.scalapb.lenses.ObjectLens[UpperPB, transaction.protocol.Epoch](_l) {
+  implicit class PartitionReleaseLens[UpperPB](_l: _root_.scalapb.lenses.Lens[UpperPB, transaction.protocol.PartitionRelease]) extends _root_.scalapb.lenses.ObjectLens[UpperPB, transaction.protocol.PartitionRelease](_l) {
     def id: _root_.scalapb.lenses.Lens[UpperPB, _root_.scala.Predef.String] = field(_.id)((c_, f_) => c_.copy(id = f_))
-    def batches: _root_.scalapb.lenses.Lens[UpperPB, _root_.scala.Seq[_root_.scala.Predef.String]] = field(_.batches)((c_, f_) => c_.copy(batches = f_))
+    def txs: _root_.scalapb.lenses.Lens[UpperPB, _root_.scala.Seq[_root_.scala.Predef.String]] = field(_.txs)((c_, f_) => c_.copy(txs = f_))
   }
   final val ID_FIELD_NUMBER = 1
-  final val BATCHES_FIELD_NUMBER = 2
+  final val TXS_FIELD_NUMBER = 2
   def of(
     id: _root_.scala.Predef.String,
-    batches: _root_.scala.Seq[_root_.scala.Predef.String]
-  ): _root_.transaction.protocol.Epoch = _root_.transaction.protocol.Epoch(
+    txs: _root_.scala.Seq[_root_.scala.Predef.String]
+  ): _root_.transaction.protocol.PartitionRelease = _root_.transaction.protocol.PartitionRelease(
     id,
-    batches
+    txs
   )
 }

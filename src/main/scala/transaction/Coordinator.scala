@@ -18,6 +18,8 @@ import scala.concurrent.ExecutionContext
 class Coordinator(val id: String, val host: String, val port: Int)(implicit val ec: ExecutionContext)
   extends Service[Command, Command]{
 
+  val eid = id.toInt
+
   val config = scala.collection.mutable.Map[String, String]()
 
   config += (ProducerConfig.BOOTSTRAP_SERVERS_CONFIG -> "localhost:9092")
@@ -59,88 +61,15 @@ class Coordinator(val id: String, val host: String, val port: Int)(implicit val 
   val timer = new Timer()
 
   def log(t: Transaction): Future[Boolean] = {
+    val now = System.currentTimeMillis()
     val buf = Any.pack(t).toByteArray
-    val record = KafkaProducerRecord.create[String, Array[Byte]]("log", t.id, buf)
+    val record = KafkaProducerRecord.create[String, Array[Byte]]("log", id, buf, now, eid)
     producer.writeFuture(record).map(_ => true)
   }
 
-  /*class Job extends TimerTask {
-    override def run(): Unit = {
-
-      if(batch.isEmpty){
-        timer.schedule(new Job(), 10L)
-        return
-      }
-
-      val now = System.currentTimeMillis()
-
-      var txs = Seq.empty[Request]
-      var keys = Seq.empty[String]
-
-      while(!batch.isEmpty){
-        val r = batch.poll()
-
-        val elapsed = now - r.tmp
-
-        if(elapsed >= TIMEOUT){
-          r.p.setValue(Nack())
-        } else if(!r.keys.exists(k => keys.exists(k1 => k.equals(k1)))){
-          keys = keys ++ r.keys
-          txs = txs :+ r
-        } else {
-          r.p.setValue(Nack())
-        }
-      }
-
-      if(txs.isEmpty) {
-        timer.schedule(new Job(), 10L)
-        return
-      }
-
-      var partitions = Map[String, TxList]()
-
-      txs.foreach { r =>
-        r.partitions.foreach { p =>
-          partitions.get(p) match {
-            case None => partitions = partitions + (p -> TxList(Seq(r.t.id)))
-            case Some(pt) => partitions = partitions + (p -> TxList(pt.txs :+ r.t.id))
-          }
-        }
-      }
-
-      val b = Batch(UUID.randomUUID.toString, partitions, txs.map(_.t), id)
-
-      log(b).map { ok =>
-
-        if(ok) {
-          txs.foreach { r =>
-            executing.put(r.id, r)
-          }
-        } else {
-          txs.foreach { r =>
-            r.p.setValue(Nack())
-          }
-        }
-
-        timer.schedule(new Job(), 10L)
-
-      }.handle { case t =>
-        t.printStackTrace()
-
-        txs.foreach { r =>
-          r.p.setValue(Nack())
-        }
-      }
-    }
-  }
-
-  timer.schedule(new Job(), 10L)*/
-
   def process(t: Transaction): Future[Command] = {
     val req = Request(t.id, t)
-    //batch.offer(req)
 
-    val b = Batch(UUID.randomUUID.toString, Map(), Seq(t), id)
     executing.put(t.id, req)
 
     log(t).flatMap { _ =>
@@ -191,6 +120,4 @@ class Coordinator(val id: String, val host: String, val port: Int)(implicit val 
       case cmd: CoordinatorResult => process(cmd)
     }
   }
-
-  //Await.ready(producer.closeFuture(), 60 seconds)
 }
