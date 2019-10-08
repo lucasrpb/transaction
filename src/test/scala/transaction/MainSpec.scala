@@ -26,7 +26,6 @@ class MainSpec extends FlatSpec {
     val rand = ThreadLocalRandom.current()
 
     val nAccounts = 1000
-    val numExecutors = WorkerMain.workers.size
 
     var tasks = Seq.empty[Future[Boolean]]
     val nAcc = 1000
@@ -45,7 +44,7 @@ class MainSpec extends FlatSpec {
 
     val counter = new AtomicInteger(0)
 
-    for(i<-0 until 100){
+    for(i<-0 until 1000){
 
       val c = new Client()
       clients = clients :+ c

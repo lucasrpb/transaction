@@ -1,7 +1,8 @@
 package transaction
 
-import java.util.concurrent.ConcurrentLinkedQueue
+import java.nio.ByteBuffer
 import java.util.{Timer, TimerTask, UUID}
+import java.util.concurrent.ConcurrentLinkedDeque
 
 import com.datastax.driver.core.{Cluster, HostDistance, PoolingOptions}
 import com.google.protobuf.any.Any
@@ -45,7 +46,11 @@ class Coordinator(val id: String, val host: String, val port: Int)(implicit val 
 
   val session = cluster.connect("mvcc")
 
+  val INSERT_BATCH = session.prepare("insert into batches(id, completed, bin) values(?,false,?);")
   val READ_DATA = session.prepare("select * from data where key=?;")
+
+  val batch = new ConcurrentLinkedDeque[Request]()
+  val executing = TrieMap[String, Request]()
 
   case class Request(id: String, t: Transaction, tmp: Long = System.currentTimeMillis()){
     val p = Promise[Command]()
@@ -55,26 +60,23 @@ class Coordinator(val id: String, val host: String, val port: Int)(implicit val 
     val partitions = keys.map(k => accounts.computeHash(k).toString)
   }
 
-  val batch = new ConcurrentLinkedQueue[Request]()
-  val executing = TrieMap[String, Request]()
+  def save(b: Batch): Future[Boolean] = {
+    val buf = ByteBuffer.wrap(Any.pack(b).toByteArray)
+    session.executeAsync(INSERT_BATCH.bind.setString(0, b.id).setBytes(1, buf)).map(_.wasApplied())
+  }
 
-  val timer = new Timer()
-
-  def log(t: Transaction): Future[Boolean] = {
-    val now = System.currentTimeMillis()
-    val buf = Any.pack(t).toByteArray
-    val record = KafkaProducerRecord.create[String, Array[Byte]]("log", id, buf, now, eid)
+  def log(b: Batch): Future[Boolean] = {
+    val partitions = b.txs.map(t => (t.rs ++ t.ws).map(_.k)).flatten.distinct
+      .map(k => (accounts.computeHash(k).abs % PARTITIONS).toString)
+    val buf = Any.pack(BatchInfo(b.id, partitions, id)).toByteArray
+    val record = KafkaProducerRecord.create[String, Array[Byte]]("batches", b.id, buf)
     producer.writeFuture(record).map(_ => true)
   }
 
   def process(t: Transaction): Future[Command] = {
     val req = Request(t.id, t)
-
-    executing.put(t.id, req)
-
-    log(t).flatMap { _ =>
-      req.p
-    }
+    batch.offer(req)
+    req.p
   }
 
   def read(key: String): Future[MVCCVersion] = {
@@ -112,6 +114,68 @@ class Coordinator(val id: String, val host: String, val port: Int)(implicit val 
 
     Future.value(Ack())
   }
+
+  val timer = new Timer()
+
+  class Job() extends TimerTask {
+    override def run(): Unit = {
+
+      if(batch.isEmpty){
+        timer.schedule(new Job(), 10L)
+        return
+      }
+
+      val now = System.currentTimeMillis()
+
+      var txs = Seq.empty[Request]
+
+      while(!batch.isEmpty){
+        txs = txs :+ batch.poll()
+      }
+
+      var keys = Seq.empty[String]
+
+      txs = txs.sortBy(_.id).filter { r =>
+        val elapsed = now - r.tmp
+
+        if(elapsed >= TIMEOUT){
+
+          false
+        } else if(!r.ws.exists{keys.contains(_)}){
+          keys = keys ++ r.rs
+          true
+        } else {
+          r.p.setValue(Nack())
+          false
+        }
+      }
+
+      if(txs.isEmpty){
+        timer.schedule(new Job(), 10L)
+        return
+      }
+
+      val b = Batch(UUID.randomUUID.toString, txs.map(_.t))
+
+      save(b).flatMap(ok => log(b).map(_ && ok)).map { ok =>
+        if(ok){
+          txs.foreach { r =>
+            executing.put(r.id, r)
+          }
+        } else {
+          txs.foreach { r =>
+            r.p.setValue(Nack())
+          }
+        }
+      }.handle { case ex =>
+        ex.printStackTrace()
+      }.ensure {
+        timer.schedule(new Job(), 10L)
+      }
+    }
+  }
+
+  timer.schedule(new Job(), 10L)
 
   override def apply(request: Command): Future[Command] = {
     request match {

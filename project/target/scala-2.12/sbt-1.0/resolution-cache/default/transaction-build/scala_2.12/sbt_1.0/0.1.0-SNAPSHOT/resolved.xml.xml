@@ -4,7 +4,7 @@
 		module="transaction-build"
 		revision="0.1.0-SNAPSHOT"
 		status="integration"
-		publication="20191003214313"
+		publication="20191007195206"
 		e:sbtVersion="1.0" e:scalaVersion="2.12"
 	>
 		<description>

@@ -55,8 +55,6 @@ message Transaction {
     string id = 1;
     repeated MVCCVersion rs = 2;
     repeated MVCCVersion ws = 3;
-    map<string, KeyList> partitions = 4;
-    repeated string keys = 5;
 }
 
 message CoordinatorResult {
@@ -80,9 +78,16 @@ message Batch {
     option (scalapb.message).companion_extends = "transaction.Command";
 
     string id = 1;
-    map<string, TxList> partitions = 2;
-    repeated Transaction txs = 3;
-    string coordinator = 4;
+    repeated Transaction txs = 2;
+}
+
+message BatchInfo {
+    option (scalapb.message).extends = "transaction.Command";
+    option (scalapb.message).companion_extends = "transaction.Command";
+
+    string id = 1;
+    repeated string partitions = 2;
+    string coordinator = 3;
 }
 
 message Epoch {
@@ -90,29 +95,5 @@ message Epoch {
     option (scalapb.message).companion_extends = "transaction.Command";
 
     string id = 1;
-    repeated string batches = 2;
-}
-
-message PartitionRequest {
-    option (scalapb.message).extends = "transaction.Command";
-    option (scalapb.message).companion_extends = "transaction.Command";
-
-    string id = 1;
-    repeated Transaction txs = 2;
-}
-
-message PartitionResponse {
-    option (scalapb.message).extends = "transaction.Command";
-    option (scalapb.message).companion_extends = "transaction.Command";
-
-    string id = 1;
-    repeated Transaction txs = 2;
-}
-
-message PartitionRelease {
-    option (scalapb.message).extends = "transaction.Command";
-    option (scalapb.message).companion_extends = "transaction.Command";
-
-    string id = 1;
-    repeated string txs = 2;
+    repeated BatchInfo batches = 2;
 }

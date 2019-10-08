@@ -1,14 +1,13 @@
 package transaction
 
 import java.net.InetSocketAddress
-
 import com.twitter.util.Await
 import scala.concurrent.ExecutionContext.Implicits.global
 
 object WorkerMain {
 
-  val port = 2000
-  val n = CoordinatorMain.n
+  val port = 5000
+  val n = 5
   var workers = Map.empty[String, (String, Int)]
 
   for(i<-0 until n){
@@ -16,10 +15,10 @@ object WorkerMain {
   }
 
   def main(args: Array[String]): Unit = {
-    Await.all(workers.map { case (id, (host, port)) =>
-      val worker = new Worker(id)
-      TransactorServer.Server().serve(new InetSocketAddress(host, port), worker)
-    }.toSeq: _*)
-  }
 
+    Await.all(workers.map { case (id, (host, port)) =>
+      TransactorServer.Server().serve(new InetSocketAddress(host, port), new Worker(id))
+    }.toSeq: _*)
+
+  }
 }

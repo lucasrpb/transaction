@@ -28,11 +28,9 @@ class Client()(implicit val ec: ExecutionContext) {
   def execute(f: ((String, Map[String, MVCCVersion])) => Map[String, MVCCVersion]): Future[Boolean] = {
 
     val accs = accounts.keys.toSeq
-
+    
     val k1 = accs(rand.nextInt(0, accs.length)).toString
     val k2 = accs(rand.nextInt(0, accs.length)).toString
-
-   // if(k1.equals(k2)) return Future.value(true)
 
     val keys = Seq(k1, k2)
 
@@ -42,18 +40,8 @@ class Client()(implicit val ec: ExecutionContext) {
       val reads = r.asInstanceOf[ReadResponse].values
       val writes = f(tid -> reads.map(v => v.k -> v).toMap)
 
-      var partitions = Map[String, KeyList]()
 
-      keys.distinct.foreach { k =>
-        val p = (accounts.computeHash(k).abs % PartitionMain.n).toString
-
-        partitions.get(p) match {
-          case None => partitions = partitions + (p -> KeyList(Seq(k)))
-          case Some(klist) => partitions = partitions + (p -> KeyList(klist.keys :+ k))
-        }
-      }
-
-      val tx = Transaction(tid, reads, writes.map(_._2).toSeq, partitions, keys.distinct)
+      val tx = Transaction(tid, reads, writes.map(_._2).toSeq)
 
       conn(tx).map {
         _ match {

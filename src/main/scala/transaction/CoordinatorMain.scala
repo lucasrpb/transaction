@@ -2,12 +2,11 @@ package transaction
 
 import java.net.InetSocketAddress
 
-import com.twitter.util.{Await, Promise}
+import com.twitter.util.{Await, Future, Promise}
 import io.vertx.scala.core.Vertx
 import io.vertx.scala.kafka.admin.AdminUtils
 
 import scala.concurrent.ExecutionContext.Implicits.global
-import scala.concurrent.Future
 
 object CoordinatorMain {
 
@@ -21,20 +20,31 @@ object CoordinatorMain {
 
   def main(args: Array[String]): Unit = {
 
-    val adminUtils = AdminUtils.create(Vertx.vertx(), "localhost:2181", false)
+    val admin = AdminUtils.create(Vertx.vertx(), "localhost:2181", false)
 
     val p = Promise[Boolean]()
 
-    adminUtils.deleteTopic("log", r => {
-      println(s"topic log deleted ${r.succeeded()}\n")
-      adminUtils.createTopic("log", n, 1, r => {
-        println(s"topic log created ${r.succeeded()}\n")
-        p.setValue(true)
+    admin.deleteTopic("batches", r => {
+      println(s"topic batches deleted ${r.succeeded()}")
+
+      admin.deleteTopic("log", r => {
+        println(s"topic log deleted ${r.succeeded()}")
+
+        admin.createTopic("batches", 3, 1, r => {
+
+          println(s"topic batches created ${r.succeeded()}")
+
+          admin.createTopic("log", 1, 1, r => {
+
+            println(s"topic log created ${r.succeeded()}")
+
+            p.setValue(true)
+          })
+        })
       })
     })
 
     Await.ready(p)
-    adminUtils.close(_)
 
     Await.all(coordinators.map { case (id, (host, port)) =>
       TransactorServer.Server().serve(new InetSocketAddress(host, port), new Coordinator(id, host, port))
