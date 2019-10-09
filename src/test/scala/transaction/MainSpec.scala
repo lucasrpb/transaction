@@ -16,6 +16,11 @@ class MainSpec extends FlatSpec {
 
   "amount of money" should " be equal after transactions" in {
 
+    val rand = ThreadLocalRandom.current()
+
+    val nAccounts = 1000
+
+    var tasks = Seq.empty[Future[Boolean]]
     val cluster = Cluster.builder()
       .addContactPoint("127.0.0.1")
       .build()
@@ -23,11 +28,6 @@ class MainSpec extends FlatSpec {
     val session = cluster.connect("mvcc")
     session.execute("truncate batches;")
 
-    val rand = ThreadLocalRandom.current()
-
-    val nAccounts = 1000
-
-    var tasks = Seq.empty[Future[Boolean]]
     val nAcc = 1000
 
     var clients = Seq.empty[Client]

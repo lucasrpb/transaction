@@ -73,7 +73,7 @@ class Coordinator(val id: String, val host: String, val port: Int)(implicit val 
 
   def log(b: Batch): Future[Boolean] = {
     val buf = Any.pack(BatchInfo(b.id, b.partitions, id)).toByteArray
-    val record = KafkaProducerRecord.create[String, Array[Byte]]("log", b.id, buf)
+    val record = KafkaProducerRecord.create[String, Array[Byte]]("batches", b.id, buf)
     producer.writeFuture(record).map(_ => true)
   }
 
@@ -275,6 +275,8 @@ class Coordinator(val id: String, val host: String, val port: Int)(implicit val 
   }
 
   def process(cmd: BatchStart): Future[Command] = {
+    println(s"received batch_start ${cmd.id}\n")
+
     val (b, pts) = batches(cmd.id)
     pts.add(cmd.partition)
 
