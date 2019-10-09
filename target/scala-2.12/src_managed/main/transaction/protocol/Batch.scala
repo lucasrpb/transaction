@@ -8,7 +8,8 @@ package transaction.protocol
 @SerialVersionUID(0L)
 final case class Batch(
     id: _root_.scala.Predef.String = "",
-    txs: _root_.scala.Seq[transaction.protocol.Transaction] = _root_.scala.Seq.empty
+    txs: _root_.scala.Seq[transaction.protocol.Transaction] = _root_.scala.Seq.empty,
+    partitions: _root_.scala.Seq[_root_.scala.Predef.String] = _root_.scala.Seq.empty
     ) extends scalapb.GeneratedMessage with scalapb.Message[Batch] with scalapb.lenses.Updatable[Batch] with transaction.Command {
     @transient
     private[this] var __serializedSizeCachedValue: _root_.scala.Int = 0
@@ -24,6 +25,10 @@ final case class Batch(
       txs.foreach { __item =>
         val __value = __item
         __size += 1 + _root_.com.google.protobuf.CodedOutputStream.computeUInt32SizeNoTag(__value.serializedSize) + __value.serializedSize
+      }
+      partitions.foreach { __item =>
+        val __value = __item
+        __size += _root_.com.google.protobuf.CodedOutputStream.computeStringSize(3, __value)
       }
       __size
     }
@@ -48,10 +53,15 @@ final case class Batch(
         _output__.writeUInt32NoTag(__m.serializedSize)
         __m.writeTo(_output__)
       };
+      partitions.foreach { __v =>
+        val __m = __v
+        _output__.writeString(3, __m)
+      };
     }
     def mergeFrom(`_input__`: _root_.com.google.protobuf.CodedInputStream): transaction.protocol.Batch = {
       var __id = this.id
       val __txs = (_root_.scala.collection.immutable.Vector.newBuilder[transaction.protocol.Transaction] ++= this.txs)
+      val __partitions = (_root_.scala.collection.immutable.Vector.newBuilder[_root_.scala.Predef.String] ++= this.partitions)
       var _done__ = false
       while (!_done__) {
         val _tag__ = _input__.readTag()
@@ -61,12 +71,15 @@ final case class Batch(
             __id = _input__.readString()
           case 18 =>
             __txs += _root_.scalapb.LiteParser.readMessage(_input__, transaction.protocol.Transaction.defaultInstance)
+          case 26 =>
+            __partitions += _input__.readString()
           case tag => _input__.skipField(tag)
         }
       }
       transaction.protocol.Batch(
           id = __id,
-          txs = __txs.result()
+          txs = __txs.result(),
+          partitions = __partitions.result()
       )
     }
     def withId(__v: _root_.scala.Predef.String): Batch = copy(id = __v)
@@ -74,6 +87,10 @@ final case class Batch(
     def addTxs(__vs: transaction.protocol.Transaction*): Batch = addAllTxs(__vs)
     def addAllTxs(__vs: Iterable[transaction.protocol.Transaction]): Batch = copy(txs = txs ++ __vs)
     def withTxs(__v: _root_.scala.Seq[transaction.protocol.Transaction]): Batch = copy(txs = __v)
+    def clearPartitions = copy(partitions = _root_.scala.Seq.empty)
+    def addPartitions(__vs: _root_.scala.Predef.String*): Batch = addAllPartitions(__vs)
+    def addAllPartitions(__vs: Iterable[_root_.scala.Predef.String]): Batch = copy(partitions = partitions ++ __vs)
+    def withPartitions(__v: _root_.scala.Seq[_root_.scala.Predef.String]): Batch = copy(partitions = __v)
     def getFieldByNumber(__fieldNumber: _root_.scala.Int): _root_.scala.Any = {
       (__fieldNumber: @_root_.scala.unchecked) match {
         case 1 => {
@@ -81,6 +98,7 @@ final case class Batch(
           if (__t != "") __t else null
         }
         case 2 => txs
+        case 3 => partitions
       }
     }
     def getField(__field: _root_.scalapb.descriptors.FieldDescriptor): _root_.scalapb.descriptors.PValue = {
@@ -88,6 +106,7 @@ final case class Batch(
       (__field.number: @_root_.scala.unchecked) match {
         case 1 => _root_.scalapb.descriptors.PString(id)
         case 2 => _root_.scalapb.descriptors.PRepeated(txs.iterator.map(_.toPMessage).toVector)
+        case 3 => _root_.scalapb.descriptors.PRepeated(partitions.iterator.map(_root_.scalapb.descriptors.PString).toVector)
       }
     }
     def toProtoString: _root_.scala.Predef.String = _root_.scalapb.TextFormat.printToUnicodeString(this)
@@ -101,7 +120,8 @@ object Batch extends scalapb.GeneratedMessageCompanion[transaction.protocol.Batc
     val __fields = javaDescriptor.getFields
     transaction.protocol.Batch(
       __fieldsMap.getOrElse(__fields.get(0), "").asInstanceOf[_root_.scala.Predef.String],
-      __fieldsMap.getOrElse(__fields.get(1), Nil).asInstanceOf[_root_.scala.Seq[transaction.protocol.Transaction]]
+      __fieldsMap.getOrElse(__fields.get(1), Nil).asInstanceOf[_root_.scala.Seq[transaction.protocol.Transaction]],
+      __fieldsMap.getOrElse(__fields.get(2), Nil).asInstanceOf[_root_.scala.Seq[_root_.scala.Predef.String]]
     )
   }
   implicit def messageReads: _root_.scalapb.descriptors.Reads[transaction.protocol.Batch] = _root_.scalapb.descriptors.Reads{
@@ -109,7 +129,8 @@ object Batch extends scalapb.GeneratedMessageCompanion[transaction.protocol.Batc
       _root_.scala.Predef.require(__fieldsMap.keys.forall(_.containingMessage == scalaDescriptor), "FieldDescriptor does not match message type.")
       transaction.protocol.Batch(
         __fieldsMap.get(scalaDescriptor.findFieldByNumber(1).get).map(_.as[_root_.scala.Predef.String]).getOrElse(""),
-        __fieldsMap.get(scalaDescriptor.findFieldByNumber(2).get).map(_.as[_root_.scala.Seq[transaction.protocol.Transaction]]).getOrElse(_root_.scala.Seq.empty)
+        __fieldsMap.get(scalaDescriptor.findFieldByNumber(2).get).map(_.as[_root_.scala.Seq[transaction.protocol.Transaction]]).getOrElse(_root_.scala.Seq.empty),
+        __fieldsMap.get(scalaDescriptor.findFieldByNumber(3).get).map(_.as[_root_.scala.Seq[_root_.scala.Predef.String]]).getOrElse(_root_.scala.Seq.empty)
       )
     case _ => throw new RuntimeException("Expected PMessage")
   }
@@ -129,14 +150,18 @@ object Batch extends scalapb.GeneratedMessageCompanion[transaction.protocol.Batc
   implicit class BatchLens[UpperPB](_l: _root_.scalapb.lenses.Lens[UpperPB, transaction.protocol.Batch]) extends _root_.scalapb.lenses.ObjectLens[UpperPB, transaction.protocol.Batch](_l) {
     def id: _root_.scalapb.lenses.Lens[UpperPB, _root_.scala.Predef.String] = field(_.id)((c_, f_) => c_.copy(id = f_))
     def txs: _root_.scalapb.lenses.Lens[UpperPB, _root_.scala.Seq[transaction.protocol.Transaction]] = field(_.txs)((c_, f_) => c_.copy(txs = f_))
+    def partitions: _root_.scalapb.lenses.Lens[UpperPB, _root_.scala.Seq[_root_.scala.Predef.String]] = field(_.partitions)((c_, f_) => c_.copy(partitions = f_))
   }
   final val ID_FIELD_NUMBER = 1
   final val TXS_FIELD_NUMBER = 2
+  final val PARTITIONS_FIELD_NUMBER = 3
   def of(
     id: _root_.scala.Predef.String,
-    txs: _root_.scala.Seq[transaction.protocol.Transaction]
+    txs: _root_.scala.Seq[transaction.protocol.Transaction],
+    partitions: _root_.scala.Seq[_root_.scala.Predef.String]
   ): _root_.transaction.protocol.Batch = _root_.transaction.protocol.Batch(
     id,
-    txs
+    txs,
+    partitions
   )
 }

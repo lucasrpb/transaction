@@ -4,10 +4,10 @@ import java.nio.ByteBuffer
 import java.util.{Timer, TimerTask, UUID}
 import java.util.concurrent.ConcurrentLinkedDeque
 
-import com.datastax.driver.core.{Cluster, HostDistance, PoolingOptions}
+import com.datastax.driver.core.{BatchStatement, Cluster, HostDistance, PoolingOptions}
 import com.google.protobuf.any.Any
 import com.twitter.finagle.Service
-import com.twitter.util.{Future, Promise}
+import com.twitter.util.{Await, Future, Promise}
 import io.vertx.scala.core.Vertx
 import io.vertx.scala.kafka.client.producer.{KafkaProducer, KafkaProducerRecord}
 import org.apache.kafka.clients.producer.ProducerConfig
@@ -18,6 +18,10 @@ import scala.concurrent.ExecutionContext
 
 class Coordinator(val id: String, val host: String, val port: Int)(implicit val ec: ExecutionContext)
   extends Service[Command, Command]{
+
+  lazy val partitions: Map[String, Service[Command, Command]] = PartitionMain.partitions.map { case (id, (host, port)) =>
+    id -> createConnection(host, port)
+  }
 
   val eid = id.toInt
 
@@ -47,9 +51,10 @@ class Coordinator(val id: String, val host: String, val port: Int)(implicit val 
   val session = cluster.connect("mvcc")
 
   val INSERT_BATCH = session.prepare("insert into batches(id, completed, bin) values(?,false,?);")
-  val READ_DATA = session.prepare("select * from data where key=?;")
+  val READ = session.prepare("select * from data where key=?;")
 
   val batch = new ConcurrentLinkedDeque[Request]()
+  val batches = TrieMap[String, (Batch, ConcurrentLinkedDeque[String])]()
   val executing = TrieMap[String, Request]()
 
   case class Request(id: String, t: Transaction, tmp: Long = System.currentTimeMillis()){
@@ -61,15 +66,14 @@ class Coordinator(val id: String, val host: String, val port: Int)(implicit val 
   }
 
   def save(b: Batch): Future[Boolean] = {
+    batches.put(b.id, b -> new ConcurrentLinkedDeque[String]())
     val buf = ByteBuffer.wrap(Any.pack(b).toByteArray)
     session.executeAsync(INSERT_BATCH.bind.setString(0, b.id).setBytes(1, buf)).map(_.wasApplied())
   }
 
   def log(b: Batch): Future[Boolean] = {
-    val partitions = b.txs.map(t => (t.rs ++ t.ws).map(_.k)).flatten.distinct
-      .map(k => (accounts.computeHash(k).abs % PARTITIONS).toString)
-    val buf = Any.pack(BatchInfo(b.id, partitions, id)).toByteArray
-    val record = KafkaProducerRecord.create[String, Array[Byte]]("batches", b.id, buf)
+    val buf = Any.pack(BatchInfo(b.id, b.partitions, id)).toByteArray
+    val record = KafkaProducerRecord.create[String, Array[Byte]]("log", b.id, buf)
     producer.writeFuture(record).map(_ => true)
   }
 
@@ -80,9 +84,69 @@ class Coordinator(val id: String, val host: String, val port: Int)(implicit val 
   }
 
   def read(key: String): Future[MVCCVersion] = {
-    session.executeAsync(READ_DATA.bind.setString(0, key)).map { rs =>
+    session.executeAsync(READ.bind.setString(0, key)).map { rs =>
       val one = rs.one()
       MVCCVersion(one.getString("key"), one.getLong("value"), one.getString("version"))
+    }
+  }
+
+  val UPDATE_DATA = session.prepare("update data set value=?, version=? where key=?;")
+  val READ_DATA = session.prepare("select * from data where key=? and version=?;")
+  val READ_BATCH = session.prepare("select * from batches where id=?;")
+
+  def readKey(k: String, v: MVCCVersion): Future[Boolean] = {
+    session.executeAsync(READ_DATA.bind.setString(0, k).setString(1, v.version)).map{_.one() != null}
+  }
+
+  def readBatch(id: String): Future[Batch] = {
+    session.executeAsync(READ_BATCH.bind.setString(0, id)).map { rs =>
+      Any.parseFrom(rs.one.getBytes("bin").array()).unpack(Batch)
+    }
+  }
+
+  def writeKey(k: String, v: MVCCVersion): Future[Boolean] = {
+    session.executeAsync(UPDATE_DATA.bind.setLong(0, v.v).setString(1, v.version).setString(2, k)).map{_.wasApplied()}
+  }
+
+  def checkTx(t: Transaction): Future[Boolean] = {
+    Future.collect(t.rs.map{r => readKey(r.k, r)}).map(!_.contains(false))
+  }
+
+  def write(t: Transaction): Future[Boolean] = {
+    val wb = new BatchStatement()
+
+    t.ws.foreach { x =>
+      val k = x.k
+      val v = x.v
+      val version = x.version
+
+      wb.add(UPDATE_DATA.bind.setLong(0, v).setString(1, version).setString(2, k))
+    }
+
+    session.executeAsync(wb).map(_.wasApplied()).handle { case e =>
+      e.printStackTrace()
+      false
+    }
+  }
+
+  def write(txs: Seq[Transaction]): Future[Boolean] = {
+    val wb = new BatchStatement()
+
+    wb.clear()
+
+    txs.foreach { t =>
+      t.ws.foreach { x =>
+        val k = x.k
+        val v = x.v
+        val version = x.version
+
+        wb.add(UPDATE_DATA.bind.setLong(0, v).setString(1, version).setString(2, k))
+      }
+    }
+
+    session.executeAsync(wb).map(_.wasApplied()).handle { case e =>
+      e.printStackTrace()
+      false
     }
   }
 
@@ -90,7 +154,7 @@ class Coordinator(val id: String, val host: String, val port: Int)(implicit val 
     Future.collect(r.keys.map{read(_)}).map(r => ReadResponse(r))
   }
 
-  def process(pr: CoordinatorResult): Future[Command] = {
+  def process(pr: CoordinatorResult): Unit = {
     println(s"conflicted ${pr.conflicted}")
     println(s"applied ${pr.applied}\n")
 
@@ -113,6 +177,10 @@ class Coordinator(val id: String, val host: String, val port: Int)(implicit val 
     }
 
     Future.value(Ack())
+  }
+
+  def computePartition(k: String): String = {
+    (k.toInt % PARTITIONS).toString
   }
 
   val timer = new Timer()
@@ -139,10 +207,10 @@ class Coordinator(val id: String, val host: String, val port: Int)(implicit val 
         val elapsed = now - r.tmp
 
         if(elapsed >= TIMEOUT){
-
+          r.p.setValue(Nack())
           false
-        } else if(!r.ws.exists{keys.contains(_)}){
-          keys = keys ++ r.rs
+        } else if(!r.keys.exists{keys.contains(_)}){
+          keys = keys ++ r.keys
           true
         } else {
           r.p.setValue(Nack())
@@ -155,7 +223,8 @@ class Coordinator(val id: String, val host: String, val port: Int)(implicit val 
         return
       }
 
-      val b = Batch(UUID.randomUUID.toString, txs.map(_.t))
+      val partitions = txs.map(r => r.keys).flatten.distinct.map(k => computePartition(k)).distinct.sorted
+      val b = Batch(UUID.randomUUID.toString, txs.map(_.t), partitions)
 
       save(b).flatMap(ok => log(b).map(_ && ok)).map { ok =>
         if(ok){
@@ -169,6 +238,10 @@ class Coordinator(val id: String, val host: String, val port: Int)(implicit val 
         }
       }.handle { case ex =>
         ex.printStackTrace()
+
+        txs.foreach { r =>
+          r.p.setValue(Nack())
+        }
       }.ensure {
         timer.schedule(new Job(), 10L)
       }
@@ -177,11 +250,53 @@ class Coordinator(val id: String, val host: String, val port: Int)(implicit val 
 
   timer.schedule(new Job(), 10L)
 
+  def execute(b: Batch): Future[Command] = {
+
+    println(s"coordinator ${this.id} executing batch ${b.id}\n")
+
+    Future.collect(b.txs.map{t => checkTx(t).map(t -> _)}).flatMap { reads =>
+      val conflicted = reads.filter(_._2 == false).map(_._1)
+      val applied = reads.filter(_._2 == true).map(_._1)
+
+      write(applied).flatMap { ok =>
+
+        batches.remove(b.id)
+        process(CoordinatorResult(id, conflicted.map(_.id), applied.map(_.id)))
+
+        /*b.partitions.foreach { p =>
+          partitions(p)(BatchDone(b.id))
+        }
+
+        Ack()*/
+
+        Future.collect(b.partitions.map{p => partitions(p)(BatchDone(b.id))}).map(_ => Ack())
+      }
+    }
+  }
+
+  def process(cmd: BatchStart): Future[Command] = {
+    val (b, pts) = batches(cmd.id)
+    pts.add(cmd.partition)
+
+    var parts = Seq.empty[String]
+    val it = pts.iterator()
+
+    while(it.hasNext){
+      parts = parts :+ it.next()
+    }
+
+    if(b.partitions.forall(parts.contains(_))){
+      return execute(b)
+    }
+
+    Future.value(Ack())
+  }
+
   override def apply(request: Command): Future[Command] = {
     request match {
       case cmd: Transaction => process(cmd)
       case cmd: ReadRequest => process(cmd)
-      case cmd: CoordinatorResult => process(cmd)
+      case cmd: BatchStart => process(cmd)
     }
   }
 }

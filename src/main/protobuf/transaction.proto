@@ -79,6 +79,7 @@ message Batch {
 
     string id = 1;
     repeated Transaction txs = 2;
+    repeated string partitions = 3;
 }
 
 message BatchInfo {
@@ -88,6 +89,21 @@ message BatchInfo {
     string id = 1;
     repeated string partitions = 2;
     string coordinator = 3;
+}
+
+message BatchStart {
+    option (scalapb.message).extends = "transaction.Command";
+    option (scalapb.message).companion_extends = "transaction.Command";
+
+    string id = 1;
+    string partition = 2;
+}
+
+message BatchDone {
+    option (scalapb.message).extends = "transaction.Command";
+    option (scalapb.message).companion_extends = "transaction.Command";
+
+    string id = 1;
 }
 
 message Epoch {

@@ -28,7 +28,7 @@ class Client()(implicit val ec: ExecutionContext) {
   def execute(f: ((String, Map[String, MVCCVersion])) => Map[String, MVCCVersion]): Future[Boolean] = {
 
     val accs = accounts.keys.toSeq
-    
+
     val k1 = accs(rand.nextInt(0, accs.length)).toString
     val k2 = accs(rand.nextInt(0, accs.length)).toString
 

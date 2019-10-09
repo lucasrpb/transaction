@@ -24,7 +24,7 @@ package object transaction {
     val PENDING = 2
   }
 
-  val PARTITIONS = 100
+  val PARTITIONS = 5
 
   val accounts = TrieMap[String, Long]()
 
@@ -90,6 +90,8 @@ package object transaction {
         case cmd: KeyList => out.add(buf.writeBytes(Any.pack(cmd).toByteArray))
         case cmd: BatchInfo => out.add(buf.writeBytes(Any.pack(cmd).toByteArray))
         case cmd: Epoch => out.add(buf.writeBytes(Any.pack(cmd).toByteArray))
+        case cmd: BatchStart => out.add(buf.writeBytes(Any.pack(cmd).toByteArray))
+        case cmd: BatchDone => out.add(buf.writeBytes(Any.pack(cmd).toByteArray))
       }
 
       buf.release()
@@ -115,6 +117,8 @@ package object transaction {
         case _ if p.is(Epoch) => out.add(p.unpack(Epoch))
         case _ if p.is(KeyList) => out.add(p.unpack(KeyList))
         case _ if p.is(BatchInfo) => out.add(p.unpack(BatchInfo))
+        case _ if p.is(BatchStart) => out.add(p.unpack(BatchStart))
+        case _ if p.is(BatchDone) => out.add(p.unpack(BatchDone))
       }
 
     }

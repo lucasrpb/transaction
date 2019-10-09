@@ -1,4 +1,2 @@
-[0m[[0m[31merror[0m] [0m[0mD:\Users\lucas\IdeaProjects\transaction\src\main\scala\transaction\Worker.scala:14:35: not found: value SchedulerMain[0m
-[0m[[0m[31merror[0m] [0m[0m    createConnection("127.0.0.1", SchedulerMain.port)[0m
-[0m[[0m[31merror[0m] [0m[0m                                  ^[0m
-[0m[[0m[31merror[0m] [0m[0mone error found[0m
+[0m[[0m[33mwarn[0m] [0m[0mthere were two feature warnings; re-run with -feature for details[0m
+[0m[[0m[33mwarn[0m] [0m[0mone warning found[0m
