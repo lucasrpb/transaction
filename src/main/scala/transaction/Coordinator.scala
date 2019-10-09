@@ -180,7 +180,8 @@ class Coordinator(val id: String, val host: String, val port: Int)(implicit val 
   }
 
   def computePartition(k: String): String = {
-    (k.toInt % PARTITIONS).toString
+    //(k.toInt % PARTITIONS).toString
+    (accounts.computeHash(k).abs % PARTITIONS).toString
   }
 
   val timer = new Timer()
@@ -258,18 +259,18 @@ class Coordinator(val id: String, val host: String, val port: Int)(implicit val 
       val conflicted = reads.filter(_._2 == false).map(_._1)
       val applied = reads.filter(_._2 == true).map(_._1)
 
-      write(applied).flatMap { ok =>
+      write(applied).map { ok =>
 
         batches.remove(b.id)
         process(CoordinatorResult(id, conflicted.map(_.id), applied.map(_.id)))
 
-        /*b.partitions.foreach { p =>
+        b.partitions.foreach { p =>
           partitions(p)(BatchDone(b.id))
         }
 
-        Ack()*/
+        Ack()
 
-        Future.collect(b.partitions.map{p => partitions(p)(BatchDone(b.id))}).map(_ => Ack())
+       // Future.collect(b.partitions.map{p => partitions(p)(BatchDone(b.id))}).map(_ => Ack())
       }
     }
   }
