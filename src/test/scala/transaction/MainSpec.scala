@@ -25,7 +25,7 @@ class MainSpec extends FlatSpec {
       .addContactPoint("127.0.0.1")
       .build()
 
-    val session = cluster.connect("mvcc")
+    val session = cluster.connect("mv2pl")
     session.execute("truncate batches;")
 
     val nAcc = 1000

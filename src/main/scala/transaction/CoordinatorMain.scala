@@ -27,22 +27,9 @@ object CoordinatorMain {
     admin.deleteTopic("batches", r => {
       println(s"topic batches deleted ${r.succeeded()}")
 
-      admin.deleteTopic("log", r => {
-
-        println(s"topic log deleted ${r.succeeded()}")
-
-        admin.createTopic("batches", 3, 1, r => {
-
+      admin.createTopic("batches", 3, 1, r => {
           println(s"topic batches created ${r.succeeded()}")
-
-          admin.createTopic("log", 1, 1, r => {
-
-            println(s"topic log created ${r.succeeded()}")
-
-            p.setValue(true)
-          })
-
-        })
+          p.setValue(true)
       })
     })
 

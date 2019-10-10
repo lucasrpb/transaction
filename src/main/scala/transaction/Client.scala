@@ -1,17 +1,10 @@
 package transaction
 
-import java.nio.ByteBuffer
 import java.util.UUID
 import java.util.concurrent.ThreadLocalRandom
-
-import com.datastax.driver.core.{Cluster, Session}
-import com.google.protobuf.any.Any
-import com.twitter.finagle.Service
-import com.twitter.util.{Future, Timer}
-import com.twitter.conversions.DurationOps._
+import com.twitter.util.Future
 import transaction.protocol._
 
-import scala.collection.concurrent.TrieMap
 import scala.concurrent.ExecutionContext
 
 class Client()(implicit val ec: ExecutionContext) {

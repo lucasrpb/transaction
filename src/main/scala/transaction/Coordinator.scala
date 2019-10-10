@@ -19,10 +19,6 @@ import scala.concurrent.ExecutionContext
 class Coordinator(val id: String, val host: String, val port: Int)(implicit val ec: ExecutionContext)
   extends Service[Command, Command]{
 
-  lazy val partitions: Map[String, Service[Command, Command]] = PartitionMain.partitions.map { case (id, (host, port)) =>
-    id -> createConnection(host, port)
-  }
-
   val eid = id.toInt
 
   val config = scala.collection.mutable.Map[String, String]()
@@ -48,7 +44,7 @@ class Coordinator(val id: String, val host: String, val port: Int)(implicit val 
     .withPoolingOptions(poolingOptions)
     .build()
 
-  val session = cluster.connect("mvcc")
+  val session = cluster.connect("mv2pl")
 
   val INSERT_BATCH = session.prepare("insert into batches(id, completed, bin) values(?,false,?);")
   val READ = session.prepare("select * from data where key=?;")
@@ -67,12 +63,11 @@ class Coordinator(val id: String, val host: String, val port: Int)(implicit val 
 
   def save(b: Batch): Future[Boolean] = {
     batches.put(b.id, b -> new ConcurrentLinkedDeque[String]())
-    val buf = ByteBuffer.wrap(Any.pack(b).toByteArray)
     session.executeAsync(INSERT_BATCH.bind.setString(0, b.id).setBytes(1, buf)).map(_.wasApplied())
   }
 
   def log(b: Batch): Future[Boolean] = {
-    val buf = Any.pack(BatchInfo(b.id, b.partitions, id)).toByteArray
+    val buf = Any.pack(b).toByteArray
     val record = KafkaProducerRecord.create[String, Array[Byte]]("batches", b.id, buf)
     producer.writeFuture(record).map(_ => true)
   }
@@ -154,7 +149,7 @@ class Coordinator(val id: String, val host: String, val port: Int)(implicit val 
     Future.collect(r.keys.map{read(_)}).map(r => ReadResponse(r))
   }
 
-  def process(pr: CoordinatorResult): Unit = {
+  def process(pr: CoordinatorResult): Future[Command] = {
     println(s"conflicted ${pr.conflicted}")
     println(s"applied ${pr.applied}\n")
 
@@ -180,7 +175,6 @@ class Coordinator(val id: String, val host: String, val port: Int)(implicit val 
   }
 
   def computePartition(k: String): String = {
-    //(k.toInt % PARTITIONS).toString
     (accounts.computeHash(k).abs % PARTITIONS).toString
   }
 
@@ -251,55 +245,11 @@ class Coordinator(val id: String, val host: String, val port: Int)(implicit val 
 
   timer.schedule(new Job(), 10L)
 
-  def execute(b: Batch): Future[Command] = {
-
-    println(s"coordinator ${this.id} executing batch ${b.id}\n")
-
-    Future.collect(b.txs.map{t => checkTx(t).map(t -> _)}).flatMap { reads =>
-      val conflicted = reads.filter(_._2 == false).map(_._1)
-      val applied = reads.filter(_._2 == true).map(_._1)
-
-      write(applied).map { ok =>
-
-        batches.remove(b.id)
-        process(CoordinatorResult(id, conflicted.map(_.id), applied.map(_.id)))
-
-        b.partitions.foreach { p =>
-          partitions(p)(BatchDone(b.id))
-        }
-
-        Ack()
-
-       // Future.collect(b.partitions.map{p => partitions(p)(BatchDone(b.id))}).map(_ => Ack())
-      }
-    }
-  }
-
-  def process(cmd: BatchStart): Future[Command] = {
-    println(s"received batch_start ${cmd.id}\n")
-
-    val (b, pts) = batches(cmd.id)
-    pts.add(cmd.partition)
-
-    var parts = Seq.empty[String]
-    val it = pts.iterator()
-
-    while(it.hasNext){
-      parts = parts :+ it.next()
-    }
-
-    if(b.partitions.forall(parts.contains(_))){
-      return execute(b)
-    }
-
-    Future.value(Ack())
-  }
-
   override def apply(request: Command): Future[Command] = {
     request match {
       case cmd: Transaction => process(cmd)
       case cmd: ReadRequest => process(cmd)
-      case cmd: BatchStart => process(cmd)
+      case cmd: CoordinatorResult => process(cmd)
     }
   }
 }

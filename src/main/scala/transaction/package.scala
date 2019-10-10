@@ -24,7 +24,7 @@ package object transaction {
     val PENDING = 2
   }
 
-  val PARTITIONS = 5
+  val PARTITIONS = 1000
 
   val accounts = TrieMap[String, Long]()
 
