@@ -1,5 +1,7 @@
 package transaction
 
+import java.util.{Timer, TimerTask}
+
 import com.datastax.driver.core.{BatchStatement, Cluster}
 import com.google.protobuf.any.Any
 import com.twitter.finagle.Service
@@ -125,9 +127,38 @@ class Worker(val id: String)(implicit val ec: ExecutionContext) {
     }
   }
 
+  def check(txs: Seq[Transaction]): Future[Seq[(Transaction, Boolean)]] = {
+    Future.collect(txs.map{t => checkTx(t).map(t -> _)})
+  }
+
   def execute(b: Batch): Future[Boolean] = {
 
+    println(s"worker ${id} executing batch ${b.id}...\n")
+
+    def execute2(): Future[Boolean] = {
+      check(b.txs).flatMap { reads =>
+        val conflicted = reads.filter(_._2 == false).map(_._1)
+        val applied = reads.filter(_._2 == true).map(_._1)
+
+        write(applied).flatMap { ok =>
+          release(b.id, b.partitions).map(_ && ok).map { ok =>
+            coordinators(b.coordinator)(CoordinatorResult(id, conflicted.map(_.id), applied.map(_.id)))
+            true
+          }
+        }
+      }
+    }
+
+    acquire(b).flatMap { locks =>
+      if(locks.exists{case (_, ok) => !ok}){
+        release(b.id, locks.filter(_._2).map(_._1)).map(_ => false)
+      } else {
+        execute2()
+      }
+    }
   }
+
+  var batch: Option[Batch] = None
 
   def handler(evt: KafkaConsumerRecord[String, Array[Byte]]): Unit = {
     if(evt.partition() != eid) {
@@ -140,16 +171,29 @@ class Worker(val id: String)(implicit val ec: ExecutionContext) {
     println(s"processing batch ${b.id}...\n")
 
     consumer.pause()
+    batch = Some(b)
 
-    coordinators(b.coordinator)(CoordinatorResult(id, Seq(), b.txs.map(_.id)))
-      .handle { case ex =>
-        ex.printStackTrace()
-      }.ensure {
-        consumer.commit()
-        consumer.resume()
+    timer.schedule(new Job(), 0L)
+  }
+
+  val timer = new Timer()
+
+  class Job() extends TimerTask {
+    override def run(): Unit = {
+
+      execute(batch.get).onSuccess { ok =>
+        if(ok){
+          batch = None
+          consumer.commit()
+          consumer.resume()
+        } else {
+          timer.schedule(new Job(), 10L)
+        }
+      }.handle { case ex =>
+          ex.printStackTrace()
       }
+    }
   }
 
   consumer.handler(handler)
-
 }

@@ -40,7 +40,7 @@ class MainSpec extends FlatSpec {
 
     val tb = session.execute("select sum(value) as total from data;").one.getLong("total")
 
-    for(i<-0 until 100){
+    for(i<-0 until 2000){
 
       val c = new Client()
       clients = clients :+ c
