@@ -33,8 +33,8 @@ class Client()(implicit val ec: ExecutionContext) {
       val reads = r.asInstanceOf[ReadResponse].values
       val writes = f(tid -> reads.map(v => v.k -> v).toMap)
 
-
-      val tx = Transaction(tid, reads, writes.map(_._2).toSeq)
+      val partitions = keys.map{k => (accounts.computeHash(k).abs % PARTITIONS).toString}.distinct
+      val tx = Transaction(tid, reads, writes.map(_._2).toSeq, partitions)
 
       conn(tx).map {
         _ match {

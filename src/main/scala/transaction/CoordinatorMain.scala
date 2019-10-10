@@ -11,7 +11,7 @@ import scala.concurrent.ExecutionContext.Implicits.global
 object CoordinatorMain {
 
   val port = 3000
-  val n = 3
+  val n = 2
   var coordinators = Map.empty[String, (String, Int)]
 
   for(i<-0 until n){
@@ -27,7 +27,7 @@ object CoordinatorMain {
     admin.deleteTopic("batches", r => {
       println(s"topic batches deleted ${r.succeeded()}")
 
-      admin.createTopic("batches", 3, 1, r => {
+      admin.createTopic("batches", n, 1, r => {
           println(s"topic batches created ${r.succeeded()}")
           p.setValue(true)
       })

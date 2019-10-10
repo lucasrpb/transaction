@@ -131,30 +131,44 @@ class Worker(val id: String)(implicit val ec: ExecutionContext) {
     Future.collect(txs.map{t => checkTx(t).map(t -> _)})
   }
 
-  def execute(b: Batch): Future[Boolean] = {
+  def execute(b: Batch, locks: Seq[String]): Future[Boolean] = {
 
-    println(s"worker ${id} executing batch ${b.id}...\n")
+    var conflicted = Seq.empty[String]
 
-    def execute2(): Future[Boolean] = {
-      check(b.txs).flatMap { reads =>
-        val conflicted = reads.filter(_._2 == false).map(_._1)
-        val applied = reads.filter(_._2 == true).map(_._1)
+    val txs = b.txs.filter{ t =>
+      if(t.partitions.forall(locks.contains(_))){
+        true
+      } else {
+        conflicted = conflicted :+ t.id
+        false
+      }
+    }
 
-        write(applied).flatMap { ok =>
-          release(b.id, b.partitions).map(_ && ok).map { ok =>
-            coordinators(b.coordinator)(CoordinatorResult(id, conflicted.map(_.id), applied.map(_.id)))
-            true
-          }
+    if(txs.isEmpty){
+      coordinators(b.coordinator)(CoordinatorResult(id, b.txs.map(_.id)))
+      return release(b.id, locks)
+    }
+
+    check(txs).flatMap { reads =>
+      conflicted = conflicted ++ reads.filter(_._2 == false).map(_._1.id)
+      val applied = reads.filter(_._2 == true).map(_._1)
+
+      write(applied).flatMap { ok =>
+        release(b.id, locks).map(_ && ok).map { ok =>
+          coordinators(b.coordinator)(CoordinatorResult(id, conflicted, applied.map(_.id)))
+          true
         }
       }
     }
 
+  }
+
+  def execute(b: Batch): Future[Boolean] = {
+
+    println(s"worker ${id} executing batch ${b.id}...\n")
+
     acquire(b).flatMap { locks =>
-      if(locks.exists{case (_, ok) => !ok}){
-        release(b.id, locks.filter(_._2).map(_._1)).map(_ => false)
-      } else {
-        execute2()
-      }
+      execute(b, locks.filter(_._2).map(_._1))
     }
   }
 
@@ -173,26 +187,14 @@ class Worker(val id: String)(implicit val ec: ExecutionContext) {
     consumer.pause()
     batch = Some(b)
 
-    timer.schedule(new Job(), 0L)
-  }
-
-  val timer = new Timer()
-
-  class Job() extends TimerTask {
-    override def run(): Unit = {
-
-      execute(batch.get).onSuccess { ok =>
-        if(ok){
-          batch = None
-          consumer.commit()
-          consumer.resume()
-        } else {
-          timer.schedule(new Job(), 10L)
-        }
-      }.handle { case ex =>
-          ex.printStackTrace()
-      }
+    execute(batch.get).handle { case ex =>
+      ex.printStackTrace()
+    }.ensure {
+      batch = None
+      consumer.commit()
+      consumer.resume()
     }
+
   }
 
   consumer.handler(handler)

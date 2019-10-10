@@ -57,11 +57,9 @@ class Coordinator(val id: String, val host: String, val port: Int)(implicit val 
     val rs = t.rs.map(_.k)
     val ws = t.ws.map(_.k)
     val keys = (rs ++ ws).distinct
-    val partitions = keys.map(k => accounts.computeHash(k).toString)
   }
 
   def save(b: Batch): Future[Boolean] = {
-    //batches.put(b.id, b -> new ConcurrentLinkedDeque[String]())
     session.executeAsync(INSERT_BATCH.bind.setString(0, b.id).setInt(1, Status.PENDING)).map(_.wasApplied())
   }
 
@@ -143,8 +141,8 @@ class Coordinator(val id: String, val host: String, val port: Int)(implicit val 
         if(elapsed >= TIMEOUT){
           r.p.setValue(Nack())
           false
-        } else if(!r.keys.exists{keys.contains(_)}){
-          keys = keys ++ r.keys
+        } else if(!r.ws.exists{keys.contains(_)}){
+          keys = keys ++ r.rs
           true
         } else {
           r.p.setValue(Nack())
@@ -157,7 +155,7 @@ class Coordinator(val id: String, val host: String, val port: Int)(implicit val 
         return
       }
 
-      val partitions = txs.map(r => r.keys).flatten.distinct.map(k => computePartition(k)).distinct.sorted
+      val partitions = txs.map(r => r.t.partitions).flatten.distinct.sorted
       val b = Batch(UUID.randomUUID.toString, txs.map(_.t), partitions, id)
 
       save(b).flatMap(ok => log(b).map(_ && ok)).map { ok =>

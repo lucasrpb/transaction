@@ -55,6 +55,7 @@ message Transaction {
     string id = 1;
     repeated MVCCVersion rs = 2;
     repeated MVCCVersion ws = 3;
+    repeated string partitions = 4;
 }
 
 message CoordinatorResult {
