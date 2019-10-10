@@ -28,8 +28,6 @@ class MainSpec extends FlatSpec {
     val session = cluster.connect("mv2pl")
     session.execute("truncate batches;")
 
-    val nAcc = 1000
-
     var clients = Seq.empty[Client]
 
     val results = session.execute(s"select * from data;")
@@ -42,7 +40,7 @@ class MainSpec extends FlatSpec {
 
     val tb = session.execute("select sum(value) as total from data;").one.getLong("total")
 
-    for(i<-0 until 1000){
+    for(i<-0 until 100){
 
       val c = new Client()
       clients = clients :+ c

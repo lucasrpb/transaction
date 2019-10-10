@@ -50,7 +50,7 @@ class Coordinator(val id: String, val host: String, val port: Int)(implicit val 
   val READ = session.prepare("select * from data where key=?;")
 
   val batch = new ConcurrentLinkedDeque[Request]()
-  val batches = TrieMap[String, (Batch, ConcurrentLinkedDeque[String])]()
+  //val batches = TrieMap[String, (Batch, ConcurrentLinkedDeque[String])]()
   val executing = TrieMap[String, Request]()
 
   case class Request(id: String, t: Transaction, tmp: Long = System.currentTimeMillis()){
@@ -62,7 +62,7 @@ class Coordinator(val id: String, val host: String, val port: Int)(implicit val 
   }
 
   def save(b: Batch): Future[Boolean] = {
-    batches.put(b.id, b -> new ConcurrentLinkedDeque[String]())
+    //batches.put(b.id, b -> new ConcurrentLinkedDeque[String]())
     session.executeAsync(INSERT_BATCH.bind.setString(0, b.id).setInt(1, Status.PENDING)).map(_.wasApplied())
   }
 
@@ -219,7 +219,7 @@ class Coordinator(val id: String, val host: String, val port: Int)(implicit val 
       }
 
       val partitions = txs.map(r => r.keys).flatten.distinct.map(k => computePartition(k)).distinct.sorted
-      val b = Batch(UUID.randomUUID.toString, txs.map(_.t), partitions)
+      val b = Batch(UUID.randomUUID.toString, txs.map(_.t), partitions, id)
 
       save(b).flatMap(ok => log(b).map(_ && ok)).map { ok =>
         if(ok){

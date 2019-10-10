@@ -16,7 +16,7 @@ import scala.util.{Failure, Success}
 
 package object transaction {
 
-  val TIMEOUT = 1000L
+  val TIMEOUT = 400L
 
   object Status {
     val ABORTED = 0

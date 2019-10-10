@@ -80,6 +80,7 @@ message Batch {
     string id = 1;
     repeated Transaction txs = 2;
     repeated string partitions = 3;
+    string coordinator = 4;
 }
 
 message BatchInfo {
