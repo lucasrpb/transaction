@@ -1,8 +1,9 @@
 package transaction
 
-import com.datastax.driver.core.Cluster
+import com.datastax.driver.core.{BatchStatement, Cluster}
 import com.google.protobuf.any.Any
 import com.twitter.finagle.Service
+import com.twitter.util.Future
 import io.vertx.scala.core.Vertx
 import io.vertx.scala.kafka.client.consumer.{KafkaConsumer, KafkaConsumerRecord}
 import org.apache.kafka.clients.consumer.ConsumerConfig
@@ -52,7 +53,81 @@ class Worker(val id: String)(implicit val ec: ExecutionContext) {
 
   val session = cluster.connect("mv2pl")
 
+  val UPDATE_DATA = session.prepare("update data set value=?, version=? where key=?;")
+  val READ_DATA = session.prepare("select * from data where key=? and version=?;")
 
+  val ACQUIRE_PARTITION = session.prepare("update partitions set batch=? where id=? if batch=null;")
+  val RELEASE_PARTITION = session.prepare("update partitions set batch=null where id=? if batch=?;")
+
+  def acquirePartition(id: String, bid: String): Future[Boolean] = {
+    session.executeAsync(ACQUIRE_PARTITION.bind.setString(0, bid).setString(1, id)).map(_.wasApplied())
+  }
+
+  def acquire(b: Batch): Future[Seq[(String, Boolean)]] = {
+    Future.collect(b.partitions.map{p => acquirePartition(p, b.id).map(p -> _)})
+  }
+
+  def releasePartition(id: String, bid: String): Future[Boolean] = {
+    session.executeAsync(RELEASE_PARTITION.bind.setString(0, id).setString(1, bid)).map(_.wasApplied())
+  }
+
+  def release(bid: String, partitions: Seq[String]): Future[Boolean] = {
+    Future.collect(partitions.map{releasePartition(_, bid)}).map(_ => true)
+  }
+
+  def readKey(k: String, v: MVCCVersion): Future[Boolean] = {
+    session.executeAsync(READ_DATA.bind.setString(0, k).setString(1, v.version)).map{_.one() != null}
+  }
+
+  def writeKey(k: String, v: MVCCVersion): Future[Boolean] = {
+    session.executeAsync(UPDATE_DATA.bind.setLong(0, v.v).setString(1, v.version).setString(2, k)).map{_.wasApplied()}
+  }
+
+  def checkTx(t: Transaction): Future[Boolean] = {
+    Future.collect(t.rs.map{r => readKey(r.k, r)}).map(!_.contains(false))
+  }
+
+  def write(t: Transaction): Future[Boolean] = {
+    val wb = new BatchStatement()
+
+    t.ws.foreach { x =>
+      val k = x.k
+      val v = x.v
+      val version = x.version
+
+      wb.add(UPDATE_DATA.bind.setLong(0, v).setString(1, version).setString(2, k))
+    }
+
+    session.executeAsync(wb).map(_.wasApplied()).handle { case e =>
+      e.printStackTrace()
+      false
+    }
+  }
+
+  def write(txs: Seq[Transaction]): Future[Boolean] = {
+    val wb = new BatchStatement()
+
+    wb.clear()
+
+    txs.foreach { t =>
+      t.ws.foreach { x =>
+        val k = x.k
+        val v = x.v
+        val version = x.version
+
+        wb.add(UPDATE_DATA.bind.setLong(0, v).setString(1, version).setString(2, k))
+      }
+    }
+
+    session.executeAsync(wb).map(_.wasApplied()).handle { case e =>
+      e.printStackTrace()
+      false
+    }
+  }
+
+  def execute(b: Batch): Future[Boolean] = {
+
+  }
 
   def handler(evt: KafkaConsumerRecord[String, Array[Byte]]): Unit = {
     if(evt.partition() != eid) {

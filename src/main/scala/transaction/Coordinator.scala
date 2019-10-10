@@ -1,13 +1,12 @@
 package transaction
 
-import java.nio.ByteBuffer
-import java.util.{Timer, TimerTask, UUID}
 import java.util.concurrent.ConcurrentLinkedDeque
+import java.util.{Timer, TimerTask, UUID}
 
-import com.datastax.driver.core.{BatchStatement, Cluster, HostDistance, PoolingOptions}
+import com.datastax.driver.core.{Cluster, HostDistance, PoolingOptions}
 import com.google.protobuf.any.Any
 import com.twitter.finagle.Service
-import com.twitter.util.{Await, Future, Promise}
+import com.twitter.util.{Future, Promise}
 import io.vertx.scala.core.Vertx
 import io.vertx.scala.kafka.client.producer.{KafkaProducer, KafkaProducerRecord}
 import org.apache.kafka.clients.producer.ProducerConfig
@@ -82,66 +81,6 @@ class Coordinator(val id: String, val host: String, val port: Int)(implicit val 
     session.executeAsync(READ.bind.setString(0, key)).map { rs =>
       val one = rs.one()
       MVCCVersion(one.getString("key"), one.getLong("value"), one.getString("version"))
-    }
-  }
-
-  val UPDATE_DATA = session.prepare("update data set value=?, version=? where key=?;")
-  val READ_DATA = session.prepare("select * from data where key=? and version=?;")
-  val READ_BATCH = session.prepare("select * from batches where id=?;")
-
-  def readKey(k: String, v: MVCCVersion): Future[Boolean] = {
-    session.executeAsync(READ_DATA.bind.setString(0, k).setString(1, v.version)).map{_.one() != null}
-  }
-
-  def readBatch(id: String): Future[Batch] = {
-    session.executeAsync(READ_BATCH.bind.setString(0, id)).map { rs =>
-      Any.parseFrom(rs.one.getBytes("bin").array()).unpack(Batch)
-    }
-  }
-
-  def writeKey(k: String, v: MVCCVersion): Future[Boolean] = {
-    session.executeAsync(UPDATE_DATA.bind.setLong(0, v.v).setString(1, v.version).setString(2, k)).map{_.wasApplied()}
-  }
-
-  def checkTx(t: Transaction): Future[Boolean] = {
-    Future.collect(t.rs.map{r => readKey(r.k, r)}).map(!_.contains(false))
-  }
-
-  def write(t: Transaction): Future[Boolean] = {
-    val wb = new BatchStatement()
-
-    t.ws.foreach { x =>
-      val k = x.k
-      val v = x.v
-      val version = x.version
-
-      wb.add(UPDATE_DATA.bind.setLong(0, v).setString(1, version).setString(2, k))
-    }
-
-    session.executeAsync(wb).map(_.wasApplied()).handle { case e =>
-      e.printStackTrace()
-      false
-    }
-  }
-
-  def write(txs: Seq[Transaction]): Future[Boolean] = {
-    val wb = new BatchStatement()
-
-    wb.clear()
-
-    txs.foreach { t =>
-      t.ws.foreach { x =>
-        val k = x.k
-        val v = x.v
-        val version = x.version
-
-        wb.add(UPDATE_DATA.bind.setLong(0, v).setString(1, version).setString(2, k))
-      }
-    }
-
-    session.executeAsync(wb).map(_.wasApplied()).handle { case e =>
-      e.printStackTrace()
-      false
     }
   }
 
