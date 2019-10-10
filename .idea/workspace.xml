@@ -2,16 +2,9 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="28075c15-abbf-4ce2-951e-97b6bfe1c951" name="Default Changelist" comment="">
-      <change afterPath="$PROJECT_DIR$/src/main/scala/transaction/Worker.scala" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/scala/transaction/WorkerMain.scala" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/scala/transaction/Aggregator.scala" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/scala/transaction/AggregatorMain.scala" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/scala/transaction/Client.scala" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/scala/transaction/Client.scala" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/scala/transaction/Coordinator.scala" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/scala/transaction/Coordinator.scala" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/scala/transaction/CoordinatorMain.scala" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/scala/transaction/CoordinatorMain.scala" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/scala/transaction/Partition.scala" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/scala/transaction/PartitionMain.scala" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/scala/transaction/Worker.scala" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/scala/transaction/Worker.scala" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/scala/transaction/package.scala" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/scala/transaction/package.scala" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/test/scala/transaction/InsertSpec.scala" beforeDir="false" afterPath="$PROJECT_DIR$/src/test/scala/transaction/InsertSpec.scala" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/test/scala/transaction/MainSpec.scala" beforeDir="false" afterPath="$PROJECT_DIR$/src/test/scala/transaction/MainSpec.scala" afterDir="false" />
@@ -140,7 +133,7 @@
       <workItem from="1570304281328" duration="3027000" />
       <workItem from="1570375377656" duration="7007000" />
       <workItem from="1570396342632" duration="9121000" />
-      <workItem from="1570570297595" duration="28356000" />
+      <workItem from="1570570297595" duration="28938000" />
     </task>
     <task id="LOCAL-00001" summary="first commit">
       <created>1567870508099</created>
@@ -401,7 +394,14 @@
       <option name="project" value="LOCAL" />
       <updated>1570650674095</updated>
     </task>
-    <option name="localTasksCounter" value="38" />
+    <task id="LOCAL-00038" summary="MVCC partitioned batched protocol.">
+      <created>1570666270907</created>
+      <option name="number" value="00038" />
+      <option name="presentableId" value="LOCAL-00038" />
+      <option name="project" value="LOCAL" />
+      <updated>1570666270907</updated>
+    </task>
+    <option name="localTasksCounter" value="39" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -429,6 +429,7 @@
     <MESSAGE value="Version with no Kafka." />
     <MESSAGE value="Version with only storage (in this case YugaByteDB)" />
     <MESSAGE value="Global distributed shared log, local aggregator and local scheduler version." />
-    <option name="LAST_COMMIT_MESSAGE" value="Global distributed shared log, local aggregator and local scheduler version." />
+    <MESSAGE value="MVCC partitioned batched protocol." />
+    <option name="LAST_COMMIT_MESSAGE" value="MVCC partitioned batched protocol." />
   </component>
 </project>

@@ -46,7 +46,7 @@ class Coordinator(val id: String, val host: String, val port: Int)(implicit val 
 
   val session = cluster.connect("mv2pl")
 
-  val INSERT_BATCH = session.prepare("insert into batches(id, completed, bin) values(?,false,?);")
+  val INSERT_BATCH = session.prepare("insert into batches(id, status) values(?,?);")
   val READ = session.prepare("select * from data where key=?;")
 
   val batch = new ConcurrentLinkedDeque[Request]()
@@ -63,7 +63,7 @@ class Coordinator(val id: String, val host: String, val port: Int)(implicit val 
 
   def save(b: Batch): Future[Boolean] = {
     batches.put(b.id, b -> new ConcurrentLinkedDeque[String]())
-    session.executeAsync(INSERT_BATCH.bind.setString(0, b.id).setBytes(1, buf)).map(_.wasApplied())
+    session.executeAsync(INSERT_BATCH.bind.setString(0, b.id).setInt(1, Status.PENDING)).map(_.wasApplied())
   }
 
   def log(b: Batch): Future[Boolean] = {

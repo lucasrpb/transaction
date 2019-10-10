@@ -35,9 +35,9 @@ class InsertSpec extends FlatSpec {
       session.execute(INSERT_DATA.bind.setString(0, key).setLong(1, rand.nextLong(0, MAX_VALUE)).setString(2, tid))
     }
 
-    for(i<-0 until n){
-      val key = UUID.randomUUID.toString
-      session.execute(INSERT_DATA.bind.setString(0, key).setLong(1, rand.nextLong(0, MAX_VALUE)).setString(2, tid))
+    for(i<-0 until PARTITIONS){
+      val id = i.toString
+      session.execute(INSERT_PARTITIONS.bind.setString(0, id))
     }
 
    /* for(i<-0 until m){
