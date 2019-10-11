@@ -68,6 +68,7 @@ class Partition(val id: String)(implicit val ec: ExecutionContext) extends Servi
         list = list :+ b
         parts = parts ++ b.partitions
       }
+
     }
 
     println(s"sending batch_start to ${list.map(_.id)}\n")
