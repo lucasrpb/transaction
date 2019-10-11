@@ -31,7 +31,7 @@ object CoordinatorMain {
 
         println(s"topic log deleted ${r.succeeded()}")
 
-        admin.createTopic("batches", 3, 1, r => {
+        admin.createTopic("batches", n, 1, r => {
 
           println(s"topic batches created ${r.succeeded()}")
 

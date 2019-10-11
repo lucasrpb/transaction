@@ -58,7 +58,7 @@ class Partition(val id: String)(implicit val ec: ExecutionContext) extends Servi
 
     consumer.pause()
 
-    var bts = batches.values.toSeq.sortBy(_.id)
+    val bts = batches.values.toSeq.sortBy(_.id)
     var parts = Seq.empty[String]
     var list = Seq.empty[BatchInfo]
 
