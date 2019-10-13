@@ -1,29 +1,3 @@
 [0m[[0m[0minfo[0m] [0m[0m[32mMainSpec:[0m[0m
 [0m[[0m[0minfo[0m] [0m[0m[32mamount of money[0m[0m
-[0m[[0m[0minfo[0m] [0m[0m[31m- should be equal after transactions *** FAILED ***[0m[0m
-[0m[[0m[0minfo[0m] [0m[0m[31m  com.twitter.finagle.Failure: connection timed out: /127.0.0.1:3001 at remote address: /127.0.0.1:3001. Remote Info: Not Available[0m[0m
-[0m[[0m[0minfo[0m] [0m[0m[31m  ...[0m[0m
-[0m[[0m[0minfo[0m] [0m[0m[31m  Cause: com.twitter.finagle.ConnectionFailedException: connection timed out: /127.0.0.1:3001 at remote address: /127.0.0.1:3001. Remote Info: Not Available[0m[0m
-[0m[[0m[0minfo[0m] [0m[0m[31m  at com.twitter.finagle.netty4.ConnectionBuilder$$anon$1.operationComplete(ConnectionBuilder.scala:100)[0m[0m
-[0m[[0m[0minfo[0m] [0m[0m[31m  at com.twitter.finagle.netty4.ConnectionBuilder$$anon$1.operationComplete(ConnectionBuilder.scala:79)[0m[0m
-[0m[[0m[0minfo[0m] [0m[0m[31m  at io.netty.util.concurrent.DefaultPromise.notifyListener0(DefaultPromise.java:511)[0m[0m
-[0m[[0m[0minfo[0m] [0m[0m[31m  at io.netty.util.concurrent.DefaultPromise.notifyListeners0(DefaultPromise.java:504)[0m[0m
-[0m[[0m[0minfo[0m] [0m[0m[31m  at io.netty.util.concurrent.DefaultPromise.notifyListenersNow(DefaultPromise.java:483)[0m[0m
-[0m[[0m[0minfo[0m] [0m[0m[31m  at io.netty.util.concurrent.DefaultPromise.notifyListeners(DefaultPromise.java:424)[0m[0m
-[0m[[0m[0minfo[0m] [0m[0m[31m  at io.netty.util.concurrent.DefaultPromise.tryFailure(DefaultPromise.java:121)[0m[0m
-[0m[[0m[0minfo[0m] [0m[0m[31m  at io.netty.channel.nio.AbstractNioChannel$AbstractNioUnsafe$1.run(AbstractNioChannel.java:269)[0m[0m
-[0m[[0m[0minfo[0m] [0m[0m[31m  at io.netty.util.concurrent.PromiseTask$RunnableAdapter.call(PromiseTask.java:38)[0m[0m
-[0m[[0m[0minfo[0m] [0m[0m[31m  at io.netty.util.concurrent.ScheduledFutureTask.run(ScheduledFutureTask.java:127)[0m[0m
-[0m[[0m[0minfo[0m] [0m[0m[31m  ...[0m[0m
-[0m[[0m[0minfo[0m] [0m[0m[31m  Cause: io.netty.channel.ConnectTimeoutException: connection timed out: /127.0.0.1:3001[0m[0m
-[0m[[0m[0minfo[0m] [0m[0m[31m  at io.netty.channel.nio.AbstractNioChannel$AbstractNioUnsafe$1.run(AbstractNioChannel.java:267)[0m[0m
-[0m[[0m[0minfo[0m] [0m[0m[31m  at io.netty.util.concurrent.PromiseTask$RunnableAdapter.call(PromiseTask.java:38)[0m[0m
-[0m[[0m[0minfo[0m] [0m[0m[31m  at io.netty.util.concurrent.ScheduledFutureTask.run(ScheduledFutureTask.java:127)[0m[0m
-[0m[[0m[0minfo[0m] [0m[0m[31m  at io.netty.util.concurrent.AbstractEventExecutor.safeExecute(AbstractEventExecutor.java:163)[0m[0m
-[0m[[0m[0minfo[0m] [0m[0m[31m  at io.netty.util.concurrent.SingleThreadEventExecutor.runAllTasks(SingleThreadEventExecutor.java:404)[0m[0m
-[0m[[0m[0minfo[0m] [0m[0m[31m  at io.netty.channel.nio.NioEventLoop.run(NioEventLoop.java:466)[0m[0m
-[0m[[0m[0minfo[0m] [0m[0m[31m  at io.netty.util.concurrent.SingleThreadEventExecutor$5.run(SingleThreadEventExecutor.java:897)[0m[0m
-[0m[[0m[0minfo[0m] [0m[0m[31m  at java.base/java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1128)[0m[0m
-[0m[[0m[0minfo[0m] [0m[0m[31m  at java.base/java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:628)[0m[0m
-[0m[[0m[0minfo[0m] [0m[0m[31m  at com.twitter.finagle.util.BlockingTimeTrackingThreadFactory$$anon$1.run(BlockingTimeTrackingThreadFactory.scala:23)[0m[0m
-[0m[[0m[0minfo[0m] [0m[0m[31m  ...[0m[0m
+[0m[[0m[0minfo[0m] [0m[0m[32m- should be equal after transactions[0m[0m

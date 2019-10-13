@@ -18,8 +18,6 @@ class MainSpec extends FlatSpec {
 
     val rand = ThreadLocalRandom.current()
 
-    val nAccounts = 1000
-
     var tasks = Seq.empty[Future[Boolean]]
     val cluster = Cluster.builder()
       .addContactPoint("127.0.0.1")
